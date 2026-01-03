@@ -24,6 +24,12 @@
             50% { opacity: 0.15; }
         }
         .animate-pulse-slow { animation: pulse-slow 3s infinite; }
+        
+        .playing-card {
+            box-shadow: 0 0 15px 2px rgba(16, 185, 129, 0.5);
+            border-color: #10b981 !important;
+            transform: scale(1.02);
+        }
 
         /* Scrollbar */
         ::-webkit-scrollbar { height: 8px; width: 8px; }
@@ -119,25 +125,62 @@
             </div>
         </div>
 
-        <!-- PROGRESSION BUILDER -->
+        <!-- PROGRESSION BUILDER (WORKSTATION MODE) -->
         <div class="lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg transition-colors duration-300">
-            <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
-                <h2 class="text-sm font-bold uppercase text-slate-400 flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-green-500"></i> Mi Progresión / Ruta Modal
-                </h2>
-                <div class="flex items-center gap-3">
-                    <div id="progression-count" class="text-xs text-slate-500">0 Pasos</div>
-                    <button id="clear-progression-btn" class="hidden text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-all">
-                        <i data-lucide="trash-2" class="w-3 h-3"></i> <span id="clear-btn-text">Borrar Todo</span>
+            
+            <!-- Progression Toolbar -->
+            <div class="flex flex-col md:flex-row items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4">
+                
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <h2 class="text-sm font-bold uppercase text-slate-400 flex items-center gap-2 whitespace-nowrap">
+                        <i data-lucide="music-4" class="w-4 h-4 text-green-500"></i> Workstation
+                    </h2>
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+                    
+                    <!-- Playback Controls -->
+                    <div class="flex items-center gap-2">
+                        <button id="btn-play-all" class="p-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" title="Reproducir Todo">
+                            <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                        </button>
+                        <button id="btn-stop" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg shadow transition-transform active:scale-95" title="Detener">
+                            <i data-lucide="square" class="w-4 h-4 fill-current"></i>
+                        </button>
+                        <button id="btn-loop" class="p-2 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-lg shadow transition-colors hover:text-slate-800 dark:hover:text-white" title="Loop">
+                            <i data-lucide="repeat" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Tempo Control -->
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">BPM</span>
+                        <input type="number" id="bpm-input" value="90" min="40" max="240" class="w-12 bg-transparent text-sm font-bold text-center outline-none text-slate-700 dark:text-slate-200">
+                    </div>
+                </div>
+
+                <!-- File Actions -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <input type="file" id="file-upload" class="hidden" accept=".json">
+                    <button id="btn-import" class="text-xs flex items-center gap-1 text-slate-500 hover:text-blue-500 transition-colors px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="upload" class="w-3.5 h-3.5"></i> Cargar
                     </button>
+                    <button id="btn-export" class="text-xs flex items-center gap-1 text-slate-500 hover:text-blue-500 transition-colors px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Guardar
+                    </button>
+                    <div class="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                    <button id="clear-progression-btn" class="hidden text-xs text-slate-500 hover:text-red-500 flex items-center gap-1 transition-all px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> <span id="clear-btn-text">Borrar</span>
+                    </button>
+                    <div id="progression-count" class="text-xs text-slate-400 font-mono ml-2">0 Pasos</div>
                 </div>
             </div>
 
-            <div id="progression-container" class="flex gap-4 overflow-x-auto pb-4">
+            <!-- Progression Strip -->
+            <div id="progression-container" class="flex gap-4 overflow-x-auto pb-4 min-h-[180px] scroll-smooth">
                 <!-- Empty State -->
-                <div class="w-full text-center py-8 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                    <p class="text-sm">No has agregado acordes aún.</p>
-                    <p class="text-xs mt-1">Usa el botón "+" en el centro o en el inspector.</p>
+                <div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center">
+                    <i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i>
+                    <p class="text-sm font-medium">Lienzo vacío</p>
+                    <p class="text-xs mt-1 opacity-70">Agrega acordes desde el mapa o inspector para construir tu idea.</p>
                 </div>
             </div>
         </div>
@@ -156,44 +199,34 @@
             'E': 'Fb', 'Fb': 'E', 'E#': 'F', 'F': 'E#', 'B#': 'C', 'C': 'B#'
         };
 
-        // Theme Definitions (Adjusted for Light/Dark modes)
-        // using tailwind classes: text-color-600 for light mode contrast, text-color-400 for dark mode
         const FAMILY_THEMES = {
             "Escala Mayor": { 
                 color: "text-amber-600 dark:text-amber-400", 
                 bg: "bg-amber-500", 
                 border: "border-amber-500", 
                 glow: "shadow-amber-500/50", 
-                gradient: "from-amber-100 to-amber-50 dark:from-amber-500/20 dark:to-amber-900/5",
-                softBorder: "border-amber-200 dark:border-amber-500/30",
-                softBg: "bg-amber-50 dark:bg-amber-900/10"
+                gradient: "from-amber-100 to-amber-50 dark:from-amber-500/20 dark:to-amber-900/5"
             },
             "Menor Armónica": { 
                 color: "text-rose-600 dark:text-rose-400", 
                 bg: "bg-rose-500", 
                 border: "border-rose-500", 
                 glow: "shadow-rose-500/50", 
-                gradient: "from-rose-100 to-rose-50 dark:from-rose-500/20 dark:to-rose-900/5",
-                softBorder: "border-rose-200 dark:border-rose-500/30",
-                softBg: "bg-rose-50 dark:bg-rose-900/10"
+                gradient: "from-rose-100 to-rose-50 dark:from-rose-500/20 dark:to-rose-900/5"
             },
             "Menor Melódica": { 
                 color: "text-emerald-600 dark:text-emerald-400", 
                 bg: "bg-emerald-500", 
                 border: "border-emerald-500", 
                 glow: "shadow-emerald-500/50", 
-                gradient: "from-emerald-100 to-emerald-50 dark:from-emerald-500/20 dark:to-emerald-900/5",
-                softBorder: "border-emerald-200 dark:border-emerald-500/30",
-                softBg: "bg-emerald-50 dark:bg-emerald-900/10"
+                gradient: "from-emerald-100 to-emerald-50 dark:from-emerald-500/20 dark:to-emerald-900/5"
             },
             "Mayor Armónica": { 
                 color: "text-violet-600 dark:text-violet-400", 
                 bg: "bg-violet-500", 
                 border: "border-violet-500", 
                 glow: "shadow-violet-500/50", 
-                gradient: "from-violet-100 to-violet-50 dark:from-violet-500/20 dark:to-violet-900/5",
-                softBorder: "border-violet-200 dark:border-violet-500/30",
-                softBg: "bg-violet-50 dark:bg-violet-900/10"
+                gradient: "from-violet-100 to-violet-50 dark:from-violet-500/20 dark:to-violet-900/5"
             }
         };
 
@@ -218,7 +251,11 @@
             hoveredNode: null,
             progression: [],
             clearConfirm: false,
-            // Dark mode is handled by HTML class "dark"
+            bpm: 90,
+            isPlaying: false,
+            isLooping: false,
+            playingIndex: -1,
+            playbackTimeout: null
         };
 
         let audioCtx = null;
@@ -234,7 +271,7 @@
             }
         }
 
-        function playChord(root, intervals, type = 'chord') {
+        function playChord(root, intervals, type = 'chord', duration = 1.5) {
             initAudio();
             const rootIdx = getNoteIndex(root);
             const baseFreq = 130.81 * Math.pow(2, rootIdx / 12); 
@@ -244,13 +281,14 @@
             if (type === 'chord') {
                 indices.forEach((degreeIdx, i) => {
                     if (degreeIdx >= intervals.length) return;
-                    playTone(baseFreq, intervals[degreeIdx], now, 1.5, i === 0 ? 'triangle' : 'sine');
+                    playTone(baseFreq, intervals[degreeIdx], now, duration, i === 0 ? 'triangle' : 'sine');
                 });
             } else if (type === 'scale') {
+                const noteDur = 0.2;
                 intervals.forEach((interval, i) => {
-                    playTone(baseFreq, interval, now + (i * 0.2), 0.3, 'sine');
+                    playTone(baseFreq, interval, now + (i * noteDur), noteDur + 0.1, 'sine');
                 });
-                playTone(baseFreq, 12, now + (intervals.length * 0.2), 0.8, 'sine');
+                playTone(baseFreq, 12, now + (intervals.length * noteDur), 0.8, 'sine');
             }
         }
 
@@ -261,13 +299,102 @@
             osc.type = type;
             
             gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0.1, startTime + 0.02);
             gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
             
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start(startTime);
             osc.stop(startTime + duration);
+        }
+
+        // --- SEQUENCER ---
+        function startSequence() {
+            if (state.progression.length === 0) return;
+            if (state.isPlaying) stopSequence(); // Restart if already playing
+            
+            state.isPlaying = true;
+            state.playingIndex = 0;
+            updateTransportUI();
+            playNextStep();
+        }
+
+        function stopSequence() {
+            state.isPlaying = false;
+            state.playingIndex = -1;
+            clearTimeout(state.playbackTimeout);
+            updateTransportUI();
+            updateProgressionVisuals();
+        }
+
+        function playNextStep() {
+            if (!state.isPlaying) return;
+            if (state.playingIndex >= state.progression.length) {
+                if (state.isLooping) {
+                    state.playingIndex = 0;
+                } else {
+                    stopSequence();
+                    return;
+                }
+            }
+
+            const item = state.progression[state.playingIndex];
+            
+            // Highlight visual
+            updateProgressionVisuals();
+            
+            // Scroll to item
+            const container = document.getElementById('progression-container');
+            const card = container.children[state.playingIndex];
+            if(card) {
+                const offset = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2);
+                container.scrollTo({ left: offset, behavior: 'smooth' });
+            }
+
+            // Calculate duration based on BPM (assuming 4/4 bar or simply quarter note beats per chord)
+            // Let's assume each chord plays for 4 beats at current BPM for a nice slow check
+            // Seconds per beat = 60 / BPM. Duration = 4 * (60/BPM)
+            const beatDur = 60 / state.bpm;
+            const chordDur = beatDur * 4; // 1 bar duration
+            
+            playChord(item.root, item.intervals, 'chord', chordDur);
+
+            state.playbackTimeout = setTimeout(() => {
+                state.playingIndex++;
+                playNextStep();
+            }, chordDur * 1000);
+        }
+
+        function updateTransportUI() {
+            const btnPlay = document.getElementById('btn-play-all');
+            if (state.isPlaying) {
+                btnPlay.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i>';
+                btnPlay.classList.replace('bg-green-600', 'bg-yellow-600');
+                btnPlay.classList.replace('hover:bg-green-500', 'hover:bg-yellow-500');
+            } else {
+                btnPlay.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i>';
+                btnPlay.classList.replace('bg-yellow-600', 'bg-green-600');
+                btnPlay.classList.replace('hover:bg-yellow-500', 'hover:bg-green-500');
+            }
+            
+            const btnLoop = document.getElementById('btn-loop');
+            if (state.isLooping) {
+                btnLoop.classList.add('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
+            } else {
+                btnLoop.classList.remove('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
+            }
+            lucide.createIcons();
+        }
+
+        function updateProgressionVisuals() {
+            const container = document.getElementById('progression-container');
+            Array.from(container.children).forEach((card, idx) => {
+                if (idx === state.playingIndex && state.isPlaying) {
+                    card.classList.add('playing-card');
+                } else {
+                    card.classList.remove('playing-card');
+                }
+            });
         }
 
         // --- THEORY UTILS ---
@@ -366,11 +493,28 @@
             document.getElementById('header-enharmonic-btn').addEventListener('click', toggleEnharmonicHeader);
             document.getElementById('clear-progression-btn').addEventListener('click', clearProgression);
             
-            // Theme Toggle
+            // Transport Controls
+            document.getElementById('btn-play-all').addEventListener('click', () => {
+                if(state.isPlaying) stopSequence(); else startSequence();
+            });
+            document.getElementById('btn-stop').addEventListener('click', stopSequence);
+            document.getElementById('btn-loop').addEventListener('click', () => {
+                state.isLooping = !state.isLooping;
+                updateTransportUI();
+            });
+            document.getElementById('bpm-input').addEventListener('change', (e) => {
+                let val = parseInt(e.target.value);
+                if(val < 40) val = 40; if(val > 240) val = 240;
+                state.bpm = val;
+            });
+
+            // File IO
+            document.getElementById('btn-export').addEventListener('click', exportSession);
+            document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-upload').click());
+            document.getElementById('file-upload').addEventListener('change', importSession);
+
             document.getElementById('theme-toggle').addEventListener('click', () => {
                 document.documentElement.classList.toggle('dark');
-                // Re-render map to update static Tailwind classes in JS if needed (not needed for basic dark: classes but good for cleanliness)
-                // Actually Lucide icons need re-scan on theme change sometimes
                 setTimeout(() => lucide.createIcons(), 100);
             });
             
@@ -461,7 +605,6 @@
             orbitSys.innerHTML = '';
             
             const appendLayer = (nodes, rPerc, bg, size, showText) => {
-                // Limit visualization to prevent clutter
                 const limit = showText ? 12 : (size === '20px' ? 16 : 24);
                 const sliced = nodes.slice(0, limit);
                 sliced.forEach((n, i) => {
@@ -470,14 +613,10 @@
                     const top = 50 + (rPerc/2 * Math.sin(angle));
                     
                     const btn = document.createElement('button');
-                    // Dynamic Orbit Colors for Light/Dark
-                    // Close/Relatives need actual colors, Distant can be gray
-                    // Note: Passed 'bg' arg is specific to layer, but we need dual mode classes now.
-                    // We'll override the passed bg argument with specific theme-aware classes
                     let dynamicBg = '';
-                    if (rPerc === 85) dynamicBg = 'bg-slate-300 border-slate-400 hover:bg-slate-400 dark:bg-slate-700 dark:border-slate-600 dark:hover:bg-slate-500'; // Distant
-                    else if (rPerc === 55) dynamicBg = 'bg-blue-300 border-blue-400 hover:bg-blue-400 dark:bg-blue-600 dark:border-blue-800 dark:hover:bg-blue-400'; // Close
-                    else dynamicBg = 'bg-amber-300 border-amber-400 hover:bg-amber-400 dark:bg-amber-500 dark:border-amber-300 dark:hover:bg-amber-400'; // Relative
+                    if (rPerc === 85) dynamicBg = 'bg-slate-300 border-slate-400 hover:bg-slate-400 dark:bg-slate-700 dark:border-slate-600 dark:hover:bg-slate-500'; 
+                    else if (rPerc === 55) dynamicBg = 'bg-blue-300 border-blue-400 hover:bg-blue-400 dark:bg-blue-600 dark:border-blue-800 dark:hover:bg-blue-400'; 
+                    else dynamicBg = 'bg-amber-300 border-amber-400 hover:bg-amber-400 dark:bg-amber-500 dark:border-amber-300 dark:hover:bg-amber-400';
 
                     btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group ${dynamicBg} orbit-node`;
                     btn.style.left = `${left}%`; btn.style.top = `${top}%`;
@@ -596,16 +735,19 @@
             
             if (state.progression.length > 0) {
                 clearBtn.classList.remove('hidden');
-                document.getElementById('clear-btn-text').innerText = state.clearConfirm ? "¿Confirmar?" : "Borrar Todo";
+                document.getElementById('clear-btn-text').innerText = state.clearConfirm ? "¿Confirmar?" : "Borrar";
                 clearBtn.className = state.clearConfirm 
                     ? "text-xs text-red-600 dark:text-red-400 font-bold bg-red-100 dark:bg-red-900/20 px-2 py-0.5 rounded flex items-center gap-1 transition-all"
-                    : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all";
+                    : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20";
                 
                 container.innerHTML = '';
                 state.progression.forEach((item, idx) => {
                     const theme = FAMILY_THEMES[item.family] || FAMILY_THEMES["Escala Mayor"];
                     const div = document.createElement('div');
-                    div.className = `min-w-[220px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg`;
+                    
+                    const playingClass = (state.isPlaying && state.playingIndex === idx) ? 'playing-card' : '';
+                    
+                    div.className = `min-w-[220px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg transition-transform ${playingClass}`;
                     
                     let notesHTML = '';
                     item.notes.forEach(n => {
@@ -633,9 +775,10 @@
             } else {
                 clearBtn.classList.add('hidden');
                 container.innerHTML = `
-                    <div class="w-full text-center py-8 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                        <p class="text-sm">No has agregado acordes aún.</p>
-                        <p class="text-xs mt-1">Usa el botón "+" en el centro o en el inspector.</p>
+                    <div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center">
+                        <i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i>
+                        <p class="text-sm font-medium">Lienzo vacío</p>
+                        <p class="text-xs mt-1 opacity-70">Agrega acordes desde el mapa o inspector para construir tu idea.</p>
                     </div>`;
             }
             lucide.createIcons();
@@ -674,6 +817,41 @@
                 renderProgression();
                 setTimeout(() => { state.clearConfirm = false; renderProgression(); }, 3000);
             }
+        }
+
+        // --- FILE IO ---
+        function exportSession() {
+            if(state.progression.length === 0) {
+                alert("La progresión está vacía.");
+                return;
+            }
+            const dataStr = JSON.stringify(state.progression, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'modal_session.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importSession(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const loaded = JSON.parse(e.target.result);
+                    if(Array.isArray(loaded)) {
+                        state.progression = loaded;
+                        renderProgression();
+                    } else {
+                        alert("Formato inválido.");
+                    }
+                } catch(err) {
+                    alert("Error al leer el archivo.");
+                }
+            };
+            reader.readAsText(file);
         }
 
         // --- ACTION HANDLERS (Global scope) ---
@@ -715,6 +893,8 @@
 
         window.removeProgressionItem = removeProgressionItem;
         window.toggleEnharmonicInspector = toggleEnharmonicInspector;
+        window.exportSession = exportSession;
+        window.importSession = importSession;
 
         // Start
         init();
