@@ -1,1487 +1,724 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Interactiva de Asados al Barril</title>
-    <!-- Carga de Tailwind CSS -->
+    <title>Laboratorio de Navegación Modal</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carga de Inter Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Estilos personalizados */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f3e8; /* Tono crema claro inspirado en el PDF */
-            color: #4a2d1f; /* Marrón oscuro para el texto */
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+        .orbit-node { transition: all 0.3s ease; }
+        .orbit-node:hover { transform: scale(1.25); z-index: 50; }
+        
+        /* Animaciones */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.15; }
         }
-        .tab-button {
-            transition: all 0.3s ease;
-            border-bottom-width: 4px;
-            border-color: transparent;
-        }
-        .tab-button.active {
-            border-color: #d97706; /* Naranja/ámbar */
-            color: #d97706;
-            font-weight: 700;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .accordion-header {
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .accordion-header:hover {
-            background-color: #fffbf0;
-        }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-        .recipe-card {
-            background-color: #ffffff;
-            border: 1px solid #e0d9c4;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            /* ! Se añade para la lógica de filtrado/búsqueda */
-            display: block; 
-        }
-        .recipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-        }
-        /* Estilos del Modal */
-        #recipe-modal {
-            display: none; /* Oculto por defecto */
-            position: fixed;
-            z-index: 50;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-        }
-        #modal-content {
-            background-color: #fff;
-            margin: auto;
-            padding: 24px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            animation: slide-down 0.3s ease-out;
-        }
-        #modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            cursor: pointer;
-            font-size: 1.5rem;
-            line-height: 1;
-            color: #9ca3af;
-        }
-        #modal-close:hover {
-            color: #111827;
-        }
-        @keyframes slide-down {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        ul, ol {
-            list-style-position: inside;
-        }
-        ul {
-            list-style-type: disc;
-        }
-        ol {
-            list-style-type: decimal;
-        }
-        /* Estilos para Filtros */
-        .filter-button {
-            background-color: #f3f4f6;
-            color: #4a2d1f;
-            padding: 8px 16px;
-            border-radius: 99px;
-            border: 1px solid #e0d9c4;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .filter-button:hover {
-            background-color: #fffbf0;
-        }
-        .filter-button.active {
-            background-color: #d97706;
-            color: #ffffff;
-            border-color: #d97706;
-        }
+        .animate-pulse-slow { animation: pulse-slow 3s infinite; }
 
-        /* ! INICIO: Nuevos Estilos (Búsqueda, Impresión, Nuevos Datos) */
-        #search-bar {
-            width: 100%;
-            padding: 10px 16px;
-            border: 2px solid #e0d9c4;
-            border-radius: 12px;
-            font-size: 1rem;
-            color: #4a2d1f;
-            background-color: #fffbf0;
-        }
-        #search-bar:focus {
-            outline: none;
-            border-color: #d97706;
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
-        }
-        /* ! INICIO: Nuevos Estilos (Orden, Favoritos, Tips) */
-        #sort-select {
-            padding: 10px 16px;
-            border: 2px solid #e0d9c4;
-            border-radius: 12px;
-            font-size: 1rem;
-            color: #4a2d1f;
-            background-color: #fffbf0;
-            width: 100%;
-        }
-        #sort-select:focus {
-            outline: none;
-            border-color: #d97706;
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
-        }
-        .favorite-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            font-size: 1.75rem; /* 28px */
-            cursor: pointer;
-            transition: transform 0.2s ease, color 0.2s ease;
-            color: rgba(255, 255, 255, 0.7); /* Blanco semitransparente */
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-            z-index: 10;
-        }
-        .favorite-btn:hover {
-            transform: scale(1.15);
-        }
-        .favorite-btn.active {
-            color: #ef4444; /* Rojo */
-            transform: scale(1.1);
-        }
-        .recipe-card-image-container {
-            position: relative;
-        }
-        #modal-tips-content {
-            background-color: #fffbf0;
-            border-left: 4px solid #d97706;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-        }
-        /* ! FIN: Nuevos Estilos */
-        .card-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 16px 12px;
-            background-color: #fdfcf9;
-            border-top: 1px solid #f3f0e8;
-            font-size: 0.875rem;
-            color: #785a4b;
-        }
-        #modal-print-btn {
-            background-color: #d97706;
-            color: white;
-            font-weight: 600;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            margin-top: 24px;
-        }
-        #modal-print-btn:hover {
-            background-color: #b45f06;
-        }
-        /* Estilos de impresión */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #print-area, #print-area * {
-                visibility: visible;
-            }
-            #print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-        }
-        /* ! FIN: Nuevos Estilos */
-
+        /* Scrollbar */
+        ::-webkit-scrollbar { height: 8px; width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="flex flex-col min-h-screen p-2 md:p-6 bg-slate-50 text-slate-900 dark:bg-[#0f172a] dark:text-e2e8f0 transition-colors duration-300">
 
-    <div class="container mx-auto max-w-6xl bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-        <!-- Cabecera -->
-        <header class="p-6 md:p-8 bg-cover bg-center" style="background-image: url('https://placehold.co/1200x300/8c5a40/f7f3e8?text=Asados+al+Barril');">
-            <!-- Título eliminado -->
-        </header>
-
-        <!-- Pestañas de Navegación -->
-        <nav class="flex border-b border-gray-300 bg-gray-50">
-            <button class="tab-button flex-1 py-4 px-6 text-lg font-semibold text-gray-800 active" data-tab="tecnicas">
-                Técnicas Esenciales
-            </button>
-            <button class="tab-button flex-1 py-4 px-6 text-lg font-semibold text-gray-800" data-tab="recetas">
-                Recetario Completo
-            </button>
-        </nav>
-
-        <!-- Contenido de Pestañas -->
-        <main class="p-6 md:p-8 pb-16">
-
-            <!-- Pestaña de Técnicas -->
-            <section id="tecnicas-content" class="tab-content active space-y-4">
-                
-                <!-- Acordeón de Técnicas (Sin cambios) -->
-                <div class="accordion-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <h3 class="accordion-header flex justify-between items-center p-5">
-                        <span class="text-xl font-bold text-amber-700">Cap. 1: Fundamentos de los Asados al Barril</span>
-                        <span class="text-2xl font-light">+</span>
-                    </h3>
-                    <div class="accordion-content px-5 pb-5">
-                        <ul class="list-disc space-y-2 text-base">
-                            <li><strong>¿Qué son?</strong> Técnica culinaria de cocción lenta con calor indirecto y humo, que da un sabor ahumado y textura tierna.</li>
-                            <li><strong>Equipo Básico:</strong> Barril o parrilla, termómetro confiable, leña o carbón de calidad.</li>
-                            <li><strong>Preparación y Encendido:</strong>
-                                <ol class="list-decimal ml-6 mt-1">
-                                    <li>Limpiar el barril o parrilla de residuos.</li>
-                                    <li>Añadir leña o carbón y encender. Dejar que se desarrollen las brasas.</li>
-                                    <li>Ajustar la temperatura usando las ventilas para controlar el calor.</li>
-                                </ol>
-                            </li>
-                        </ul>
-                    </div>
+    <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        
+        <!-- HEADER -->
+        <div class="lg:col-span-12 flex flex-col md:flex-row justify-between items-end border-b border-slate-200 dark:border-slate-800 pb-6 transition-colors duration-300">
+            <div class="flex items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-black bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 dark:from-amber-200 dark:via-orange-300 dark:to-rose-400 bg-clip-text text-transparent uppercase tracking-tighter">
+                        Laboratorio de Navegación Modal
+                    </h1>
                 </div>
-
-                <div class="accordion-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <h3 class="accordion-header flex justify-between items-center p-5">
-                        <span class="text-xl font-bold text-amber-700">Cap. 2: Selección y Preparación de la Carne</span>
-                        <span class="text-2xl font-light">+</span>
-                    </h3>
-                    <div class="accordion-content px-5 pb-5">
-                        <ul class="list-disc space-y-2 text-base">
-                            <li><strong>Marmoleo:</strong> Busca vetas de grasa intramuscular (8-12% ideal) para sabor y jugosidad. Presente en Ribeye, filete de lomo, brisket.</li>
-                            <li><strong>Frescura:</strong> Compra en proveedores de confianza. Opta por carne local y de pasto si es posible.</li>
-                            <li><strong>Cortes Populares (Gramaje por persona):</strong>
-                                <ul class="list-disc ml-6 mt-1">
-                                    <li><strong>Costillar de Cerdo:</strong> 500g - 1kg. Clásico y jugoso.</li>
-                                    <li><strong>Brisket de Res:</strong> 200g - 300g. Sabor ahumado intenso, textura tierna.</li>
-                                    <li><strong>Pechuga de Pollo:</strong> 150g - 200g. Magra y versátil, absorbe bien sabores.</li>
-                                    <li><strong>Lomo de Cerdo:</strong> 200g - 250g. Magro y tierno, ideal para personalizar.</li>
-                                    <li><strong>Muslos de Pollo:</strong> 2 muslos (150g-200g total). Jugosos y con más grasa.</li>
-                                    <li><strong>Costillas de Cordero:</strong> 200g - 250g. Tiernas y con sabor característico.</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="accordion-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <h3 class="accordion-header flex justify-between items-center p-5">
-                        <span class="text-xl font-bold text-amber-700">Cap. 3: Marinados y Adobos</span>
-                        <span class="text-2xl font-light">+</span>
-                    </h3>
-                    <div class="accordion-content px-5 pb-5">
-                        <p class="mb-4">Técnicas para infundir sabor y ablandar la carne antes de la cocción.</p>
-                        <h4 class="font-bold text-lg mb-2">Marinados (Líquidos)</h4>
-                        <ul class="list-disc space-y-2 mb-4">
-                            <li><strong>De Hierbas y Cítricos:</strong> Jugo de limón, aceite de oliva, romero, tomillo, ajo. (Marinar 2-4 horas).</li>
-                            <li><strong>De Cerveza y Mostaza:</strong> Cerveza (Ale), salsa de soja, mostaza Dijon, ajo, azúcar moreno. (Marinar 4-6 horas).</li>
-                        </ul>
-                        <h4 class="font-bold text-lg mb-2">Adobos (Pastas/Mezclas secas)</h4>
-                        <ul class="list-disc space-y-2">
-                            <li><strong>De Chile y Ajo:</strong> Chiles secos (guajillo, ancho), ajo, aceite de oliva, comino, orégano. Se licúa hasta formar una pasta.</li>
-                            <li><strong>De Yogur y Hierbas:</strong> Yogur natural, menta, cilantro, comino, paprika. Reposar 2 horas.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="accordion-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <h3 class="accordion-header flex justify-between items-center p-5">
-                        <span class="text-xl font-bold text-amber-700">Cap. 4: Técnicas de Cocina</span>
-                        <span class="text-2xl font-light">+</span>
-                    </h3>
-                    <div class="accordion-content px-5 pb-5">
-                        <ul class="list-disc space-y-4 text-base">
-                            <li><strong>Control de Temperatura:</strong>
-                                <ul class="list-disc ml-6 mt-1 space-y-2">
-                                    <li><strong>Zonas de Calor:</strong> Crear una zona directa (sobre brasas, para sellar) y una indirecta (lejos de brasas, para cocción lenta y ahumado).</li>
-                                    <li><strong>Medición:</strong> Usar un termómetro confiable. Ajustar temperatura con las ventilas (más abiertas = más calor).</li>
-                                    <li><strong>Temperaturas Internas Objetivo:</strong>
-                                        <ul class="list-disc ml-6 mt-1">
-                                            <li>Costillar de Cerdo: 63-71°C</li>
-                                            <li>Brisket de Res: 88-93°C</li>
-                                            <li>Pechuga de Pollo: 74-79°C</li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><strong>Cocción Lenta (Indirecta):</strong>
-                                <ul class="list-disc ml-6 mt-1 space-y-2">
-                                    <li><strong>Definición:</strong> La carne se coloca lejos del fuego directo. Es la técnica principal para asados al barril (BBQ).</li>
-                                    <li><strong>Uso:</strong> Perfecta para piezas grandes que requieren tiempos largos (ej. brisket 10-12 horas a 107-121°C). Logra la textura tierna y desmenuzable.</li>
-                                    <li><strong>Humedad:</strong> Colocar recipientes con agua en el barril para evitar que la carne se seque.</li>
-                                    <li><strong>Rotación:</strong> Girar y voltear la carne (especialmente piezas grandes) para cocción uniforme.</li>
-                                </ul>
-                            </li>
-                            <li><strong>Cocción Rápida (Directa / Sellado):</strong>
-                                <ul class="list-disc ml-6 mt-1 space-y-2">
-                                    <li><strong>Definición:</strong> La carne se coloca directamente sobre las brasas calientes.</li>
-                                    <li><strong>Uso:</strong> Ideal para sellar la carne, crear una costra (reacción de Maillard) y cocinar cortes más delgados.</li>
-                                    <li><strong>Tiempos Cortos:</strong> Se usa para filetes (3-5 min por lado), costillas de cordero (3-4 min por lado) o para dorar la carne antes de pasarla a cocción indirecta.</li>
-                                </ul>
-                            </li>
-                            <li><strong>Sabor Ahumado Perfecto:</strong>
-                                <ul class="list-disc ml-6 mt-1 space-y-2">
-                                    <li><strong>Selección de Madera:</strong> Nogal (suave), Manzano (frutal), Nogal Americano (fuerte), Mezquite (intenso).</li>
-                                    <li><strong>Remojo:</strong> Remojar la madera 30 min antes para un humo más limpio.</li>
-                                    <li><strong>Control del Humo:</strong> Evitar humo denso (da sabor amargo). Usar ventilas.</li>
-                                    <li><strong>Tiempo y Temperatura:</strong> Ahumar entre 107-121°C. (ej. Costillar 2-4 horas, Brisket 4-6 horas).</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="accordion-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <h3 class="accordion-header flex justify-between items-center p-5">
-                        <span class="text-xl font-bold text-amber-700">Cap. 7: Servicio y Presentación</span>
-                        <span class="text-2xl font-light">+</span>
-                    </h3>
-                    <div class="accordion-content px-5 pb-5">
-                        <ul class="list-disc space-y-2 text-base">
-                            <li><strong>Primera Impresión:</strong> Usar vajilla limpia. Combinar colores y contrastes de los alimentos.</li>
-                            <li><strong>Decoración:</strong> Usar elementos frescos como hierbas (albahaca, perejil) o rodajas de limón.</li>
-                            <li><strong>Salsas y Aderezos:</strong> Servir en recipientes decorativos. Experimentar con salsas caseras.</li>
-                            <li><strong>Acompañamientos:</strong> Combinar texturas (crujientes y suaves) y colores.</li>
-                            <li><strong>Servicio:</strong> Mantener platos calientes. Informar la temperatura de la carne. Ser amable y atento.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pestaña de Recetas -->
-            <section id="recetas-content" class="tab-content">
-                
-                <!-- ! INICIO: Controles de Búsqueda y Filtro -->
-                <div class="mb-8 space-y-4">
-                    <!-- Barra de Búsqueda -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="search-bar" class="block text-sm font-semibold mb-2">Buscar Receta:</label>
-                            <input type="text" id="search-bar" placeholder="Ej: Costillar, Brisket, Papas...">
-                        </div>
-                        <!-- ! INICIO: Opciones de Ordenar -->
-                        <div>
-                            <label for="sort-select" class="block text-sm font-semibold mb-2">Ordenar por:</label>
-                            <select id="sort-select">
-                                <option value="default">Relevancia</option>
-                                <option value="time-asc">Tiempo (más rápido primero)</option>
-                                <option value="time-desc">Tiempo (más lento primero)</option>
-                                <option value="difficulty-asc">Dificultad (más fácil primero)</option>
-                                <option value="difficulty-desc">Dificultad (más difícil primero)</option>
-                                <option value="name-asc">Nombre (A-Z)</option>
-                                <option value="name-desc">Nombre (Z-A)</option>
-                            </select>
-                        </div>
-                        <!-- ! FIN: Opciones de Ordenar -->
-                    </div>
-                    
-                    <!-- Contenedor de Filtros -->
-                    <div id="filter-container" class="flex flex-wrap gap-2">
-                        <button class="filter-button active" data-filter="todos">Ver Todo</button>
-                        <!-- ! INICIO: Botón de Favoritos -->
-                        <button class="filter-button" data-filter="favoritos">❤️ Favoritos</button>
-                        <!-- ! FIN: Botón de Favoritos -->
-                        <button class="filter-button" data-filter="cerdo">🐖 Cerdo</button>
-                        <button class="filter-button" data-filter="res">🐄 Res</button>
-                        <button class="filter-button" data-filter="pollo">🐓 Pollo</button>
-                        <button class="filter-button" data-filter="cordero">🐑 Cordero</button>
-                        <button class="filter-button" data-filter="pavo">🦃 Pavo</button>
-                        <button class="filter-button" data-filter="pescado">🐟 Pescado</button>
-                        <button class="filter-button" data-filter="acompanamiento">🥗 Acompañamiento</button>
-                    </div>
-                </div>
-                <!-- ! FIN: Controles de Búsqueda y Filtro -->
-
-                <!-- Platos Principales -->
-                <h2 id="header-principales" class="text-3xl font-bold text-amber-800 mb-6 border-b-2 border-amber-300 pb-2">Platos Principales (Cap. 5)</h2>
-                <!-- ! CONTENEDOR VACÍO: Las tarjetas se generarán aquí -->
-                <div id="grid-principales" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Las tarjetas de recetas principales se inyectarán aquí dinámicamente -->
-                </div>
-
-                <!-- Acompañamientos y Salsas -->
-                <h2 id="header-acompanamientos" class="text-3xl font-bold text-amber-800 mt-12 mb-6 border-b-2 border-amber-300 pb-2">Acompañamientos y Salsas (Cap. 6)</h2>
-                <!-- ! CONTENEDOR VACÍO: Las tarjetas se generarán aquí -->
-                <div id="grid-acompanamientos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Las tarjetas de recetas de acompañamiento se inyectarán aquí dinámicamente -->
-                </div>
-
-                <!-- Mensaje de no resultados -->
-                <p id="no-results" class="text-center text-gray-500 text-lg mt-10" style="display: none;">No se encontraron recetas que coincidan con tu búsqueda.</p>
-
-            </section>
-        </main>
-
-        <!-- Footer con Créditos -->
-        <footer class="p-6 text-center text-sm text-gray-500 border-t border-gray-300 bg-gray-50">
-            <p>Créditos: Juan Miguel Rios Redondo</p>
-        </footer>
-
-    </div>
-
-    <!-- Modal para Recetas -->
-    <div id="recipe-modal">
-        <div id="modal-content">
-            <span id="modal-close">&times;</span>
-            <h2 id="modal-title" class="text-3xl font-bold mb-4 text-amber-800"></h2>
-            <!-- ! Contenedor para el área imprimible -->
-            <div id="modal-body-printable">
-                <div id="modal-body" class="space-y-4 text-base">
-                    <!-- El contenido de la receta se inyectará aquí -->
-                </div>
-                <!-- ! INICIO: Contenedor de Tips -->
-                <div id="modal-tips-content" class="hidden">
-                    <h3 class="font-bold text-xl mb-3 text-amber-800">💡 Consejos del Asador</h3>
-                    <p id="modal-tips-text" class="text-base"></p>
-                </div>
-                <!-- ! FIN: Contenedor de Tips -->
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="p-2 rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-all shadow-sm" title="Cambiar Tema">
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                </button>
             </div>
-            <!-- ! Botón de Imprimir -->
-            <button id="modal-print-btn">Imprimir Receta</button>
+            
+            <div class="flex gap-4 mt-4 md:mt-0 w-full md:w-auto items-end">
+                <div class="flex flex-col flex-1 min-w-[120px]">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[10px] uppercase font-bold text-slate-500">Tónica</label>
+                        <button id="header-enharmonic-btn" class="hidden text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 px-1.5 rounded border border-blue-200 dark:border-blue-500/30 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Enarmónico
+                        </button>
+                    </div>
+                    <select id="root-select" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none w-full text-slate-900 dark:text-white shadow-sm transition-colors">
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+                <div class="flex flex-col flex-[2]">
+                    <label class="text-[10px] uppercase font-bold text-slate-500 mb-1">Modo Base</label>
+                    <select id="mode-select" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white shadow-sm transition-colors">
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAPA VISUAL -->
+        <div class="lg:col-span-8 h-[500px] lg:h-[600px] relative bg-slate-100 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl dark:shadow-2xl overflow-hidden select-none transition-colors duration-300" id="visual-map-container">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-200/50 via-slate-100/0 to-slate-200/80 dark:from-slate-800/30 dark:via-slate-900/0 dark:to-slate-950/80 transition-colors duration-300"></div>
+            
+            <!-- Anillos -->
+            <div class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+                <div class="w-[25%] h-[25%] rounded-full border border-amber-500/50"></div>
+                <div class="w-[55%] h-[55%] rounded-full border border-blue-400/30"></div>
+                <div class="w-[85%] h-[85%] rounded-full border border-slate-600/30"></div>
+            </div>
+
+            <div class="absolute top-4 left-4 text-[10px] font-mono text-slate-500 dark:text-slate-600 space-y-1 z-10">
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Relativos</div>
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Cercanos</div>
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></div>Lejanos</div>
+            </div>
+
+            <!-- NODO CENTRAL (HOME) -->
+            <div id="home-node-container" class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- ORBIT SYSTEM -->
+            <div id="orbit-system">
+                <!-- Nodes injected via JS -->
+            </div>
+        </div>
+
+        <!-- INSPECTOR LATERAL -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-lg flex-1 flex flex-col relative transition-colors duration-300">
+                <h2 class="text-xs font-bold uppercase text-slate-400 flex items-center gap-2 mb-4">
+                    <i data-lucide="info" class="w-4 h-4"></i> Inspector
+                </h2>
+
+                <div id="inspector-content" class="flex-1 flex flex-col">
+                    <!-- Default State -->
+                    <div class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60">
+                        <i data-lucide="grid" class="w-12 h-12 mb-2"></i>
+                        <p class="text-sm">Selecciona un nodo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESSION BUILDER -->
+        <div class="lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg transition-colors duration-300">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h2 class="text-sm font-bold uppercase text-slate-400 flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-green-500"></i> Mi Progresión / Ruta Modal
+                </h2>
+                <div class="flex items-center gap-3">
+                    <div id="progression-count" class="text-xs text-slate-500">0 Pasos</div>
+                    <button id="clear-progression-btn" class="hidden text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-all">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i> <span id="clear-btn-text">Borrar Todo</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="progression-container" class="flex gap-4 overflow-x-auto pb-4">
+                <!-- Empty State -->
+                <div class="w-full text-center py-8 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                    <p class="text-sm">No has agregado acordes aún.</p>
+                    <p class="text-xs mt-1">Usa el botón "+" en el centro o en el inspector.</p>
+                </div>
+            </div>
         </div>
     </div>
 
-
-    <!-- ! INICIO: Base de datos de recetas en JSON y Lógica de la App -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- INICIO: Base de Datos de Recetas (JSON) ---
-        // ! REFACTORIZADO: 'content' se ha dividido en 'ingredients' (objetos) e 'instructions' (strings).
-        const recipeData = [
-            // --- PLATOS PRINCIPALES ---
-            {
-                id: 'receta-costillar-clasico',
-                title: 'Costillar de Cerdo con Sazonado Clásico',
-                category: 'cerdo',
-                image: 'https://placehold.co/400x200/c27a42/ffffff?text=Costillar+de+Cerdo',
-                time: '3-4 horas',
-                timeMinutes: 210,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "1", unit: "", name: "costillar de cerdo (aprox. 2 kg)." },
-                    { amount: "", unit: "", name: "Sazonado Clásico (Cap. 2):", isSubheader: true },
-                    { amount: "2", unit: "cdas", name: "de sal", isSubItem: true },
-                    { amount: "2", unit: "cdas", name: "de pimienta negra", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de paprika", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de azúcar moreno", isSubItem: true },
-                    { amount: "1", unit: "cdta", name: "de ajo en polvo", isSubItem: true },
-                    { amount: "1", unit: "cdta", name: "de cebolla en polvo", isSubItem: true }
-                ],
-                instructions: [
-                    "Lava y seca el costillar.",
-                    "Aplica generosamente el sazonado clásico por toda la superficie.",
-                    "Precalienta el barril a 121°C.",
-                    "Coloca el costillar en la zona indirecta.",
-                    "Cocina por 3-4 horas, manteniendo la temperatura y añadiendo madera de nogal para ahumar.",
-                    "Verifica que la temperatura interna alcance los 71°C.",
-                    "Retira, deja reposar 15 minutos y corta."
-                ],
-                tips: 'Para una costra más sabrosa, puedes rociar el costillar con jugo de manzana cada 45 minutos durante la cocción.'
+        // --- DATA & CONFIG ---
+        const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        const ROOT_OPTIONS = ['C', 'C#', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+        const ENHARMONIC_MAP = {
+            'C#': 'Db', 'Db': 'C#', 'D#': 'Eb', 'Eb': 'D#', 'F#': 'Gb', 'Gb': 'F#',
+            'G#': 'Ab', 'Ab': 'G#', 'A#': 'Bb', 'Bb': 'A#', 'B': 'Cb', 'Cb': 'B',
+            'E': 'Fb', 'Fb': 'E', 'E#': 'F', 'F': 'E#', 'B#': 'C', 'C': 'B#'
+        };
+
+        // Theme Definitions (Adjusted for Light/Dark modes)
+        // using tailwind classes: text-color-600 for light mode contrast, text-color-400 for dark mode
+        const FAMILY_THEMES = {
+            "Escala Mayor": { 
+                color: "text-amber-600 dark:text-amber-400", 
+                bg: "bg-amber-500", 
+                border: "border-amber-500", 
+                glow: "shadow-amber-500/50", 
+                gradient: "from-amber-100 to-amber-50 dark:from-amber-500/20 dark:to-amber-900/5",
+                softBorder: "border-amber-200 dark:border-amber-500/30",
+                softBg: "bg-amber-50 dark:bg-amber-900/10"
             },
-            {
-                id: 'receta-brisket',
-                title: 'Brisket de Res Ahumado',
-                category: 'res',
-                image: 'https://placehold.co/400x200/a15c38/ffffff?text=Brisket+de+Res',
-                time: '10-12 horas',
-                timeMinutes: 660,
-                difficulty: 'Difícil',
-                difficultyValue: 3,
-                ingredients: [
-                    { amount: "1", unit: "", name: "brisket de res (4-5 kg)." },
-                    { amount: "", unit: "", name: "Sazonado Ahumado (Cap. 2):", isSubheader: true },
-                    { amount: "3", unit: "cdas", name: "de sal ahumada", isSubItem: true },
-                    { amount: "2", unit: "cdas", name: "de pimienta negra", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de pimentón ahumado", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de ajo en polvo", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de cebolla en polvo", isSubItem: true }
-                ],
-                instructions: [
-                    "Lava y seca el brisket.",
-                    "Aplica el sazonado ahumado por todas las superficies.",
-                    "Precalienta el barril a 107°C.",
-                    "Coloca el brisket en la zona indirecta, con la grasa hacia arriba.",
-                    "Cocina por 10-12 horas, manteniendo la temperatura y añadiendo madera de nogal para ahumar.",
-                    "Verifica que la temperatura interna alcance los 88-93°C.",
-                    "Retira, envuelve en papel aluminio y deja reposar 30 minutos antes de cortar."
-                ],
-                tips: 'La paciencia es clave. No subas el fuego. Para atravesar el "estancamiento" (stall) alrededor de los 70°C, puedes envolver el brisket en papel de estraza (butcher paper).'
+            "Menor Armónica": { 
+                color: "text-rose-600 dark:text-rose-400", 
+                bg: "bg-rose-500", 
+                border: "border-rose-500", 
+                glow: "shadow-rose-500/50", 
+                gradient: "from-rose-100 to-rose-50 dark:from-rose-500/20 dark:to-rose-900/5",
+                softBorder: "border-rose-200 dark:border-rose-500/30",
+                softBg: "bg-rose-50 dark:bg-rose-900/10"
             },
-            {
-                id: 'receta-pollo-citricos',
-                title: 'Pollo Asado con Marinado de Hierbas y Cítricos',
-                category: 'pollo',
-                image: 'https://placehold.co/400x200/facc15/4a2d1f?text=Pollo+Asado',
-                time: '1.5-2 horas',
-                timeMinutes: 105,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "1", unit: "", name: "pollo entero (aprox. 2 kg)." },
-                    { amount: "", unit: "", name: "Marinado de Hierbas y Cítricos (Cap. 3):", isSubheader: true },
-                    { amount: "1/2", unit: "taza", name: "de jugo de limón fresco", isSubItem: true },
-                    { amount: "1/4", unit: "taza", name: "de aceite de oliva", isSubItem: true },
-                    { amount: "2", unit: "cdas", name: "de romero fresco picado", isSubItem: true },
-                    { amount: "2", unit: "cdas", name: "de tomillo fresco picado", isSubItem: true },
-                    { amount: "3", unit: "", name: "dientes de ajo picados", isSubItem: true },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto", isSubItem: true }
-                ],
-                instructions: [
-                    "Lava y seca el pollo.",
-                    "Prepara el marinado.",
-                    "Coloca el pollo y el marinado en una bolsa o recipiente. Refrigera por 2-4 horas.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca el pollo en la zona indirecta y cocina por 1-1.5 horas, volteando ocasionalmente.",
-                    "Verifica que la temperatura interna alcance los 74-79°C en la parte más gruesa.",
-                    "Retira y deja reposar 10 minutos antes de cortar."
-                ],
-                tips: 'Para una piel extra crujiente, seca muy bien el pollo con papel de cocina antes de marinarlo (especialmente si el marinado no es a base de aceite).'
+            "Menor Melódica": { 
+                color: "text-emerald-600 dark:text-emerald-400", 
+                bg: "bg-emerald-500", 
+                border: "border-emerald-500", 
+                glow: "shadow-emerald-500/50", 
+                gradient: "from-emerald-100 to-emerald-50 dark:from-emerald-500/20 dark:to-emerald-900/5",
+                softBorder: "border-emerald-200 dark:border-emerald-500/30",
+                softBg: "bg-emerald-50 dark:bg-emerald-900/10"
             },
-            {
-                id: 'receta-cordero-menta',
-                title: 'Costillas de Cordero con Salsa de Menta',
-                category: 'cordero',
-                image: 'https://placehold.co/400x200/8c7a6b/ffffff?text=Costillas+de+Cordero',
-                time: '20-30 min',
-                timeMinutes: 25,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "2", unit: "", name: "costillas de cordero (aprox. 200-250 g c/u)." },
-                    { amount: "", unit: "", name: "Salsa de Menta (Basada en Adobo de Yogur y Hierbas Cap. 3):", isSubheader: true },
-                    { amount: "1", unit: "taza", name: "de yogur natural", isSubItem: true },
-                    { amount: "2", unit: "cdas", name: "de menta fresca picada", isSubItem: true },
-                    { amount: "2", unit: "cdas", name: "de cilantro fresco picado", isSubItem: true },
-                    { amount: "1", unit: "cdta", name: "de comino molido", isSubItem: true },
-                    { amount: "1", unit: "cdta", name: "de paprika", isSubItem: true },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto", isSubItem: true }
-                ],
-                instructions: [
-                    "Lava y seca las costillas.",
-                    "Prepara la salsa/adobo de menta.",
-                    "Aplica una capa generosa sobre las costillas y marina por al menos 30 minutos.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca las costillas en la zona directa y cocina 3-4 minutos por lado (para dorar).",
-                    "Mueve a la zona indirecta y continúa cocinando 8-10 minutos, volteando y cepillando con más salsa.",
-                    "Verifica que la temperatura interna alcance los 63-71°C (punto medio).",
-                    "Sirve con más salsa por encima."
-                ],
-                tips: 'El cordero se cocina rápido. No lo cocines en exceso. El punto medio (rosa por dentro) es ideal para mantener su jugosidad.'
-            },
-            {
-                id: 'receta-pavo-arce',
-                title: 'Pechuga de Pavo Ahumada con Glaseado de Arce y Mostaza',
-                category: 'pavo',
-                image: 'https://placehold.co/400x200/d4a373/ffffff?text=Pechuga+de+Pavo',
-                time: '2-3 horas',
-                timeMinutes: 150,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "1", unit: "", name: "pechuga de pavo (aprox. 2 kg)." },
-                    { amount: "", unit: "", name: "Glaseado de Arce y Mostaza:", isSubheader: true },
-                    { amount: "1/2", unit: "taza", name: "de sirope de arce", isSubItem: true },
-                    { amount: "1/4", unit: "taza", name: "de mostaza Dijon", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de aceite de oliva", isSubItem: true },
-                    { amount: "1", unit: "cdta", name: "de paprika", isSubItem: true },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto", isSubItem: true }
-                ],
-                instructions: [
-                    "Lava y seca la pechuga de pavo.",
-                    "Prepara el glaseado mezclando los ingredientes.",
-                    "Aplica el glaseado sobre la pechuga uniformemente.",
-                    "Precalienta el barril a 149°C.",
-                    "Coloca la pechuga en la zona indirecta.",
-                    "Cocina por 2-3 horas, aplicando más glaseado regularmente.",
-                    "Verifica que la temperatura interna alcance los 74-79°C.",
-                    "Retira, deja reposar 10 minutos y rebana."
-                ],
-                tips: 'El pavo tiende a secarse. Usar un marinado o salmuera antes de glasear puede ayudar a mantenerlo jugoso. No cocines de más.'
-            },
-            {
-                id: 'receta-costillas-miel-mostaza',
-                title: 'Costillas de Cerdo con Glaseado de Miel y Mostaza',
-                category: 'cerdo',
-                image: 'https://placehold.co/400x200/e6b980/4a2d1f?text=Costillas+Miel+Mostaza',
-                time: '2-3 horas',
-                timeMinutes: 150,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "2", unit: "racks", name: "de costillas de cerdo (aprox. 1.5 kg c/u)." },
-                    { amount: "1/2", unit: "taza", name: "de miel." },
-                    { amount: "1/4", unit: "taza", name: "de mostaza Dijon." },
-                    { amount: "2", unit: "cdas", name: "de salsa de soja." },
-                    { amount: "2", unit: "cdta", name: "de pimentón ahumado." },
-                    { amount: "1", unit: "cdta", name: "de ajo en polvo." },
-                    { amount: "1", unit: "cdta", name: "de cebolla en polvo." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Lava y seca las costillas.",
-                    "Mezcla miel, mostaza, soja, pimentón, ajo en polvo y cebolla en polvo para el glaseado.",
-                    "Aplica una capa generosa de glaseado y sazona con sal y pimienta.",
-                    "Precalienta el barril a 149°C.",
-                    "Coloca las costillas en la zona indirecta y cocina 2-3 horas, volteando y aplicando más glaseado cada 30 minutos.",
-                    "Verifica que la temperatura interna alcance los 71°C.",
-                    "Retira, corta y sirve con más glaseado."
-                ],
-                tips: 'Aplica el glaseado (que contiene azúcar/miel) solo durante los últimos 30-45 minutos de cocción para evitar que se queme.'
-            },
-            {
-                id: 'receta-costillas-coreanas',
-                title: 'Costillas de Cerdo Coreanas a la Parrilla',
-                category: 'cerdo',
-                image: 'https://placehold.co/400x200/bf4e30/ffffff?text=Costillas+Coreanas',
-                time: '1.5-2 horas',
-                timeMinutes: 105,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "2", unit: "racks", name: "de costillas de cerdo (aprox. 1.5 kg c/u)." },
-                    { amount: "1/2", unit: "taza", name: "de salsa de soja." },
-                    { amount: "1/4", unit: "taza", name: "de azúcar moreno." },
-                    { amount: "2", unit: "cdas", name: "de aceite de sésamo." },
-                    { amount: "2", unit: "cdas", name: "de cebolla verde picada." },
-                    { amount: "2", unit: "", name: "dientes de ajo picados." },
-                    { amount: "1", unit: "cdta", name: "de jengibre fresco rallado." },
-                    { amount: "1/2", unit: "cdta", name: "de pimienta negra." },
-                    { amount: "", unit: "", name: "Semillas de sésamo tostado para decorar." }
-                ],
-                instructions: [
-                    "Lava y seca las costillas.",
-                    "Mezcla soja, azúcar, aceite de sésamo, cebolla verde, ajo, jengibre y pimienta para el marinado.",
-                    "Marina las costillas en refrigeración por al menos 4 horas o toda la noche.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca las costillas en la zona indirecta y cocina 1-1.5 horas, volteando y aplicando más marinado cada 20 minutos.",
-                    "Verifica que la temperatura interna alcance los 71°C.",
-                    "Retira, espolvorea con semillas de sésamo y sirve."
-                ],
-                tips: 'Para un sabor más intenso, ralla un poco de pera asiática en el marinado. Las enzimas de la pera ayudan a ablandar la carne.'
-            },
-            {
-                id: 'receta-costillas-ciruela',
-                title: 'Costillas de Cerdo con Salsa de Ciruela',
-                category: 'cerdo',
-                image: 'https://placehold.co/400x200/805060/ffffff?text=Costillas+con+Ciruela',
-                time: '2-2.5 horas',
-                timeMinutes: 135,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "2", unit: "racks", name: "de costillas de cerdo (aprox. 1.5 kg c/u)." },
-                    { amount: "1", unit: "taza", name: "de salsa de ciruela." },
-                    { amount: "1/4", unit: "taza", name: "de salsa de soja." },
-                    { amount: "2", unit: "cdas", name: "de miel." },
-                    { amount: "2", unit: "cdta", name: "de jengibre fresco rallado." },
-                    { amount: "1", unit: "cdta", name: "de ajo picado." },
-                    { amount: "1/2", unit: "cdta", name: "de pimienta roja triturada (opcional)." }
-                ],
-                instructions: [
-                    "Lava y seca las costillas.",
-                    "Mezcla salsa de ciruela, soja, miel, jengibre, ajo y pimienta roja (si se usa).",
-                    "Aplica la mezcla sobre las costillas y marina al menos 1 hora en refrigeración.",
-                    "Precalienta el barril a 149°C.",
-                    "Coloca las costillas en la zona indirecta y cocina 2-2.5 horas, volteando y aplicando más salsa cada 30 minutos.",
-                    "Verifica que la temperatura interna alcance los 71°C.",
-                    "Retira, corta y sirve con más salsa."
-                ],
-                tips: 'La salsa de ciruela (a menudo usada en cocina asiática) puede ser espesa. Puedes aligerarla con un chorrito de vinagre de arroz.'
-            },
-            {
-                id: 'receta-chicharron-crujiente',
-                title: 'Chicharrón al Barril Crujiente',
-                category: 'cerdo',
-                image: 'https://placehold.co/400x200/e6c9a1/4a2d1f?text=Chicharrón+Crujiente',
-                time: '1-2 horas',
-                timeMinutes: 90,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "1", unit: "kg", name: "de piel de cerdo, cortada en trozos pequeños." },
-                    { amount: "2", unit: "cdas", name: "de sal gruesa." },
-                    { amount: "1", unit: "cdta", name: "de pimienta negra molida." },
-                    { amount: "1", unit: "cdta", name: "de pimentón ahumado." },
-                    { amount: "", unit: "", name: "Aceite vegetal para freír." }
-                ],
-                instructions: [
-                    "Lava y seca cuidadosamente la piel de cerdo.",
-                    "Mezcla sal, pimienta y pimentón ahumado.",
-                    "Espolvorea y frota las especias sobre la piel.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca la piel en la zona indirecta y cocina 1-2 horas hasta que esté crujiente y dorada, girando ocasionalmente.",
-                    "Retira y escurre sobre papel absorbente.",
-                    "Calienta aceite vegetal en una sartén grande a 180°C.",
-                    "Fríe los chicharrones 1-2 minutos hasta que estén completamente crujientes.",
-                    "Escurre el exceso de aceite y sirve caliente."
-                ],
-                tips: 'El secreto del chicharrón es que la piel esté MUY seca. Déjala secar en la nevera sin tapar durante unas horas antes de cocinarla.'
-            },
-            {
-                id: 'receta-chicharron-limon',
-                title: 'Chicharrón al Barril con Sabor a Limón y Chile',
-                category: 'cerdo',
-                image: 'https://placehold.co/400x200/f5d576/4a2d1f?text=Chicharrón+Limón+y+Chile',
-                time: '1-2 horas',
-                timeMinutes: 90,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "1", unit: "kg", name: "de piel de cerdo, cortada en tiras delgadas." },
-                    { amount: "2", unit: "", name: "limones (jugo y ralladura)." },
-                    { amount: "2", unit: "cdas", name: "de sal." },
-                    { amount: "1", unit: "cda", name: "de chile en polvo." },
-                    { amount: "1", unit: "cdta", name: "de ajo en polvo." },
-                    { amount: "1", unit: "cdta", name: "de comino molido." },
-                    { amount: "", unit: "", name: "Aceite vegetal para freír." }
-                ],
-                instructions: [
-                    "Lava y seca las tiras de piel.",
-                    "Mezcla jugo y ralladura de limón, sal, chile en polvo, ajo en polvo y comino.",
-                    "Marina la piel en la mezcla por al menos 30 minutos en refrigeración.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca las tiras en la zona indirecta y cocina 1-2 horas hasta que estén crujientes y doradas, girando ocasionalmente.",
-                    "Retira y escurre sobre papel absorbente.",
-                    "Calienta aceite vegetal a 180°C.",
-                    "Fríe los chicharrones 1-2 minutos hasta que estén completamente crujientes.",
-                    "Escurre el exceso de aceite y sirve caliente con rodajas de limón."
-                ],
-                tips: 'No añadas la ralladura de limón hasta el final (después de freír) para un sabor a limón más fresco, ya que puede quemarse.'
-            },
-            {
-                id: 'receta-pescado-limon',
-                title: 'Pescado al Barril con Salsa de Hierbas y Limón',
-                category: 'pescado',
-                image: 'https://placehold.co/400x200/bde0fe/4a2d1f?text=Pescado+al+Barril',
-                time: '15-20 min',
-                timeMinutes: 18,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "filetes", name: "de pescado (aprox. 150 g c/u), como lubina o trucha." },
-                    { amount: "2", unit: "", name: "limones (jugo y ralladura)." },
-                    { amount: "3", unit: "cdas", name: "de aceite de oliva." },
-                    { amount: "2", unit: "", name: "dientes de ajo, picados." },
-                    { amount: "2", unit: "cdas", name: "de perejil fresco picado." },
-                    { amount: "1", unit: "cdta", name: "de tomillo fresco." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Mezcla jugo y ralladura de limón, aceite de oliva, ajo, perejil, tomillo, sal y pimienta.",
-                    "Coloca los filetes en una bandeja y vierte la mezcla sobre ellos. Marina 30 minutos en refrigeración.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca los filetes en la zona indirecta y cocina 8-10 minutos, volteando una vez, hasta que estén tiernos.",
-                    "Sirve con un poco de la salsa por encima."
-                ],
-                tips: 'El pescado se cocina muy rápido. Estará listo cuando se desmenuce fácilmente con un tenedor. No lo dejes ni un minuto de más.'
-            },
-            {
-                id: 'receta-pescado-mantequilla',
-                title: 'Pescado al Barril con Salsa de Mantequilla y Hierbas',
-                category: 'pescado',
-                image: 'https://placehold.co/400x200/cddfa0/4a2d1f?text=Pescado+con+Mantequilla',
-                time: '15-20 min',
-                timeMinutes: 18,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "filetes", name: "de pescado (aprox. 150 g c/u), como salmón o trucha." },
-                    { amount: "1/2", unit: "taza", name: "(115 g) de mantequilla derretida." },
-                    { amount: "2", unit: "cdas", name: "de perejil fresco picado." },
-                    { amount: "2", unit: "cdas", name: "de cilantro fresco picado." },
-                    { amount: "1", unit: "cda", name: "de estragón fresco picado." },
-                    { amount: "2", unit: "cdta", name: "de jugo de limón." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Mezcla mantequilla derretida, perejil, cilantro, estragón, jugo de limón, sal y pimienta.",
-                    "Coloca los filetes en una bandeja y vierte la mezcla sobre ellos. Marina 30 minutos en refrigeración.",
-                    "Precalienta el barril a 177°C.",
-                    "Coloca los filetes en la zona indirecta y cocina 8-10 minutos, volteando una vez, hasta que estén tiernos.",
-                    "Sirve con un poco de la salsa por encima."
-                ],
-                tips: 'Para salmón, considera cocinarlo sobre una tabla de cedro (remojada previamente) en la parrilla para un sabor ahumado extra.'
-            },
-            // --- ACOMPAÑAMIENTOS ---
-            {
-                id: 'receta-pure-ahumado',
-                title: 'Puré de Papas Ahumadas',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/f0e6d2/4a2d1f?text=Puré+de+Papas+Ahumado',
-                time: '45 min',
-                timeMinutes: 45,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "", name: "papas grandes, peladas y en cubos." },
-                    { amount: "1/2", unit: "taza", name: "de leche caliente." },
-                    { amount: "2", unit: "cdas", name: "de mantequilla." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Cocina las papas en agua con sal hasta que estén tiernas. Escúrrelas.",
-                    "Precalienta el barril a baja temperatura y agrega astillas de madera de manzana.",
-                    "Coloca las papas en una fuente resistente al fuego y ahúmalas en el barril por 15-20 minutos, revolviendo ocasionalmente.",
-                    "Haz un puré con las papas ahumadas, agregando leche caliente, mantequilla, sal y pimienta. Mezcla hasta obtener consistencia suave."
-                ],
-                tips: 'Usa una madera de sabor suave como manzano o cerezo para ahumar las papas. Maderas fuertes como el mezquite pueden ser demasiado intensas.'
-            },
-            {
-                id: 'receta-ensalada-col',
-                title: 'Ensalada de Col Rizada con Vinagreta',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/55a630/ffffff?text=Ensalada+de+Col+Rizada',
-                time: '10 min',
-                timeMinutes: 10,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "tazas", name: "de col rizada, lavada y picada." },
-                    { amount: "1/4", unit: "taza", name: "de pasas." },
-                    { amount: "1/4", unit: "taza", name: "de nueces tostadas." },
-                    { amount: "", unit: "", name: "Para la vinagreta:", isSubheader: true },
-                    { amount: "2", unit: "cdas", name: "de aceite de oliva.", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de vinagre de sidra de manzana.", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de mostaza Dijon.", isSubItem: true },
-                    { amount: "1", unit: "cda", name: "de miel.", isSubItem: true },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto.", isSubItem: true }
-                ],
-                instructions: [
-                    "En un tazón grande, combina la col rizada, pasas y nueces.",
-                    "En otro tazón, mezcla los ingredientes de la vinagreta.",
-                    "Vierte la vinagreta sobre la ensalada y mezcla bien."
-                ],
-                tips: 'La col rizada (kale) puede ser dura. "Masajea" la col con la vinagreta usando tus manos durante 1-2 minutos para ablandar las hojas.'
-            },
-            {
-                id: 'receta-salsa-bbq',
-                title: 'Salsa Barbacoa Casera',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/8f250c/ffffff?text=Salsa+Barbacoa',
-                time: '15 min',
-                timeMinutes: 15,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "1", unit: "taza", name: "de kétchup." },
-                    { amount: "1/4", unit: "taza", name: "de vinagre de sidra de manzana." },
-                    { amount: "2", unit: "cdas", name: "de azúcar moreno." },
-                    { amount: "1", unit: "cda", name: "de mostaza Dijon." },
-                    { amount: "1", unit: "cdta", name: "de salsa Worcestershire." },
-                    { amount: "1", unit: "cdta", name: "de pimentón ahumado." },
-                    { amount: "1/2", unit: "cdta", name: "de ajo en polvo." },
-                    { amount: "1/2", unit: "cdta", name: "de cebolla en polvo." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Combina todos los ingredientes en una cacerola a fuego medio.",
-                    "Lleva a ebullición, reduce el fuego y cocina a fuego lento 10-15 minutos, removiendo, hasta que espese.",
-                    "Deja enfriar antes de usar."
-                ],
-                tips: 'Para una salsa más compleja, añade 1/4 de taza de bourbon o ron oscuro durante la cocción.'
-            },
-            {
-                id: 'receta-maiz-parrilla',
-                title: 'Maíz a la Parrilla con Mantequilla de Hierbas',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/fde047/4a2d1f?text=Maíz+a+la+Parrilla',
-                time: '20 min',
-                timeMinutes: 20,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "mazorcas", name: "de maíz, con hojas." },
-                    { amount: "4", unit: "cdas", name: "de mantequilla derretida." },
-                    { amount: "2", unit: "cdas", name: "de perejil fresco picado." },
-                    { amount: "2", unit: "cdas", name: "de cebollín fresco picado." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Remoja las mazorcas en agua por al menos 30 minutos.",
-                    "Precalienta el barril a temperatura media-alta.",
-                    "Asa las mazorcas directamente en la parrilla, girando, por 10-15 minutos o hasta que estén tiernas y doradas.",
-                    "Mezcla la mantequilla derretida, perejil, cebollín, sal y pimienta.",
-                    "Cepilla el maíz con la mantequilla de hierbas antes de servir."
-                ],
-                tips: 'No quites todas las hojas del maíz. Tira de ellas hacia atrás, quita los pelos, unta el maíz con mantequilla de hierbas y vuelve a cerrar las hojas. Asa el maíz envuelto en sus propias hojas.'
-            },
-            {
-                id: 'receta-esparragos',
-                title: 'Espárragos a la Parrilla con Limón y Parmesano',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/84cc16/ffffff?text=Espárragos',
-                time: '10 min',
-                timeMinutes: 10,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "1", unit: "manojo", name: "de espárragos frescos." },
-                    { amount: "2", unit: "cdas", name: "de aceite de oliva." },
-                    { amount: "1", unit: "", name: "limón (jugo y ralladura)." },
-                    { amount: "1/4", unit: "taza", name: "de queso parmesano rallado." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Lava y recorta los extremos leñosos de los espárragos.",
-                    "Mezcla aceite de oliva, jugo y ralladura de limón, parmesano, sal y pimienta.",
-                    "Cepilla los espárragos con esta mezcla.",
-                    "Asa en la parrilla del barril por 5-7 minutos, girando, hasta que estén tiernos y ligeramente dorados.",
-                    "Sirve con más ralladura de limón y parmesano."
-                ],
-                tips: 'Añade el queso parmesano solo en el último minuto de cocción, o se quemará y amargará.'
-            },
-            {
-                id: 'receta-ensalada-tomate',
-                title: 'Ensalada de Tomate y Mozzarella con Albahaca',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/ef4444/ffffff?text=Ensalada+Tomate+Mozzarella',
-                time: '5 min',
-                timeMinutes: 5,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "", name: "tomates medianos, en rodajas." },
-                    { amount: "200", unit: "g", name: "de queso mozzarella fresco, en rodajas." },
-                    { amount: "", unit: "", name: "Hojas frescas de albahaca." },
-                    { amount: "2", unit: "cdas", name: "de aceite de oliva virgen extra." },
-                    { amount: "", unit: "", name: "Vinagre balsámico." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Alterna las rodajas de tomate y mozzarella en un plato.",
-                    "Coloca hojas de albahaca entre las rodajas.",
-                    "Rocía con aceite de oliva, vinagre balsámico, sal y pimienta.",
-                    "Deja reposar unos minutos antes de servir."
-                ],
-                tips: 'Usa tomates de buena calidad y a temperatura ambiente, nunca fríos de la nevera. Sazona los tomates con sal *antes* de añadir la mozzarella.'
-            },
-            {
-                id: 'receta-papas-hasselback',
-                title: 'Papas Hasselback con Hierbas y Queso',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/f5cb5c/4a2d1f?text=Papas+Hasselback',
-                time: '1 hora',
-                timeMinutes: 60,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "4", unit: "", name: "papas medianas." },
-                    { amount: "4", unit: "cdas", name: "de mantequilla derretida." },
-                    { amount: "2", unit: "cdas", name: "de romero fresco picado." },
-                    { amount: "1/4", unit: "taza", name: "de queso cheddar rallado." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Lava las papas y córtalas en rodajas finas sin llegar al fondo.",
-                    "Precalienta el barril a 204°C.",
-                    "Coloca las papas en una fuente resistente al fuego.",
-                    "Mezcla la mantequilla derretida con romero, sal y pimienta. Cepilla sobre las papas.",
-                    "Hornea en el barril por 45-60 minutos, o hasta que estén tiernas y doradas.",
-                    "Espolvorea el queso cheddar y hornea unos minutos más hasta que se derrita."
-                ],
-                tips: 'Para cortar las papas fácilmente sin llegar al fondo, colócalas entre dos palillos chinos o mangos de cucharas de madera.'
-            },
-            {
-                id: 'receta-yuca-frita',
-                title: 'Yuca Frita con Mojo',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/ffe8d6/4a2d1f?text=Yuca+Frita+con+Mojo',
-                time: '45 min',
-                timeMinutes: 45,
-                difficulty: 'Media',
-                difficultyValue: 2,
-                ingredients: [
-                    { amount: "2", unit: "", name: "yucas medianas, peladas y en tiras." },
-                    { amount: "", unit: "", name: "Aceite vegetal para freír." },
-                    { amount: "", unit: "", name: "Sal al gusto." },
-                    { amount: "", unit: "", name: "Para el Mojo:", isSubheader: true },
-                    { amount: "4", unit: "", name: "dientes de ajo, picados finamente.", isSubItem: true },
-                    { amount: "1/2", unit: "taza", name: "de aceite de oliva.", isSubItem: true },
-                    { amount: "1/4", unit: "taza", name: "de jugo de limón.", isSubItem: true },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto.", isSubItem: true }
-                ],
-                instructions: [
-                    "Hierve las tiras de yuca en agua con sal hasta que estén tiernas (20-25 min). Escurre y deja enfriar.",
-                    "Precalienta el barril a 190°C para freír (o usa sartén con aceite).",
-                    "Fríe las tiras de yuca hasta que estén doradas y crujientes. Escurre y sazona con sal.",
-                    "Para el mojo: Calienta aceite de oliva, agrega el ajo y cocina a fuego lento hasta que esté dorado.",
-                    "Retira del fuego y mezcla el ajo dorado con jugo de limón, sal y pimienta.",
-                    "Sirve la yuca caliente con el mojo."
-                ],
-                tips: 'Para una yuca extra crujiente, congela las tiras de yuca *después* de hervirlas y enfriarlas. Fríelas directamente desde congeladas.'
-            },
-            {
-                id: 'receta-pure-yuca',
-                title: 'Puré de Yuca con Queso',
-                category: 'acompanamiento',
-                image: 'https://placehold.co/400x200/fff4e6/4a2d1f?text=Puré+de+Yuca',
-                time: '30 min',
-                timeMinutes: 30,
-                difficulty: 'Fácil',
-                difficultyValue: 1,
-                ingredients: [
-                    { amount: "2", unit: "", name: "yucas medianas, peladas y en trozos." },
-                    { amount: "1/2", unit: "taza", name: "de queso crema." },
-                    { amount: "1/4", unit: "taza", name: "de leche caliente." },
-                    { amount: "2", unit: "cdas", name: "de mantequilla." },
-                    { amount: "", unit: "", name: "Sal y pimienta al gusto." }
-                ],
-                instructions: [
-                    "Hierve la yuca en agua con sal hasta que esté tierna (20-25 min). Escurre.",
-                    "En un tazón, mezcla la yuca, queso crema, leche caliente y mantequilla.",
-                    "Usa un machacador o procesador para hacer un puré suave.",
-                    "Sazona con sal y pimienta. Sirve caliente."
-                ],
-                tips: 'Asegúrate de quitar la hebra central (fibrosa) de la yuca después de hervirla y antes de hacer el puré.'
+            "Mayor Armónica": { 
+                color: "text-violet-600 dark:text-violet-400", 
+                bg: "bg-violet-500", 
+                border: "border-violet-500", 
+                glow: "shadow-violet-500/50", 
+                gradient: "from-violet-100 to-violet-50 dark:from-violet-500/20 dark:to-violet-900/5",
+                softBorder: "border-violet-200 dark:border-violet-500/30",
+                softBg: "bg-violet-50 dark:bg-violet-900/10"
             }
-        ];
-        // --- FIN: Base de Datos de Recetas (JSON) ---
+        };
 
+        const MODES_DATA = {
+            "Escala Mayor": { "Jónico (Mayor)": [0,2,4,5,7,9,11], "Dórico": [0,2,3,5,7,9,10], "Frigio": [0,1,3,5,7,8,10], "Lidio": [0,2,4,6,7,9,11], "Mixolidio": [0,2,4,5,7,9,10], "Eólico (Menor)": [0,2,3,5,7,8,10], "Locrio": [0,1,3,5,6,8,10] },
+            "Menor Armónica": { "Menor Armónica": [0,2,3,5,7,8,11], "Locrio ♮6": [0,1,3,5,6,9,10], "Jónico #5": [0,2,4,5,8,9,11], "Dórico #4": [0,2,3,6,7,9,10], "Mixolidio b9 b13": [0,1,4,5,7,8,10], "Lidio #2": [0,3,4,6,7,9,11], "Locrio b4 bb7": [0,1,3,4,6,8,9] },
+            "Menor Melódica": { "Menor Melódica": [0,2,3,5,7,9,11], "Frigio ♮6 (Dórico b2)": [0,1,3,5,7,9,10], "Lidio Aumentado": [0,2,4,6,8,9,11], "Mixolidio #4 (Lidio b7)": [0,2,4,6,7,9,10], "Mixolidio b6": [0,2,4,5,7,8,10], "Locrio ♮2": [0,2,3,5,6,8,10], "Alterada (Super Locrio)": [0,1,3,4,6,8,10] },
+            "Mayor Armónica": { "Jónico b6": [0,2,4,5,7,8,11], "Locrio ♮2 (Dórico b5)": [0,2,3,5,6,9,10], "Frigio b4": [0,1,3,4,7,8,10], "Lidio b3 (Dórico #4)": [0,2,3,6,7,9,11], "Mixolidio b2": [0,1,4,5,7,9,10], "Lidio Aumentado #2": [0,3,4,6,8,9,11], "Locrio bb7": [0,1,3,5,6,8,9] }
+        };
 
-        // --- INICIO: Lógica de la Aplicación ---
-        document.addEventListener('DOMContentLoaded', function () {
+        let ALL_MODES_FLAT = {};
+        Object.keys(MODES_DATA).forEach(family => {
+            Object.keys(MODES_DATA[family]).forEach((mode, idx, arr) => {
+                ALL_MODES_FLAT[mode] = { family, intervals: MODES_DATA[family][mode], degree: idx + 1, degreeTotal: arr.length };
+            });
+        });
+
+        // --- STATE ---
+        let state = {
+            root: 'C',
+            mode: 'Jónico (Mayor)',
+            hoveredNode: null,
+            progression: [],
+            clearConfirm: false,
+            // Dark mode is handled by HTML class "dark"
+        };
+
+        let audioCtx = null;
+
+        // --- AUDIO ENGINE ---
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playChord(root, intervals, type = 'chord') {
+            initAudio();
+            const rootIdx = getNoteIndex(root);
+            const baseFreq = 130.81 * Math.pow(2, rootIdx / 12); 
+            const now = audioCtx.currentTime;
+            const indices = [0, 2, 4, 6]; 
             
-            // --- Declaración de variables ---
-            const tabs = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const accordionItems = document.querySelectorAll('.accordion-item');
+            if (type === 'chord') {
+                indices.forEach((degreeIdx, i) => {
+                    if (degreeIdx >= intervals.length) return;
+                    playTone(baseFreq, intervals[degreeIdx], now, 1.5, i === 0 ? 'triangle' : 'sine');
+                });
+            } else if (type === 'scale') {
+                intervals.forEach((interval, i) => {
+                    playTone(baseFreq, interval, now + (i * 0.2), 0.3, 'sine');
+                });
+                playTone(baseFreq, 12, now + (intervals.length * 0.2), 0.8, 'sine');
+            }
+        }
+
+        function playTone(baseFreq, semitones, startTime, duration, type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.frequency.value = baseFreq * Math.pow(2, semitones / 12);
+            osc.type = type;
             
-            // Variables del Modal
-            const modal = document.getElementById('recipe-modal');
-            const modalClose = document.getElementById('modal-close');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            const modalPrintBtn = document.getElementById('modal-print-btn');
-            // ! INICIO: Nuevas variables de Modal (Tips)
-            const modalTipsContent = document.getElementById('modal-tips-content');
-            const modalTipsText = document.getElementById('modal-tips-text');
-            // ! FIN: Nuevas variables de Modal (Tips)
-
-            // Variables de Recetas (se llenarán dinámicamente)
-            let allRecipeCards = []; // Se llenará después de generar las tarjetas
-            const gridPrincipales = document.getElementById('grid-principales');
-            const gridAcompanamientos = document.getElementById('grid-acompanamientos');
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
             
-            // Variables de Filtro/Búsqueda
-            const filterContainer = document.getElementById('filter-container');
-            const searchBar = document.getElementById('search-bar');
-            // ! INICIO: Nueva variable (Sort)
-            const sortSelect = document.getElementById('sort-select');
-            // ! FIN: Nueva variable (Sort)
-            const headerPrincipales = document.getElementById('header-principales');
-            const headerAcompanamientos = document.getElementById('header-acompanamientos');
-            const noResults = document.getElementById('no-results');
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
 
-            // ! INICIO: Variables de Favoritos
-            let favorites = getFavorites();
-            // ! FIN: Variables de Favoritos
+        // --- THEORY UTILS ---
+        function getNoteIndex(noteName) {
+            let idx = NOTES_SHARP.indexOf(noteName);
+            if (idx === -1) idx = NOTES_FLAT.indexOf(noteName);
+            return idx;
+        }
 
-            // Mapa de iconos
-            const iconMap = {
-                cerdo: '🐖',
-                res: '🐄',
-                pollo: '🐓',
-                cordero: '🐑',
-                pavo: '🦃',
-                pescado: '🐟',
-                acompanamiento: '🥗'
+        function getScaleNotesIndices(rootIndex, intervals) {
+            return intervals.map(interval => (rootIndex + interval) % 12);
+        }
+
+        function getStrictScaleDetails(rootNote, intervals) {
+            const ALPHABET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            const NATURALS = { 'C':0, 'D':2, 'E':4, 'F':5, 'G':7, 'A':9, 'B':11 };
+            
+            let rootLetter = rootNote.charAt(0);
+            let rootVal = getNoteIndex(rootNote);
+            let notes = [], formula = [];
+            let rootLetterIdx = ALPHABET.indexOf(rootLetter);
+
+            intervals.forEach((interval, i) => {
+                const targetLetter = ALPHABET[(rootLetterIdx + i) % 7];
+                let naturalDist = NATURALS[targetLetter]; 
+                let targetVal = (rootVal + interval) % 12;
+                let diff = targetVal - naturalDist;
+                if (diff > 6) diff -= 12;
+                if (diff < -6) diff += 12;
+
+                let acc = '';
+                if (diff === 1) acc = '#';
+                else if (diff === 2) acc = '##';
+                else if (diff === -1) acc = 'b';
+                else if (diff === -2) acc = 'bb';
+                
+                notes.push(targetLetter + acc);
+
+                const major = [0,2,4,5,7,9,11];
+                let fDiff = interval - major[i];
+                let fSym = (i + 1).toString();
+                if (i===0) fSym = '1';
+                else if (fDiff === 1) fSym = '#' + fSym;
+                else if (fDiff === -1) fSym = 'b' + fSym;
+                else if (fDiff === -2) fSym = 'bb' + fSym;
+                formula.push(fSym);
+            });
+            return { notes, formula };
+        }
+
+        function getChordSymbol(root, intervals) {
+            const i = new Set(intervals);
+            let s = root;
+            if (i.has(4)) { 
+                if (i.has(7)) { if (i.has(11)) s += "maj7"; else if (i.has(10)) s += "7"; }
+                else if (i.has(8)) { if (i.has(11)) s += "maj7#5"; else if (i.has(10)) s += "7#5"; else s += "aug"; }
+                else if (i.has(6)) s += i.has(10) ? "7b5" : "maj7b5";
+            } else if (i.has(3)) { 
+                if (i.has(7)) { if (i.has(11)) s += "mMaj7"; else if (i.has(10)) s += "m7"; else s += "m"; }
+                else if (i.has(6)) { if (i.has(9)) s += "dim7"; else if (i.has(10)) s += "m7b5"; else s += "dim"; }
+            } else { 
+                if (i.has(7)) s += i.has(5) ? "sus4" : (i.has(2) ? "sus2" : "5"); else s += "(no3)";
+            }
+            return s;
+        }
+
+        function analyzeRelationship(homeIndices, targetIndices) {
+            const setHome = new Set(homeIndices);
+            let diff = 0, diffIndices = [];
+            targetIndices.forEach(n => { if(!setHome.has(n)) { diff++; diffIndices.push(n); }});
+            
+            let hasTetra = false;
+            const ext = [...targetIndices, ...targetIndices.slice(0,3)];
+            for(let i=0; i<targetIndices.length; i++) {
+                if([0,1,2,3].every(x => setHome.has(ext[i+x]))) { hasTetra = true; break; }
+            }
+            return { diff, diffIndices, hasTetra };
+        }
+
+        // --- RENDER LOGIC ---
+
+        function init() {
+            const rSel = document.getElementById('root-select');
+            ROOT_OPTIONS.forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.innerText = r; rSel.appendChild(opt); });
+
+            const mSel = document.getElementById('mode-select');
+            Object.keys(MODES_DATA).forEach(family => {
+                let grp = document.createElement('optgroup'); grp.label = family;
+                Object.keys(MODES_DATA[family]).forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.innerText = m; grp.appendChild(opt); });
+                mSel.appendChild(grp);
+            });
+
+            rSel.addEventListener('change', e => { state.root = e.target.value; update(); });
+            mSel.addEventListener('change', e => { state.mode = e.target.value; update(); });
+            
+            document.getElementById('header-enharmonic-btn').addEventListener('click', toggleEnharmonicHeader);
+            document.getElementById('clear-progression-btn').addEventListener('click', clearProgression);
+            
+            // Theme Toggle
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                // Re-render map to update static Tailwind classes in JS if needed (not needed for basic dark: classes but good for cleanliness)
+                // Actually Lucide icons need re-scan on theme change sometimes
+                setTimeout(() => lucide.createIcons(), 100);
+            });
+            
+            document.body.addEventListener('click', initAudio, { once: true });
+
+            update();
+            lucide.createIcons();
+        }
+
+        function toggleEnharmonicHeader() {
+            const eq = ENHARMONIC_MAP[state.root];
+            if(eq) { state.root = eq; document.getElementById('root-select').value = eq; update(); }
+        }
+
+        function toggleEnharmonicInspector() {
+            if (!state.hoveredNode) return;
+            const eq = ENHARMONIC_MAP[state.hoveredNode.root];
+            if (eq) {
+                const newNode = { ...state.hoveredNode, root: eq };
+                newNode.chord = getChordSymbol(eq, newNode.intervals);
+                state.hoveredNode = newNode;
+                renderInspector();
+            }
+        }
+
+        function update() {
+            const rootIdx = getNoteIndex(state.root);
+            const homeMode = ALL_MODES_FLAT[state.mode];
+            const homeIndices = getScaleNotesIndices(rootIdx, homeMode.intervals);
+            const homeDetails = getStrictScaleDetails(state.root, homeMode.intervals);
+            const homeChord = getChordSymbol(state.root, homeMode.intervals);
+            const homeData = { ...homeMode, root: state.root, mode: state.mode, indices: homeIndices, notes: homeDetails.notes, formula: homeDetails.formula, chord: homeChord };
+
+            let layers = { relatives: [], close: [], distant: [] };
+            
+            NOTES_SHARP.forEach((r, rIdx) => {
+                Object.keys(ALL_MODES_FLAT).forEach(mName => {
+                    if (r === state.root && mName === state.mode) return;
+                    
+                    const mData = ALL_MODES_FLAT[mName];
+                    const tIndices = getScaleNotesIndices(rIdx, mData.intervals);
+                    const rel = analyzeRelationship(homeIndices, tIndices);
+                    const tChord = getChordSymbol(r, mData.intervals);
+
+                    const node = {
+                        root: r, mode: mName, family: mData.family, degree: mData.degree,
+                        indices: tIndices, diff: rel.diff, diffIndices: rel.diffIndices, hasTetra: rel.hasTetra,
+                        chord: tChord, intervals: mData.intervals
+                    };
+
+                    if(rel.diff === 0) layers.relatives.push(node);
+                    else if(rel.diff === 1) layers.close.push(node);
+                    else if(rel.diff === 2) layers.distant.push(node);
+                });
+            });
+
+            renderMap(homeData, layers);
+            renderInspector();
+
+            const btnHeader = document.getElementById('header-enharmonic-btn');
+            if(ENHARMONIC_MAP[state.root]) {
+                btnHeader.classList.remove('hidden');
+                btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`;
+            } else {
+                btnHeader.classList.add('hidden');
+            }
+        }
+
+        function renderMap(homeData, layers) {
+            const container = document.getElementById('home-node-container');
+            const theme = FAMILY_THEMES[homeData.family];
+            
+            container.innerHTML = `
+                <div class="relative group">
+                    <div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-default shadow-xl transition-all duration-500">
+                        <span class="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 border-b border-slate-200 dark:border-slate-800 pb-0.5">${homeData.degree}º MODO</span>
+                        <span class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-0.5">${homeData.chord}</span>
+                        <span class="text-[9px] font-bold ${theme.color} uppercase leading-tight max-w-[90%]">${state.mode}</span>
+                    </div>
+                    <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 flex gap-2 pointer-events-auto z-30">
+                        <button onclick="addHomeToProgression()" class="bg-green-600 hover:bg-green-500 text-white rounded-full p-2 shadow-lg border-4 border-white dark:border-slate-900 transition-transform hover:scale-110"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                        <button onclick="playHome()" class="bg-slate-700 hover:bg-slate-600 text-white rounded-full p-2 shadow-lg border-4 border-white dark:border-slate-900 transition-transform hover:scale-110"><i data-lucide="volume-2" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+            `;
+            
+            const orbitSys = document.getElementById('orbit-system');
+            orbitSys.innerHTML = '';
+            
+            const appendLayer = (nodes, rPerc, bg, size, showText) => {
+                // Limit visualization to prevent clutter
+                const limit = showText ? 12 : (size === '20px' ? 16 : 24);
+                const sliced = nodes.slice(0, limit);
+                sliced.forEach((n, i) => {
+                    const angle = (i / sliced.length) * 2 * Math.PI - (Math.PI / 2);
+                    const left = 50 + (rPerc/2 * Math.cos(angle));
+                    const top = 50 + (rPerc/2 * Math.sin(angle));
+                    
+                    const btn = document.createElement('button');
+                    // Dynamic Orbit Colors for Light/Dark
+                    // Close/Relatives need actual colors, Distant can be gray
+                    // Note: Passed 'bg' arg is specific to layer, but we need dual mode classes now.
+                    // We'll override the passed bg argument with specific theme-aware classes
+                    let dynamicBg = '';
+                    if (rPerc === 85) dynamicBg = 'bg-slate-300 border-slate-400 hover:bg-slate-400 dark:bg-slate-700 dark:border-slate-600 dark:hover:bg-slate-500'; // Distant
+                    else if (rPerc === 55) dynamicBg = 'bg-blue-300 border-blue-400 hover:bg-blue-400 dark:bg-blue-600 dark:border-blue-800 dark:hover:bg-blue-400'; // Close
+                    else dynamicBg = 'bg-amber-300 border-amber-400 hover:bg-amber-400 dark:bg-amber-500 dark:border-amber-300 dark:hover:bg-amber-400'; // Relative
+
+                    btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group ${dynamicBg} orbit-node`;
+                    btn.style.left = `${left}%`; btn.style.top = `${top}%`;
+                    btn.style.width = size; btn.style.height = size;
+                    btn.style.marginLeft = `calc(-${size} / 2)`; btn.style.marginTop = `calc(-${size} / 2)`;
+                    
+                    if (showText) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`;
+                    
+                    btn.onmouseenter = () => { state.hoveredNode = n; renderInspector(); };
+                    btn.onclick = () => { state.root = n.root; state.mode = n.mode; state.hoveredNode = null; update(); };
+
+                    orbitSys.appendChild(btn);
+                });
             };
 
-            // --- Funcionalidad de Pestañas (Tabs) ---
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    tab.classList.add('active');
-                    const activeTabContent = document.getElementById(tab.dataset.tab + '-content');
-                    if (activeTabContent) activeTabContent.classList.add('active');
-                });
+            appendLayer(layers.distant, 85, null, '12px', false);
+            appendLayer(layers.close, 55, null, '20px', false);
+            appendLayer(layers.relatives, 25, null, '32px', true);
+        }
+
+        function renderInspector() {
+            const container = document.getElementById('inspector-content');
+            const node = state.hoveredNode;
+            
+            if (!node) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60">
+                        <i data-lucide="grid" class="w-12 h-12 mb-2"></i>
+                        <p class="text-sm">Selecciona un nodo</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            const theme = FAMILY_THEMES[node.family] || FAMILY_THEMES["Escala Mayor"];
+            const details = getStrictScaleDetails(node.root, node.intervals);
+            const hasEnharmonic = !!ENHARMONIC_MAP[node.root];
+
+            let notesHTML = '';
+            details.notes.forEach((n, i) => {
+                const isDiff = node.diffIndices.includes(node.indices[i]);
+                const style = isDiff 
+                    ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-500/50 dark:text-red-400' 
+                    : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300';
+                notesHTML += `
+                    <div class="flex flex-col items-center">
+                        <span class="w-8 h-8 flex items-center justify-center rounded-lg font-bold border text-sm transition-colors ${style}">${n}</span>
+                        <span class="text-[9px] text-slate-400 dark:text-slate-600 mt-1 font-mono">${details.formula[i]}</span>
+                    </div>`;
             });
 
-            // --- Funcionalidad de Acordeón ---
-            accordionItems.forEach(item => {
-                const header = item.querySelector('.accordion-header');
-                const content = item.querySelector('.accordion-content');
-                const icon = header.querySelector('span:last-child');
-
-                header.addEventListener('click', () => {
-                    const isOpen = content.style.maxHeight;
-                    if (isOpen) {
-                        content.style.maxHeight = null;
-                        if (icon) icon.textContent = '+';
-                    } else {
-                        if (content) content.style.maxHeight = content.scrollHeight + 'px';
-                        if (icon) icon.textContent = '−';
-                    }
-                });
-            });
-
-            // --- ! INICIO: Generación Dinámica de Recetas (Actualizada) ---
-            function generateRecipeCards() {
-                if (!gridPrincipales || !gridAcompanamientos) return;
-
-                // ! Actualizar favoritos desde localStorage al inicio
-                favorites = getFavorites();
-
-                let gridPrincipalesHTML = '';
-                let gridAcompanamientosHTML = '';
-
-                recipeData.forEach(recipe => {
-                    const icon = iconMap[recipe.category] || '🍽️';
-                    // ! Comprobar si es favorito
-                    const isFavorite = favorites.includes(recipe.id);
+            container.innerHTML = `
+                <div class="mb-4 text-center p-4 bg-gradient-to-br ${theme.gradient} rounded-xl border ${theme.border} relative overflow-hidden shadow-sm">
+                    <div class="absolute top-2 right-3 text-[9px] font-bold px-2 py-0.5 bg-white/60 dark:bg-slate-900/50 ${theme.color} rounded-full border border-slate-200 dark:border-slate-700">
+                        ${node.degree}º MODO
+                    </div>
                     
-                    const cardHTML = `
-                        <div class="recipe-card rounded-lg shadow-md overflow-hidden" 
-                             data-recipe-id="${recipe.id}" 
-                             data-category="${recipe.category}"
-                             data-time-minutes="${recipe.timeMinutes}"
-                             data-difficulty-value="${recipe.difficultyValue}"
-                             data-title="${recipe.title.toLowerCase()}"
-                        >
-                            <div class="recipe-card-image-container">
-                                <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-40 object-cover">
-                                <!-- ! Botón de Favorito -->
-                                <span class="favorite-btn ${isFavorite ? 'active' : ''}" data-fav-id="${recipe.id}">❤️</span>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="text-lg font-bold">${icon} ${recipe.title}</h3>
-                            </div>
-                            <div class="card-details">
-                                <span><strong>Tiempo:</strong> ${recipe.time}</span>
-                                <span><strong>Dificultad:</strong> ${recipe.difficulty}</span>
+                    ${hasEnharmonic ? `
+                    <button onclick="toggleEnharmonicInspector()" class="absolute top-2 left-2 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="Ver Enarmónico">
+                         <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                    </button>` : ''}
+
+                    <div class="text-xs uppercase text-slate-500 dark:text-slate-300 opacity-70 mb-1 mt-2">Acorde Resultante</div>
+                    <div class="text-4xl font-black text-slate-900 dark:text-white drop-shadow-sm mb-2">${node.chord}</div>
+                    
+                    <div class="flex justify-center gap-2 mt-2">
+                        <button onclick="playInspector('chord')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors">
+                            <i data-lucide="volume-2" class="w-3 h-3"></i> Acorde
+                        </button>
+                        <button onclick="playInspector('scale')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors">
+                            <i data-lucide="music" class="w-3 h-3"></i> Escala
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 leading-tight">${node.root} <span class="font-normal text-slate-500 dark:text-slate-400">${node.mode}</span></h3>
+                    <div class="flex items-center gap-2 mt-1">
+                        <i data-lucide="layers" class="w-3 h-3 ${theme.color}"></i>
+                        <p class="text-xs ${theme.color} font-medium">${node.family}</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-950 rounded-lg p-3 border border-slate-200 dark:border-slate-800 mb-4 mt-2">
+                    <div class="flex flex-wrap gap-1 mb-2 justify-center">${notesHTML}</div>
+                </div>
+
+                <div class="p-3 rounded-lg border flex items-start gap-3 mb-4 ${node.hasTetra ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}">
+                    <i data-lucide="${node.hasTetra ? 'check' : 'x'}" class="w-4 h-4 ${node.hasTetra ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'} mt-0.5"></i>
+                    <div>
+                        <h4 class="text-xs font-bold ${node.hasTetra ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-500'}">
+                            ${node.hasTetra ? 'Conexión Fluida (Tetracordio)' : 'Sin conexión directa'}
+                        </h4>
+                    </div>
+                </div>
+
+                <div class="mt-auto grid grid-cols-2 gap-2">
+                    <button onclick="addInspectorToProgression()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-green-500 dark:hover:bg-green-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Agregar
+                    </button>
+                    <button onclick="goToInspector()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-amber-500 dark:hover:bg-amber-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
+                        Ir Aquí <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // --- PROGRESSION LOGIC ---
+        function renderProgression() {
+            const container = document.getElementById('progression-container');
+            const countEl = document.getElementById('progression-count');
+            const clearBtn = document.getElementById('clear-progression-btn');
+            
+            countEl.innerText = `${state.progression.length} Pasos`;
+            
+            if (state.progression.length > 0) {
+                clearBtn.classList.remove('hidden');
+                document.getElementById('clear-btn-text').innerText = state.clearConfirm ? "¿Confirmar?" : "Borrar Todo";
+                clearBtn.className = state.clearConfirm 
+                    ? "text-xs text-red-600 dark:text-red-400 font-bold bg-red-100 dark:bg-red-900/20 px-2 py-0.5 rounded flex items-center gap-1 transition-all"
+                    : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all";
+                
+                container.innerHTML = '';
+                state.progression.forEach((item, idx) => {
+                    const theme = FAMILY_THEMES[item.family] || FAMILY_THEMES["Escala Mayor"];
+                    const div = document.createElement('div');
+                    div.className = `min-w-[220px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg`;
+                    
+                    let notesHTML = '';
+                    item.notes.forEach(n => {
+                        notesHTML += `<span class="text-[9px] font-mono bg-slate-100 dark:bg-slate-900 px-1 rounded text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${n}</span>`;
+                    });
+
+                    div.innerHTML = `
+                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="playProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-800 dark:hover:text-white"><i data-lucide="volume-2" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="removeProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 dark:hover:text-red-400"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                        <div class="mb-2">
+                            <span class="bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded mr-2">${idx + 1}</span>
+                            <div class="inline-block">
+                                <div class="text-[10px] font-bold uppercase ${theme.color}">${item.degree}º Modo <span class="text-slate-400 dark:text-slate-500 font-normal normal-case">de</span></div>
+                                <div class="text-[10px] ${theme.color} opacity-80 leading-none">${item.family}</div>
                             </div>
                         </div>
+                        <div class="text-2xl font-black text-slate-900 dark:text-white mb-1">${item.chord}</div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 mb-3 font-medium tracking-wide truncate" title="${item.mode}">${item.mode}</div>
+                        <div class="flex flex-wrap gap-1">${notesHTML}</div>
                     `;
-                    
-                    if (recipe.category === 'acompanamiento') {
-                        gridAcompanamientosHTML += cardHTML;
-                    } else {
-                        gridPrincipalesHTML += cardHTML;
-                    }
+                    container.appendChild(div);
                 });
-
-                gridPrincipales.innerHTML = gridPrincipalesHTML;
-                gridAcompanamientos.innerHTML = gridAcompanamientosHTML;
-
-                // ! IMPORTANTE: Seleccionar las tarjetas DESPUÉS de generarlas
-                allRecipeCards = document.querySelectorAll('.recipe-card');
-                
-                // Añadir listeners a las nuevas tarjetas
-                allRecipeCards.forEach(card => {
-                    // Listener para abrir el modal (en la tarjeta)
-                    card.addEventListener('click', (e) => {
-                        // Solo abrir modal si no se hizo clic en el botón de favorito
-                        if (e.target.closest('.favorite-btn')) return;
-                        const recipeId = card.dataset.recipeId;
-                        openModal(recipeId);
-                    });
-                });
-
-                // ! Añadir listeners a los botones de favorito
-                document.querySelectorAll('.favorite-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Evitar que se abra el modal
-                        toggleFavorite(e.target);
-                    });
-                });
+            } else {
+                clearBtn.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="w-full text-center py-8 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                        <p class="text-sm">No has agregado acordes aún.</p>
+                        <p class="text-xs mt-1">Usa el botón "+" en el centro o en el inspector.</p>
+                    </div>`;
             }
-            // --- ! FIN: Generación Dinámica de Recetas ---
+            lucide.createIcons();
+        }
 
+        function addToProgression(data) {
+            const details = getStrictScaleDetails(data.root, data.intervals);
+            state.progression.push({
+                id: Date.now(),
+                root: data.root,
+                mode: data.mode,
+                chord: data.chord,
+                family: data.family,
+                degree: data.degree,
+                notes: details.notes,
+                intervals: data.intervals
+            });
+            renderProgression();
+            playChord(data.root, data.intervals);
+            const c = document.getElementById('progression-container');
+            setTimeout(() => c.scrollLeft = c.scrollWidth, 100);
+        }
 
-            // --- ! INICIO: Funcionalidad del Modal de Recetas (Actualizada) ---
-            function openModal(recipeId) {
-                const recipe = recipeData.find(r => r.id === recipeId);
-                
-                if (recipe && modalTitle && modalBody && modal) {
-                    modalTitle.textContent = recipe.title;
-                    
-                    // ! INICIO: Construcción dinámica de contenido
-                    let modalHTML = '';
+        function removeProgressionItem(id) {
+            state.progression = state.progression.filter(p => p.id !== id);
+            renderProgression();
+        }
 
-                    // 1. Ingredientes
-                    if (recipe.ingredients && recipe.ingredients.length > 0) {
-                        modalHTML += '<h3 class="font-bold text-xl mb-3">Ingredientes:</h3>';
-                        modalHTML += '<ul class="list-disc pl-5 mb-4 space-y-1">';
-                        
-                        let sublistOpen = false;
-                        recipe.ingredients.forEach(ing => {
-                            const itemText = `${ing.amount ? `<strong>${ing.amount}</strong> ` : ''}${ing.unit ? `${ing.unit} ` : ''}${ing.name}`;
-                            
-                            if (ing.isSubheader) {
-                                if (sublistOpen) modalHTML += '</ul></li>'; // Cierra sublista anterior si existe
-                                modalHTML += `<li>${itemText}<ul class="list-disc pl-6 mt-1">`; // Abre nueva sublista
-                                sublistOpen = true;
-                            } else if (ing.isSubItem) {
-                                modalHTML += `<li>${itemText}</li>`; // Item dentro de sublista
-                            } else {
-                                if (sublistOpen) modalHTML += '</ul></li>'; // Cierra sublista anterior
-                                modalHTML += `<li>${itemText}</li>`; // Item normal
-                                sublistOpen = false;
-                            }
-                        });
-                        if (sublistOpen) modalHTML += '</ul></li>'; // Cierra la última sublista
-                        modalHTML += '</ul>';
-                    }
-
-                    // 2. Instrucciones
-                    if (recipe.instructions && recipe.instructions.length > 0) {
-                        modalHTML += '<h3 class="font-bold text-xl mb-3">Instrucciones:</h3>';
-                        modalHTML += '<ol class="list-decimal pl-5 space-y-2">';
-                        recipe.instructions.forEach(step => {
-                            modalHTML += `<li>${step}</li>`;
-                        });
-                        modalHTML += '</ol>';
-                    }
-                    
-                    modalBody.innerHTML = modalHTML;
-                    // ! FIN: Construcción dinámica de contenido
-                    
-                    // ! Lógica de Tips
-                    if (recipe.tips && modalTipsContent && modalTipsText) {
-                        modalTipsText.textContent = recipe.tips;
-                        modalTipsContent.classList.remove('hidden');
-                    } else {
-                        modalTipsContent.classList.add('hidden');
-                    }
-
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }
+        function clearProgression() {
+            if (state.clearConfirm) {
+                state.progression = [];
+                state.clearConfirm = false;
+                renderProgression();
+            } else {
+                state.clearConfirm = true;
+                renderProgression();
+                setTimeout(() => { state.clearConfirm = false; renderProgression(); }, 3000);
             }
+        }
 
-            function closeModal() {
-                if (modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
+        // --- ACTION HANDLERS (Global scope) ---
+        window.addHomeToProgression = () => {
+            const rootIdx = getNoteIndex(state.root);
+            const mode = ALL_MODES_FLAT[state.mode];
+            const chord = getChordSymbol(state.root, mode.intervals);
+            addToProgression({ ...mode, root: state.root, mode: state.mode, chord });
+        };
+        
+        window.playHome = () => {
+            const mode = ALL_MODES_FLAT[state.mode];
+            playChord(state.root, mode.intervals);
+        };
+
+        window.addInspectorToProgression = () => {
+            if(state.hoveredNode) addToProgression(state.hoveredNode);
+        };
+        
+        window.goToInspector = () => {
+            if(state.hoveredNode) {
+                state.root = state.hoveredNode.root;
+                state.mode = state.hoveredNode.mode;
+                state.hoveredNode = null;
+                document.getElementById('root-select').value = state.root;
+                document.getElementById('mode-select').value = state.mode;
+                update();
             }
+        };
 
-            // Clicks para cerrar el modal
-            if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-            if (modalClose) modalClose.addEventListener('click', closeModal);
-            // --- ! FIN: Funcionalidad del Modal de Recetas ---
+        window.playInspector = (type) => {
+            if(state.hoveredNode) playChord(state.hoveredNode.root, state.hoveredNode.intervals, type);
+        };
 
+        window.playProgressionItem = (id) => {
+            const item = state.progression.find(p => p.id === id);
+            if(item) playChord(item.root, item.intervals);
+        };
 
-            // --- ! INICIO: Funcionalidad de Filtro y Búsqueda combinada (Actualizada) ---
-            function updateRecipeView() {
-                if (!filterContainer || !searchBar || !allRecipeCards.length || !sortSelect) return;
+        window.removeProgressionItem = removeProgressionItem;
+        window.toggleEnharmonicInspector = toggleEnharmonicInspector;
 
-                const activeFilter = filterContainer.querySelector('.filter-button.active').dataset.filter;
-                const searchTerm = searchBar.value.toLowerCase();
-                const sortValue = sortSelect.value;
-                
-                let mainVisibleCards = [];
-                let accompVisibleCards = [];
+        // Start
+        init();
 
-                allRecipeCards.forEach(card => {
-                    const category = card.dataset.category;
-                    const title = card.dataset.title;
-                    const recipeId = card.dataset.recipeId;
-                    
-                    // ! Lógica de Filtro (con Favoritos)
-                    const isFavorite = favorites.includes(recipeId);
-                    const matchesFilter = (activeFilter === 'todos') || 
-                                          (activeFilter === category) || 
-                                          (activeFilter === 'favoritos' && isFavorite);
-                    const matchesSearch = title.includes(searchTerm);
-
-                    if (matchesFilter && matchesSearch) {
-                        card.style.display = 'block';
-                        if (category === 'acompanamiento') {
-                            accompVisibleCards.push(card);
-                        } else {
-                            mainVisibleCards.push(card);
-                        }
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                // ! Lógica de Ordenamiento
-                const sortFunction = (a, b) => {
-                    const valA = a.dataset;
-                    const valB = b.dataset;
-
-                    switch (sortValue) {
-                        case 'time-asc':
-                            return parseFloat(valA.timeMinutes) - parseFloat(valB.timeMinutes);
-                        case 'time-desc':
-                            return parseFloat(valB.timeMinutes) - parseFloat(valA.timeMinutes);
-                        case 'difficulty-asc':
-                            return parseFloat(valA.difficultyValue) - parseFloat(valB.difficultyValue);
-                        case 'difficulty-desc':
-                            return parseFloat(valB.difficultyValue) - parseFloat(valA.difficultyValue);
-                        case 'name-asc':
-                            return valA.title.localeCompare(valB.title);
-                        case 'name-desc':
-                            return valB.title.localeCompare(valA.title);
-                        case 'default':
-                        default:
-                            return 0; // Mantener el orden del DOM
-                    }
-                };
-                
-                if (sortValue !== 'default') {
-                    mainVisibleCards.sort(sortFunction);
-                    accompVisibleCards.sort(sortFunction);
-                }
-
-                // ! Re-apendar al DOM en el orden correcto
-                mainVisibleCards.forEach(card => gridPrincipales.appendChild(card));
-                accompVisibleCards.forEach(card => gridAcompanamientos.appendChild(card));
-
-                // Actualizar visibilidad de cabeceras
-                if (headerPrincipales) headerPrincipales.style.display = (mainVisibleCards.length > 0) ? 'block' : 'none';
-                if (headerAcompanamientos) headerAcompanamientos.style.display = (accompVisibleCards.length > 0) ? 'block' : 'none';
-
-                // Mostrar mensaje de no resultados
-                if (noResults) {
-                    noResults.style.display = (mainVisibleCards.length === 0 && accompVisibleCards.length === 0) ? 'block' : 'none';
-                }
-            }
-
-            // Event Listeners para Filtro y Búsqueda
-            if (filterContainer) {
-                filterContainer.addEventListener('click', (event) => {
-                    if (event.target.classList.contains('filter-button')) {
-                        filterContainer.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
-                        event.target.classList.add('active');
-                        updateRecipeView();
-                    }
-                });
-            }
-            if (searchBar) searchBar.addEventListener('keyup', updateRecipeView);
-            // ! Listener para Ordenar
-            if (sortSelect) sortSelect.addEventListener('change', updateRecipeView);
-            // --- ! FIN: Funcionalidad de Filtro y Búsqueda ---
-            
-
-            // --- ! INICIO: Funciones de Favoritos (Nuevas) ---
-            function getFavorites() {
-                const favs = localStorage.getItem('asadosBarrilFavorites');
-                return favs ? JSON.parse(favs) : [];
-            }
-
-            function saveFavorites(favs) {
-                localStorage.setItem('asadosBarrilFavorites', JSON.stringify(favs));
-            }
-
-            function toggleFavorite(btnElement) {
-                const recipeId = btnElement.dataset.favId;
-                const index = favorites.indexOf(recipeId);
-
-                if (index > -1) {
-                    // Ya es favorito, quitar
-                    favorites.splice(index, 1);
-                    btnElement.classList.remove('active');
-                } else {
-                    // No es favorito, añadir
-                    favorites.push(recipeId);
-                    btnElement.classList.add('active');
-                }
-                saveFavorites(favorites);
-
-                // Si estamos en la vista de favoritos, actualizar la vista
-                const activeFilter = filterContainer.querySelector('.filter-button.active').dataset.filter;
-                if (activeFilter === 'favoritos') {
-                    updateRecipeView();
-                }
-            }
-            // --- ! FIN: Funciones de Favoritos ---
-
-
-            // --- ! INICIO: Funcionalidad de Imprimir ---
-            function handlePrint() {
-                const title = modalTitle.textContent;
-                // ! Actualizado para incluir los Tips
-                const content = document.getElementById('modal-body-printable').innerHTML;
-                
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write('<html><head><title>Imprimir Receta</title>');
-                // Estilos simples para impresión
-                printWindow.document.write(`
-                    <style>
-                        body { font-family: 'Inter', sans-serif; line-height: 1.6; margin: 2rem; }
-                        h1 { color: #d97706; }
-                        h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-                        ul, ol { padding-left: 20px; }
-                        /* Ocultar elementos no deseados en impresión */
-                        #modal-tips-content.hidden { display: none; }
-                        #modal-tips-content {
-                            background-color: #fafaf8;
-                            border-left: 4px solid #d97706;
-                            padding: 16px;
-                            border-radius: 8px;
-                            margin-top: 16px;
-                        }
-                    </style>
-                `);
-                printWindow.document.write('</head><body>');
-                printWindow.document.write(`<h1>${title}</h1>`);
-                printWindow.document.write(content);
-                printWindow.document.write('</body></html>');
-                
-                printWindow.document.close();
-                printWindow.focus();
-                
-                // Esperar a que el contenido se cargue antes de imprimir
-                setTimeout(() => {
-                    printWindow.print();
-                    printWindow.close();
-                }, 250);
-            }
-
-            if (modalPrintBtn) modalPrintBtn.addEventListener('click', handlePrint);
-            // --- ! FIN: Funcionalidad de Imprimir ---
-
-
-            // --- INICIO: Ejecución Inicial ---
-            generateRecipeCards();
-            updateRecipeView(); // Para ocultar cabeceras si están vacías al inicio (aunque no debería pasar)
-
-        });
-        // --- FIN: Lógica de la Aplicación ---
     </script>
 </body>
 </html>
