@@ -47,24 +47,15 @@
 
         /* Piano Styles */
         .piano-key { transition: background-color 0.05s, fill 0.05s; }
-        .piano-key.active-chord { background-color: #8b5cf6 !important; border-color: #7c3aed !important; box-shadow: 0 0 10px #8b5cf6; z-index: 20; transform: translateY(2px); } 
-        .piano-key.active-melody { background-color: #06b6d4 !important; border-color: #0891b2 !important; box-shadow: 0 0 10px #06b6d4; z-index: 20; transform: translateY(2px); }
+        .piano-key.active-chord { background-color: #8b5cf6 !important; box-shadow: 0 0 12px #8b5cf6; z-index: 20; transform: translateY(2px); } 
+        .piano-key.active-melody { background-color: #06b6d4 !important; box-shadow: 0 0 12px #06b6d4; z-index: 20; transform: translateY(2px); }
 
-        /* CSS Diagrams */
-        .ring-graphic { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
+        /* CSS Diagrams for Guide */
+        .ring-graphic { position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; }
         .ring-graphic .r1 { position: absolute; width: 100%; height: 100%; border: 2px solid #94a3b8; border-radius: 50%; opacity: 0.3; }
         .ring-graphic .r2 { position: absolute; width: 70%; height: 70%; border: 2px solid #60a5fa; border-radius: 50%; opacity: 0.6; }
         .ring-graphic .r3 { position: absolute; width: 40%; height: 40%; background: #f59e0b; border-radius: 50%; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
 
-        /* Timeline Step for Workflow */
-        .timeline-step { display: flex; gap: 1rem; position: relative; padding-bottom: 2rem; }
-        .timeline-step:last-child { padding-bottom: 0; }
-        .timeline-step::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: #e2e8f0; }
-        .dark .timeline-step::before { background: #334155; }
-        .timeline-step:last-child::before { display: none; }
-        .step-icon { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; z-index: 10; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .dark .step-icon { background: #1e293b; color: #94a3b8; border-color: #0f172a; }
-        
         /* Scrollbar */
         ::-webkit-scrollbar { height: 6px; width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -118,17 +109,17 @@
         <div class="lg:col-span-8 h-[400px] sm:h-[500px] lg:h-[600px] relative bg-slate-100 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl dark:shadow-2xl overflow-hidden select-none transition-colors duration-300 touch-pan-y" id="visual-map-container">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-200/50 via-slate-100/0 to-slate-200/80 dark:from-slate-800/30 dark:via-slate-900/0 dark:to-slate-950/80 transition-colors duration-300"></div>
             
-            <!-- Anillos Ajustados para Visibilidad Móvil -->
+            <!-- Anillos -->
             <div class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-                <div class="w-[35%] h-[35%] rounded-full border border-amber-500/50"></div> <!-- Ring 1: Expanded -->
-                <div class="w-[60%] h-[60%] rounded-full border border-blue-400/30"></div>  <!-- Ring 2: Expanded -->
-                <div class="w-[85%] h-[85%] rounded-full border border-slate-600/30"></div> <!-- Ring 3 -->
+                <div class="w-[35%] h-[35%] rounded-full border border-amber-500/50"></div>
+                <div class="w-[60%] h-[60%] rounded-full border border-blue-400/30"></div>
+                <div class="w-[85%] h-[85%] rounded-full border border-slate-600/30"></div>
             </div>
 
-            <div class="absolute top-4 left-4 text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-600 space-y-1 z-10 pointer-events-none hidden sm:block">
-                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Relativos (0 Dif)</div>
-                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Cercanos (1 Dif)</div>
-                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></div>Lejanos (2 Dif)</div>
+            <div class="absolute top-4 left-4 text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-600 space-y-1 z-10 pointer-events-none">
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Relativos (0 Diferencias)</div>
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Cercanos (1 Diferencia)</div>
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></div>Lejanos (2 Diferencias)</div>
             </div>
 
             <!-- NODO CENTRAL -->
@@ -252,159 +243,8 @@
                 <button id="close-help" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             
-            <div class="p-8 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-12 leading-relaxed text-sm md:text-base">
-                
-                <!-- 1. GRAVEDAD TONAL -->
-                <section>
-                    <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                        <div class="ring-graphic shrink-0 bg-slate-100 dark:bg-slate-800 rounded-full p-4">
-                            <div class="r1"></div><div class="r2"></div><div class="r3"></div>
-                            <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="sun" class="w-8 h-8 text-amber-500"></i></div>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">1. Gravitación Armónica</h3>
-                            <p class="text-base text-justify">
-                                En la teoría modal, entendemos la tonalidad como un <strong>Campo Gravitatorio</strong>. El <strong>Centro Modal</strong> (el círculo grande) es el punto de reposo absoluto ("Hogar").
-                                <br><br>
-                                Los nodos alrededor son <strong>satélites armónicos</strong>. Su posición no es aleatoria: están organizados por "distancia interválica". Alejarse del centro crea tensión; volver a él genera resolución.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <hr class="border-slate-200 dark:border-slate-700">
-
-                <!-- 2. ANILLOS -->
-                <section>
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">2. Topología de la Distancia</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800">
-                            <div class="flex items-center gap-2 mb-2 text-amber-600 dark:text-amber-400 font-bold uppercase text-xs tracking-wider">
-                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Anillo 1: Relativos
-                            </div>
-                            <p class="text-sm"><strong>Isomorfismo Total (0 Diferencias).</strong> Mismas notas, distinto centro. Modulación imperceptible.</p>
-                        </div>
-                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-                            <div class="flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400 font-bold uppercase text-xs tracking-wider">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span> Anillo 2: Cercanos
-                            </div>
-                            <p class="text-sm"><strong>Alteración Mínima (1 Diferencia).</strong> Solo cambia una nota. Introduce un color nuevo suavemente.</p>
-                        </div>
-                        <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-                            <div class="flex items-center gap-2 mb-2 text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-wider">
-                                <span class="w-2 h-2 rounded-full bg-slate-400"></span> Anillo 3: Lejanos
-                            </div>
-                            <p class="text-sm"><strong>Contraste (2 Diferencias).</strong> Cambio evidente y dramático. Ideal para secciones de desarrollo.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <hr class="border-slate-200 dark:border-slate-700">
-
-                <!-- 3. TETRACORDIOS -->
-                <section>
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">3. Principio de Intersección de Tetracordios</h3>
-                    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-                        <p class="mb-6 text-base">
-                            Para una <strong>modulación fluida</strong>, debe existir una secuencia de <strong>4 notas consecutivas (Tetracordio)</strong> en la escala de origen que también esté presente en la de destino.
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <!-- Ejemplo Positivo -->
-                            <div>
-                                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold mb-3">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i> Conexión Fluida
-                                </div>
-                                <div class="space-y-3 font-mono text-sm">
-                                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                                        <div class="text-xs text-slate-400 mb-1">Base: Sol Eólico</div>
-                                        <div class="flex flex-wrap gap-1">
-                                            <span class="opacity-50">G A</span>
-                                            <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 px-1 rounded font-bold border border-emerald-200 dark:border-emerald-800">Bb C D Eb</span>
-                                            <span class="opacity-50">F</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-center"><i data-lucide="arrow-down" class="w-4 h-4 text-slate-300"></i></div>
-                                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                                        <div class="text-xs text-slate-400 mb-1">Destino: Re Mixolidio b2 b6</div>
-                                        <div class="flex flex-wrap gap-1">
-                                            <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 px-1 rounded font-bold border border-emerald-200 dark:border-emerald-800">D Eb</span>
-                                            <span class="opacity-50">F# G A</span>
-                                            <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 px-1 rounded font-bold border border-emerald-200 dark:border-emerald-800">Bb C</span>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mt-2 italic">
-                                        El conjunto <strong>{Bb, C, D, Eb}</strong> existe en ambas, creando un puente melódico perfecto.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Ejemplo Negativo -->
-                            <div>
-                                <div class="flex items-center gap-2 text-red-500 font-bold mb-3">
-                                    <i data-lucide="x-circle" class="w-5 h-5"></i> Ruptura de Enlace
-                                </div>
-                                <div class="space-y-3 font-mono text-sm">
-                                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                                        <div class="text-xs text-slate-400 mb-1">Base: Sol Eólico</div>
-                                        <div class="flex flex-wrap gap-1 text-slate-400">
-                                            G A <strong class="text-red-500">Bb</strong> C D <strong class="text-red-500">Eb</strong> F
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-center"><i data-lucide="arrow-down" class="w-4 h-4 text-slate-300"></i></div>
-                                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                                        <div class="text-xs text-slate-400 mb-1">Destino: Do Mayor</div>
-                                        <div class="flex flex-wrap gap-1 text-slate-400">
-                                            C D <strong class="text-slate-800 dark:text-white">E</strong> F G A <strong class="text-slate-800 dark:text-white">B</strong>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mt-2 italic">
-                                        Las alteraciones (Bb vs B, Eb vs E) rompen la continuidad. No hay 4 notas seguidas en común.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 4. WORKFLOW VISUAL -->
-                <section>
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">4. Guía de Flujo de Trabajo</h3>
-                    <div class="relative pl-6 border-l-2 border-slate-200 dark:border-slate-800 space-y-8">
-                        
-                        <div class="relative">
-                            <span class="absolute -left-[33px] top-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center border-4 border-white dark:border-slate-900">1</span>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-1">Definición del Centro</h4>
-                            <p class="text-sm text-slate-500">Selecciona tu <strong>Tónica</strong> y <strong>Modo Inicial</strong> en el panel superior. Este será tu punto de partida (Home).</p>
-                        </div>
-
-                        <div class="relative">
-                            <span class="absolute -left-[33px] top-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center border-4 border-white dark:border-slate-900">2</span>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-1">Exploración Orbital</h4>
-                            <p class="text-sm text-slate-500">Pasa el mouse (o toca) los nodos satélites. Observa el <strong>Inspector</strong> para ver la distancia armónica y si existe conexión fluida.</p>
-                        </div>
-
-                        <div class="relative">
-                            <span class="absolute -left-[33px] top-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center border-4 border-white dark:border-slate-900">3</span>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-1">Construcción</h4>
-                            <p class="text-sm text-slate-500">Si un acorde te convence, pulsa <strong class="text-green-600 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded border border-green-200 dark:border-green-800 text-xs">+ AGREGAR</strong> en el inspector para sumarlo a tu progresión.</p>
-                        </div>
-
-                        <div class="relative">
-                            <span class="absolute -left-[33px] top-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center border-4 border-white dark:border-slate-900">4</span>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-1">Modulación</h4>
-                            <p class="text-sm text-slate-500">Para cambiar de centro tonal, usa el botón <strong class="text-amber-600 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800 text-xs">IR AQUÍ</strong>. El mapa se redibujará desde la nueva perspectiva.</p>
-                        </div>
-
-                        <div class="relative">
-                            <span class="absolute -left-[33px] top-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center border-4 border-white dark:border-slate-900">5</span>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 mb-1">Refinamiento</h4>
-                            <p class="text-sm text-slate-500">Usa la <strong>Workstation</strong> para reproducir. Activa <strong>Melodía</strong> para generar líneas melódicas automáticas basadas en las escalas seleccionadas.</p>
-                        </div>
-
-                    </div>
-                </section>
-
+            <div class="p-8 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-10 leading-relaxed">
+                 <section><div class="flex gap-4 items-start mb-2"><div class="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl text-amber-600 dark:text-amber-400 shrink-0"><i data-lucide="home" class="w-6 h-6"></i></div><div><h3 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">El Centro Modal: Tu "Hogar" Sonoro</h3><p class="text-base">En la composición modal, no pensamos solo en "tono", sino en un <strong>Centro de Gravedad Tonal</strong>. El nodo central grande en la interfaz representa tu "Hogar" (Home Mode). Es el punto de estabilidad o reposo armónico hacia el cual la música tiende a resolver.</p><p class="text-base mt-3">Los modos satélites que orbitan alrededor son <strong>regiones modales vecinas</strong>. Moverse hacia ellos genera tensión, color y dirección, manteniendo siempre una relación interválica calculada con tu centro.</p></div></div></section><hr class="border-slate-200 dark:border-slate-700"/><section><h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2"><i data-lucide="orbit" class="w-5 h-5 text-blue-500"></i>Jerarquía de Proximidad Modal (Anillos)</h3><p class="text-sm mb-4">Los modos se organizan visualmente según su distancia armónica respecto al centro:</p><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="bg-amber-50 dark:bg-amber-900/10 p-5 rounded-xl border border-amber-100 dark:border-amber-900/30"><span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest block mb-2">Círculo 1: Relativos</span><div class="text-2xl font-black text-slate-900 dark:text-white mb-1">0 Diferencias</div><p class="text-xs opacity-80 mt-2"><strong>Isomorfismo Total.</strong> Comparten exactamente las mismas notas (pitch class set), pero su centro tonal es distinto. La modulación es extremadamente suave.</p></div><div class="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-xl border border-blue-100 dark:border-blue-900/30"><span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest block mb-2">Círculo 2: Cercanos</span><div class="text-2xl font-black text-slate-900 dark:text-white mb-1">1 Diferencia</div><p class="text-xs opacity-80 mt-2"><strong>Vecinos Directos.</strong> Se altera un único grado de la escala. Introduce un matiz de color nuevo sin romper la coherencia.</p></div><div class="bg-slate-100 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700"><span class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">Círculo 3: Lejanos</span><div class="text-2xl font-black text-slate-900 dark:text-white mb-1">2 Diferencias</div><p class="text-xs opacity-80 mt-2"><strong>Contraste Cromático.</strong> Se alteran dos notas. Genera una distancia armónica mayor, ideal para secciones de desarrollo o puentes dramáticos.</p></div></div></section><hr class="border-slate-200 dark:border-slate-700"/><section><div class="flex gap-4 items-start"><div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400 shrink-0"><i data-lucide="link" class="w-6 h-6"></i></div><div><h3 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Principio de Intersección de Tetracordios</h3><p class="text-base mb-4">El <strong>Principio de Intersección de Tetracordios</strong> establece que para una modulación fluida, deben existir <strong>4 notas seguidas (consecutivas)</strong> en la escala base que también estén presentes en la escala de destino.</p><div class="bg-white dark:bg-slate-950 p-5 rounded-xl border border-slate-200 dark:border-slate-800 font-mono text-sm shadow-sm"><p class="mb-3 text-xs uppercase font-bold text-slate-400 tracking-wide">Ejemplo 1: ¡SÍ Conecta!</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-4"><div><span class="block text-slate-500 mb-1 text-[10px] uppercase">G Menor (Eólico)</span><div class="flex flex-wrap gap-1 items-center"><span class="text-slate-400">G</span><span class="text-slate-400">A</span><div class="flex bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-200 dark:border-emerald-800"><span>Bb</span><span class="mx-1">-</span><span>C</span><span class="mx-1">-</span><span>D</span><span class="mx-1">-</span><span>Eb</span></div><span class="text-slate-400">F</span></div></div><div><span class="block text-slate-500 mb-1 text-[10px] uppercase">D Mixolidio b2 #2 b6</span><div class="flex flex-wrap gap-1 items-center"><div class="flex bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-200 dark:border-emerald-800"><span>D</span><span class="mx-1">-</span><span>Eb</span></div><span class="text-slate-400">F#</span><span class="text-slate-400">G</span><span class="text-slate-400">A</span><div class="flex bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-200 dark:border-emerald-800"><span>Bb</span><span class="mx-1">-</span><span>C</span></div></div></div></div><p class="text-xs text-slate-500 italic">En este caso, las notas <strong>Bb, C, D, Eb</strong> aparecen seguidas en G Eólico y todas existen en D Mixolidio b2 #2 b6 (aunque envuelvan la octava).</p><div class="border-t border-slate-100 dark:border-slate-800 my-4"></div><p class="mb-3 text-xs uppercase font-bold text-red-400 tracking-wide">Ejemplo 2: NO Conecta</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-6"><div><span class="block text-slate-500 mb-1 text-[10px] uppercase">G Menor (Eólico)</span><div class="flex flex-wrap gap-1 items-center"><span class="text-slate-500">G A Bb C D Eb F</span></div></div><div><span class="block text-slate-500 mb-1 text-[10px] uppercase">C Mayor</span><div class="flex flex-wrap gap-1 items-center"><span class="text-slate-500">C D E F G A B</span></div></div></div><p class="mt-2 text-xs text-slate-500 italic">Aunque comparten notas (C, D, F, G, A), G Eólico <strong>no tiene 4 notas consecutivas</strong> que existan todas en C Mayor (por culpa del Bb y Eb que rompen las secuencias).</p></div></div></div></section><hr class="border-slate-200 dark:border-slate-700"/><section><h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Flujo de Trabajo para Composición</h3><ul class="space-y-6"><li class="flex gap-4"><span class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-sm font-bold shrink-0">1</span><div><p class="text-sm font-bold text-slate-900 dark:text-white">Establece tu Base</p><p class="text-xs text-slate-500 mt-1">Usa los selectores superiores para definir tu Tónica y Modo inicial.</p></div></li><li class="flex gap-4"><span class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-sm font-bold shrink-0">2</span><div><p class="text-sm font-bold text-slate-900 dark:text-white">Exploración Orbital</p><p class="text-xs text-slate-500 mt-1">Navega por los nodos satélites. El <strong>Inspector</strong> te mostrará la relación interválica.</p></div></li><li class="flex gap-4"><span class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-sm font-bold shrink-0">3</span><div><p class="text-sm font-bold text-slate-900 dark:text-white">Construcción</p><p class="text-xs text-slate-500 mt-1">Si te gusta un acorde, agrégalo a la Workstation usando el botón <strong>+ AGREGAR</strong> en el inspector.</p></div></li><li class="flex gap-4"><span class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-sm font-bold shrink-0">4</span><div><p class="text-sm font-bold text-slate-900 dark:text-white">Modulación</p><p class="text-xs text-slate-500 mt-1">Para desarrollar la pieza, cambia tu centro tonal haciendo clic en <strong>IR AQUÍ</strong> en el inspector.</p></div></li><li class="flex gap-4"><span class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-sm font-bold shrink-0">5</span><div><p class="text-sm font-bold text-slate-900 dark:text-white">Refinamiento</p><p class="text-xs text-slate-500 mt-1">Usa la Workstation para reproducir la secuencia y activa el botón <strong>Melodía</strong> para inspirarte.</p></div></li></ul></section>
             </div>
             
             <div class="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-center sticky bottom-0">
@@ -492,20 +332,34 @@
             const beats = 4; // Exactly 4 quarter notes per measure
             const pattern = [];
             const scaleLen = intervals.length;
+            
             const chordTonesIndices = [0, 2, 4, 6].filter(i => i < scaleLen);
             let currentIndex = chordTonesIndices[Math.floor(Math.random() * chordTonesIndices.length)];
             let currentOctave = 1; 
+            
             pattern.push({ interval: intervals[currentIndex], octaveOffset: currentOctave * 12 });
-            let lastStepSize = 0, prevAbsIndex = currentIndex + (currentOctave * scaleLen);
+            
+            let lastStepSize = 0; 
+            let prevAbsIndex = currentIndex + (currentOctave * scaleLen);
+
             for (let i = 1; i < beats; i++) {
-                let stepSize = 0, nextIndex, nextOctave, nextAbsIndex, attempts = 0;
+                let stepSize = 0;
+                let nextIndex, nextOctave, nextAbsIndex;
+                let attempts = 0;
                 do {
-                    if (Math.abs(lastStepSize) >= 2) stepSize = lastStepSize > 0 ? -1 : 1; 
-                    else {
+                    if (Math.abs(lastStepSize) >= 2) {
+                        stepSize = lastStepSize > 0 ? -1 : 1; 
+                    } else {
                         const dir = Math.random() > 0.5 ? 1 : -1;
-                        if (currentOctave > 1) stepSize = -1; else if (currentOctave < 0) stepSize = 1;
-                        else stepSize = Math.random() < 0.8 ? dir : dir * 2;
+                        if (currentOctave > 1) stepSize = -1;
+                        else if (currentOctave < 0) stepSize = 1;
+                        else {
+                            const r = Math.random();
+                            if (r < 0.8) stepSize = dir; 
+                            else stepSize = dir * 2; 
+                        }
                     }
+
                     let nextRaw = currentIndex + stepSize;
                     nextOctave = currentOctave + Math.floor(nextRaw / scaleLen);
                     nextIndex = ((nextRaw % scaleLen) + scaleLen) % scaleLen;
@@ -522,6 +376,7 @@
 
         // AUDIO
         function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        
         function playTone(baseFreq, semitones, startTime, duration, type, volume, isMelody) {
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.frequency.value = baseFreq * Math.pow(2, semitones / 12); osc.type = type;
@@ -529,6 +384,7 @@
             osc.connect(gain); gain.connect(audioCtx.destination); osc.start(startTime); osc.stop(startTime + duration);
             setTimeout(() => { highlightKey((getNoteIndex("C") + semitones) % 60, isMelody); }, (startTime - audioCtx.currentTime) * 1000);
         }
+
         function playChord(root, intervals, type, duration = 1.5, patternType = 'block') {
             initAudio(); const rootIdx = getNoteIndex(root), baseFreq = 130.81 * Math.pow(2, rootIdx / 12), now = audioCtx.currentTime;
             const indices = [0, 2, 4, 6].filter(i => i < intervals.length);
@@ -541,15 +397,20 @@
                 playTone(130.81, rootIdx + 12, now + (intervals.length * noteDur), 0.8, 'sine', state.volMelody * 0.2, true);
             }
         }
+
         function playStoredMelody(root, melodyPattern, startTime, totalDuration) {
             const rootIdx = getNoteIndex(root), step = totalDuration / melodyPattern.length;
-            melodyPattern.forEach((note, i) => { playTone(130.81, rootIdx + 12 + note.interval + note.octaveOffset, startTime + (i * step), step * 0.9, 'triangle', state.volMelody * 0.15, true); });
+            melodyPattern.forEach((note, i) => {
+                playTone(130.81, rootIdx + 12 + note.interval + note.octaveOffset, startTime + (i * step), step * 0.9, 'triangle', state.volMelody * 0.15, true);
+            });
         }
 
-        // PIANO
+        // --- PIANO ---
         function renderPiano() {
-            const container = document.getElementById('piano-container'); if(!container) return;
-            const keys = []; const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const container = document.getElementById('piano-container');
+            if(!container) return;
+            const keys = [];
+            const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
             for(let i=0; i<5; i++) notes.forEach(n => keys.push({ n: n, t: n.includes('#') ? 'black' : 'white' }));
             let html = '<div class="relative w-full h-full flex">';
             let wCount = keys.filter(k => k.t === 'white').length; let wWidth = 100 / wCount; let wLeft = 0;
@@ -557,37 +418,133 @@
             wLeft = 0; keys.forEach((k, i) => { if (k.t === 'white') wLeft += wWidth; else { let bLeft = wLeft - (wWidth * 0.7 / 2); html += `<div id="key-${i}" class="piano-key black bg-slate-800 dark:bg-black border border-slate-900 h-[60%] absolute z-10" style="width:${wWidth*0.7}%; left:${bLeft}%" onmousedown="previewNote(${i})"></div>`; } });
             html += '</div>'; container.innerHTML = html;
         }
+
         window.previewNote = (idx) => { initAudio(); playTone(130.81, idx, audioCtx.currentTime, 0.5, 'sine', 0.5, true); };
-        function highlightKey(idx, isMelody) { const keyIdx = idx % 60; const key = document.getElementById(`key-${keyIdx}`); if (key) { const cls = isMelody ? 'active-melody' : 'active-chord'; key.classList.add(cls); setTimeout(() => key.classList.remove(cls), 200); } }
 
-        // HANDLERS
+        function highlightKey(idx, isMelody) {
+            const keyIdx = idx % 60; const key = document.getElementById(`key-${keyIdx}`);
+            if (key) { const cls = isMelody ? 'active-melody' : 'active-chord'; key.classList.add(cls); setTimeout(() => key.classList.remove(cls), 200); }
+        }
+
+        // --- HANDLERS ---
         function saveState() { localStorage.setItem('modalLabProgression', JSON.stringify(state.progression)); }
-        function loadState() { const saved = localStorage.getItem('modalLabProgression'); if(saved) { try { state.progression = JSON.parse(saved); window.renderProgression(); showToast("Sesión restaurada"); } catch(e) {} } }
+        function loadState() {
+            const saved = localStorage.getItem('modalLabProgression');
+            if(saved) { try { state.progression = JSON.parse(saved); window.renderProgression(); showToast("Sesión restaurada"); } catch(e) {} }
+        }
 
-        window.addHomeToProgression = function() { const rootIdx = getNoteIndex(state.root); const mode = ALL_MODES_FLAT[state.mode]; const chord = getChordSymbol(state.root, mode.intervals); window.addToProgression({ ...mode, root: state.root, mode: state.mode, chord }); };
-        window.playHome = function() { const mode = ALL_MODES_FLAT[state.mode]; playChord(state.root, mode.intervals, 'chord', 1.5, state.rhythmPattern); };
+        // Handlers
+        window.addHomeToProgression = function() {
+            const rootIdx = getNoteIndex(state.root);
+            const mode = ALL_MODES_FLAT[state.mode];
+            const chord = getChordSymbol(state.root, mode.intervals);
+            window.addToProgression({ ...mode, root: state.root, mode: state.mode, chord });
+        };
+        window.playHome = function() {
+            const mode = ALL_MODES_FLAT[state.mode];
+            playChord(state.root, mode.intervals, 'chord', 1.5, state.rhythmPattern);
+        };
         window.addInspectorToProgression = function() { if(state.hoveredNode) window.addToProgression(state.hoveredNode); };
-        window.goToInspector = function() { if(state.hoveredNode) { state.root = state.hoveredNode.root; state.mode = state.hoveredNode.mode; state.hoveredNode = null; document.getElementById('root-select').value = state.root; document.getElementById('mode-select').value = state.mode; window.update(); } };
-        window.playInspector = function(type) { if(state.hoveredNode) { if (type === 'chord') playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'chord', 1.5, state.rhythmPattern); else playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'scale'); } };
-        window.playProgressionItem = function(id) { const item = state.progression.find(p => p.id === id); if(item) playChord(item.root, item.intervals, 'chord', 1.5, state.rhythmPattern); };
+        window.goToInspector = function() {
+            if(state.hoveredNode) {
+                state.root = state.hoveredNode.root;
+                state.mode = state.hoveredNode.mode;
+                state.hoveredNode = null;
+                document.getElementById('root-select').value = state.root;
+                document.getElementById('mode-select').value = state.mode;
+                window.update();
+            }
+        };
+        window.playInspector = function(type) {
+            if(state.hoveredNode) {
+                if (type === 'chord') playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'chord', 1.5, state.rhythmPattern);
+                else playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'scale');
+            }
+        };
+        window.playProgressionItem = function(id) {
+            const item = state.progression.find(p => p.id === id);
+            if(item) playChord(item.root, item.intervals, 'chord', 1.5, state.rhythmPattern);
+        };
         window.removeProgressionItem = function(id) { state.progression = state.progression.filter(p => p.id !== id); saveState(); window.renderProgression(); };
-        window.regenerateMelody = function(id) { const itemIndex = state.progression.findIndex(p => p.id === id); if (itemIndex > -1) { state.progression[itemIndex].melody = generateMelodyPattern(state.progression[itemIndex].intervals); saveState(); window.renderProgression(); } };
-        window.addToProgression = function(data) { const details = getStrictScaleDetails(data.root, data.intervals); const melody = generateMelodyPattern(data.intervals); state.progression.push({ id: Date.now(), root: data.root, mode: data.mode, chord: data.chord, family: data.family, degree: data.degree, notes: details.notes, intervals: data.intervals, melody: melody }); saveState(); window.renderProgression(); playChord(data.root, data.intervals, 'chord', 1.5, state.rhythmPattern); const c = document.getElementById('progression-container'); if(c) setTimeout(() => c.scrollLeft = c.scrollWidth, 100); showToast("Acorde agregado"); };
-        window.clearProgression = function() { if (state.clearConfirm) { state.progression = []; state.clearConfirm = false; saveState(); window.renderProgression(); showToast("Progresión borrada"); } else { state.clearConfirm = true; window.renderProgression(); setTimeout(() => { state.clearConfirm = false; window.renderProgression(); }, 3000); } };
-        window.exportSession = function() { if(state.progression.length === 0) { showToast("Nada que exportar"); return; } const dataStr = JSON.stringify(state.progression, null, 2); const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr); const link = document.createElement('a'); link.setAttribute('href', dataUri); link.setAttribute('download', 'modal_session.json'); link.click(); showToast("Sesión exportada"); };
-        window.importSession = function(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const loaded = JSON.parse(e.target.result); if(Array.isArray(loaded)) { state.progression = loaded; saveState(); window.renderProgression(); showToast("Sesión cargada"); } } catch(err) { showToast("Error de archivo"); } }; reader.readAsText(file); };
-        window.toggleEnharmonicInspector = function() { if (!state.hoveredNode) return; const eq = ENHARMONIC_MAP[state.hoveredNode.root]; if (eq) { state.hoveredNode = { ...state.hoveredNode, root: eq, chord: getChordSymbol(eq, state.hoveredNode.intervals) }; window.renderInspector(); } };
-        window.toggleEnharmonicHeader = function() { const eq = ENHARMONIC_MAP[state.root]; if(eq) { state.root = eq; document.getElementById('root-select').value = eq; window.update(); } };
-        function showToast(msg) { const t = document.getElementById('toast'); if(!t) return; t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+        window.regenerateMelody = function(id) {
+            const itemIndex = state.progression.findIndex(p => p.id === id);
+            if (itemIndex > -1) {
+                state.progression[itemIndex].melody = generateMelodyPattern(state.progression[itemIndex].intervals);
+                saveState(); window.renderProgression();
+            }
+        };
+        window.addToProgression = function(data) {
+            const details = getStrictScaleDetails(data.root, data.intervals);
+            const melody = generateMelodyPattern(data.intervals);
+            state.progression.push({ id: Date.now(), root: data.root, mode: data.mode, chord: data.chord, family: data.family, degree: data.degree, notes: details.notes, intervals: data.intervals, melody: melody });
+            saveState(); window.renderProgression();
+            playChord(data.root, data.intervals, 'chord', 1.5, state.rhythmPattern);
+            const c = document.getElementById('progression-container');
+            if(c) setTimeout(() => c.scrollLeft = c.scrollWidth, 100);
+            showToast("Acorde agregado");
+        };
+        window.clearProgression = function() {
+            if (state.clearConfirm) { state.progression = []; state.clearConfirm = false; saveState(); window.renderProgression(); showToast("Progresión borrada"); }
+            else { state.clearConfirm = true; window.renderProgression(); setTimeout(() => { state.clearConfirm = false; window.renderProgression(); }, 3000); }
+        };
+        window.exportSession = function() {
+            if(state.progression.length === 0) { showToast("Nada que exportar"); return; }
+            const dataStr = JSON.stringify(state.progression, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const link = document.createElement('a'); link.setAttribute('href', dataUri); link.setAttribute('download', 'modal_session.json'); link.click();
+            showToast("Sesión exportada");
+        };
+        window.importSession = function(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) { try { const loaded = JSON.parse(e.target.result); if(Array.isArray(loaded)) { state.progression = loaded; saveState(); window.renderProgression(); showToast("Sesión cargada"); } } catch(err) { showToast("Error de archivo"); } };
+            reader.readAsText(file);
+        };
+        window.toggleEnharmonicInspector = function() {
+            if (!state.hoveredNode) return;
+            const eq = ENHARMONIC_MAP[state.hoveredNode.root];
+            if (eq) { state.hoveredNode = { ...state.hoveredNode, root: eq, chord: getChordSymbol(eq, state.hoveredNode.intervals) }; window.renderInspector(); }
+        };
+        window.toggleEnharmonicHeader = function() {
+            const eq = ENHARMONIC_MAP[state.root];
+            if(eq) { state.root = eq; document.getElementById('root-select').value = eq; window.update(); }
+        };
+
+        function showToast(msg) {
+            const t = document.getElementById('toast'); if(!t) return;
+            t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000);
+        }
 
         window.renderMap = function(homeData, layers) {
             const container = document.getElementById('home-node-container');
             const theme = FAMILY_THEMES[homeData.family];
-            container.innerHTML = `<div class="relative group" onclick="playHome()"><div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-pointer shadow-xl transition-all duration-500 hover:scale-105"><span class="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 border-b border-slate-200 dark:border-slate-800 pb-0.5">${homeData.degree}º MODO</span><span class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-0.5">${homeData.chord}</span><span class="text-[9px] font-bold ${theme.color} uppercase leading-tight max-w-[90%]">${state.mode}</span></div></div>`;
+            container.innerHTML = `
+                <div class="relative group" onclick="playHome()">
+                    <div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-pointer shadow-xl transition-all duration-500 hover:scale-105">
+                        <span class="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 border-b border-slate-200 dark:border-slate-800 pb-0.5">${homeData.degree}º MODO</span>
+                        <span class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-0.5">${homeData.chord}</span>
+                        <span class="text-[9px] font-bold ${theme.color} uppercase leading-tight max-w-[90%]">${state.mode}</span>
+                    </div>
+                </div>`;
             const centerNode = container.firstElementChild;
             centerNode.onmouseenter = () => { state.hoveredNode = { ...homeData, diffIndices: [], hasTetra: false, tetraIndices: null }; window.renderInspector(); };
+            
             const sys = document.getElementById('orbit-system'); sys.innerHTML = '';
-            const addLayer = (nodes, r, size, txt) => { const limit = txt ? 12 : (size==='20px'?16:24); nodes.slice(0, limit).forEach((n, i, arr) => { const angle = (i / arr.length) * 2 * Math.PI - (Math.PI / 2); const left = 50 + (r/2 * Math.cos(angle)), top = 50 + (r/2 * Math.sin(angle)); const btn = document.createElement('button'); let bg = r===85 ? 'bg-slate-300 dark:bg-slate-700' : r===55 ? 'bg-blue-300 dark:bg-blue-600' : 'bg-amber-300 dark:bg-amber-500'; btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group orbit-node ${bg} border-slate-400 dark:border-slate-600`; btn.style.left = `${left}%`; btn.style.top = `${top}%`; btn.style.width = size; btn.style.height = size; btn.style.marginLeft = `calc(-${size}/2)`; btn.style.marginTop = `calc(-${size}/2)`; if(txt) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`; btn.onmouseenter = () => { state.hoveredNode = n; window.renderInspector(); }; btn.onclick = (e) => { e.stopPropagation(); state.root = n.root; state.mode = n.mode; state.hoveredNode = null; window.update(); }; sys.appendChild(btn); }); };
+            const addLayer = (nodes, r, size, txt) => {
+                const limit = txt ? 12 : (size==='20px'?16:24);
+                nodes.slice(0, limit).forEach((n, i, arr) => {
+                    const angle = (i / arr.length) * 2 * Math.PI - (Math.PI / 2);
+                    const left = 50 + (r/2 * Math.cos(angle)), top = 50 + (r/2 * Math.sin(angle));
+                    const btn = document.createElement('button');
+                    let bg = r===85 ? 'bg-slate-300 dark:bg-slate-700' : r===55 ? 'bg-blue-300 dark:bg-blue-600' : 'bg-amber-300 dark:bg-amber-500';
+                    btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group orbit-node ${bg} border-slate-400 dark:border-slate-600`;
+                    btn.style.left = `${left}%`; btn.style.top = `${top}%`; btn.style.width = size; btn.style.height = size; btn.style.marginLeft = `calc(-${size}/2)`; btn.style.marginTop = `calc(-${size}/2)`;
+                    if(txt) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`;
+                    btn.onmouseenter = () => { state.hoveredNode = n; window.renderInspector(); };
+                    btn.onclick = (e) => { e.stopPropagation(); state.root = n.root; state.mode = n.mode; state.hoveredNode = null; window.update(); };
+                    sys.appendChild(btn);
+                });
+            };
             addLayer(layers.distant, 85, '12px', false); addLayer(layers.close, 55, '20px', false); addLayer(layers.relatives, 25, '32px', true);
         }
 
@@ -595,37 +552,86 @@
             const el = document.getElementById('inspector-content'), n = state.hoveredNode;
             if(!n) { el.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60"><i data-lucide="grid" class="w-12 h-12 mb-2"></i><p class="text-sm">Pasa el mouse sobre un círculo</p></div>`; lucide.createIcons(); return; }
             const theme = FAMILY_THEMES[n.family] || FAMILY_THEMES["Escala Mayor"], det = getStrictScaleDetails(n.root, n.intervals);
+            
             let tetraText = "";
-            if (n.hasTetra && n.tetraIndices) { const tetraNames = n.tetraIndices.map(interval => { const noteIdx = n.intervals.indexOf(interval); return (noteIdx !== -1) ? det.notes[noteIdx] : getNoteNameFromInterval(n.root, interval); }); tetraText = `${tetraNames.join(' - ')}`; }
+            if (n.hasTetra && n.tetraIndices) {
+                const homeDet = getStrictScaleDetails(state.root, ALL_MODES_FLAT[state.mode].intervals);
+                const tetraNames = n.tetraIndices.map(interval => {
+                    const idx = ALL_MODES_FLAT[state.mode].intervals.indexOf(interval);
+                    return (idx !== -1) ? homeDet.notes[idx] : getNoteNameFromInterval(state.root, interval);
+                });
+                tetraText = `Comparte con ${state.root} ${state.mode}: ${tetraNames.join(' - ')}`;
+            }
+
             let notesHTML = det.notes.map((note, i) => `<div class="flex flex-col items-center"><span class="w-8 h-8 flex items-center justify-center rounded-lg font-bold border text-sm transition-colors ${n.diffIndices && n.diffIndices.includes(n.indices[i]) ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}">${note}</span><span class="text-[9px] text-slate-400 dark:text-slate-600 mt-1 font-mono">${det.formula[i]}</span></div>`).join('');
             el.innerHTML = `
-                <div class="mb-4 text-center p-4 bg-gradient-to-br ${theme.gradient} rounded-xl border ${theme.border} relative overflow-hidden shadow-sm"><div class="absolute top-2 right-3 text-[9px] font-bold px-2 py-0.5 bg-white/60 dark:bg-slate-900/50 ${theme.color} rounded-full border border-slate-200 dark:border-slate-700">${n.degree}º MODO</div>${!!ENHARMONIC_MAP[n.root] ? `<button onclick="toggleEnharmonicInspector()" class="absolute top-2 left-2 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="Ver Enarmónico"><i data-lucide="refresh-cw" class="w-3 h-3"></i></button>` : ''}<div class="text-xs uppercase text-slate-500 dark:text-slate-300 opacity-70 mb-1 mt-2">Acorde Resultante</div><div class="text-4xl font-black text-slate-900 dark:text-white drop-shadow-sm mb-2">${n.chord}</div><div class="flex justify-center gap-2 mt-2"><button onclick="playInspector('chord')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors"><i data-lucide="volume-2" class="w-3 h-3"></i> Acorde</button><button onclick="playInspector('scale')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors"><i data-lucide="music" class="w-3 h-3"></i> Escala</button></div></div>
+                <div class="mb-4 text-center p-4 bg-gradient-to-br ${theme.gradient} rounded-xl border ${theme.border} relative overflow-hidden shadow-sm">
+                    <div class="absolute top-2 right-3 text-[9px] font-bold px-2 py-0.5 bg-white/60 dark:bg-slate-900/50 ${theme.color} rounded-full border border-slate-200 dark:border-slate-700">${n.degree}º MODO</div>
+                    ${!!ENHARMONIC_MAP[n.root] ? `<button onclick="toggleEnharmonicInspector()" class="absolute top-2 left-2 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="Ver Enarmónico"><i data-lucide="refresh-cw" class="w-3 h-3"></i></button>` : ''}
+                    <div class="text-xs uppercase text-slate-500 dark:text-slate-300 opacity-70 mb-1 mt-2">Acorde Resultante</div><div class="text-4xl font-black text-slate-900 dark:text-white drop-shadow-sm mb-2">${n.chord}</div>
+                    <div class="flex justify-center gap-2 mt-2"><button onclick="playInspector('chord')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors"><i data-lucide="volume-2" class="w-3 h-3"></i> Acorde</button><button onclick="playInspector('scale')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors"><i data-lucide="music" class="w-3 h-3"></i> Escala</button></div>
+                </div>
                 <div class="mb-2"><h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 leading-tight">${n.root} <span class="font-normal text-slate-500 dark:text-slate-400">${n.mode}</span></h3><div class="flex items-center gap-2 mt-1"><i data-lucide="layers" class="w-3 h-3 ${theme.color}"></i><p class="text-xs ${theme.color} font-medium">${n.family}</p></div></div>
                 <div class="bg-slate-50 dark:bg-slate-950 rounded-lg p-3 border border-slate-200 dark:border-slate-800 mb-4 mt-2"><div class="flex flex-wrap gap-1 mb-2 justify-center">${notesHTML}</div></div>
-                <div class="p-3 rounded-lg border flex items-start gap-3 mb-4 ${n.hasTetra ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}"><i data-lucide="${n.hasTetra ? 'check' : 'x'}" class="w-4 h-4 ${n.hasTetra ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'} mt-0.5"></i><div><h4 class="text-xs font-bold ${n.hasTetra ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-500'}">${n.hasTetra ? 'Conexión Fluida' : 'Sin Tetracordio Común'}</h4>${n.hasTetra ? `<p class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 font-mono break-all">Tetracordio Común: ${tetraText}</p>` : ''}</div></div>
+                
+                <div class="p-3 rounded-lg border flex items-start gap-3 mb-4 ${n.hasTetra ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}">
+                    <i data-lucide="${n.hasTetra ? 'check' : 'x'}" class="w-4 h-4 ${n.hasTetra ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'} mt-0.5"></i>
+                    <div>
+                        <h4 class="text-xs font-bold ${n.hasTetra ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-500'}">${n.hasTetra ? 'Conexión Fluida' : 'Sin Tetracordio Común'}</h4>
+                        ${n.hasTetra ? `<p class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 font-mono break-all w-full">${tetraText}</p>` : ''}
+                    </div>
+                </div>
                 <div class="mt-auto grid grid-cols-2 gap-2"><button onclick="addInspectorToProgression()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-green-500 text-slate-700 dark:text-slate-200 hover:text-white font-bold rounded-lg flex items-center justify-center gap-2 text-xs uppercase"><i data-lucide="plus" class="w-4 h-4"></i> Agregar</button><button onclick="goToInspector()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-amber-500 text-slate-700 dark:text-slate-200 hover:text-white font-bold rounded-lg flex items-center justify-center gap-2 text-xs uppercase">Ir Aquí <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
             `;
             lucide.createIcons();
         }
 
         window.renderProgression = function() {
-            const container = document.getElementById('progression-container'); const countEl = document.getElementById('progression-count'); const clearBtn = document.getElementById('clear-progression-btn');
+            const container = document.getElementById('progression-container');
+            const countEl = document.getElementById('progression-count');
+            const clearBtn = document.getElementById('clear-progression-btn');
             if(!container || !countEl) return;
+            
             countEl.innerText = `${state.progression.length} Pasos`;
             if (state.progression.length > 0) {
-                if(clearBtn) { clearBtn.classList.remove('hidden'); document.getElementById('clear-btn-text').innerText = state.clearConfirm ? "¿Confirmar?" : "Borrar"; clearBtn.className = state.clearConfirm ? "text-xs text-red-600 dark:text-red-400 font-bold bg-red-100 dark:bg-red-900/20 px-2 py-0.5 rounded flex items-center gap-1 transition-all" : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20"; }
+                if(clearBtn) {
+                    clearBtn.classList.remove('hidden');
+                    const clearText = document.getElementById('clear-btn-text');
+                    if(clearText) clearText.innerText = state.clearConfirm ? "¿Confirmar?" : "Borrar";
+                    clearBtn.className = state.clearConfirm ? "text-xs text-red-600 dark:text-red-400 font-bold bg-red-100 dark:bg-red-900/20 px-2 py-0.5 rounded flex items-center gap-1 transition-all" : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20";
+                }
                 container.innerHTML = '';
                 state.progression.forEach((item, idx) => {
-                    if (idx > 0) { const c = document.createElement('div'); c.className = "flex items-center justify-center shrink-0 opacity-40"; c.innerHTML = `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>`; container.appendChild(c); }
+                    if (idx > 0) {
+                        const c = document.createElement('div'); c.className = "flex items-center justify-center shrink-0 opacity-40"; c.innerHTML = `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>`; container.appendChild(c);
+                    }
                     const theme = FAMILY_THEMES[item.family] || FAMILY_THEMES["Escala Mayor"];
                     const div = document.createElement('div');
                     const playingClass = (state.isPlaying && state.playingIndex === idx) ? 'playing-card' : '';
                     div.className = `min-w-[240px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg transition-transform ${playingClass} snap-center`;
-                    let melodyText = item.melody.map(m => { const noteIdx = item.intervals.indexOf(m.interval); const noteName = (noteIdx !== -1 && item.notes[noteIdx]) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval); return m.octaveOffset > 0 ? `${noteName}↑` : noteName; }).join(' - ');
-                    div.innerHTML = `<div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="regenerateMelody(${item.id})" class="p-1 hover:bg-violet-100 dark:hover:bg-violet-900/30 rounded text-slate-400 hover:text-violet-500" title="Regenerar"><i data-lucide="dices" class="w-3.5 h-3.5"></i></button><button onclick="playProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-800 dark:hover:text-white"><i data-lucide="volume-2" class="w-3.5 h-3.5"></i></button><button onclick="removeProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 dark:hover:text-red-400"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div><div class="mb-2"><span class="bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded mr-2">${idx + 1}</span><div class="inline-block"><div class="text-[10px] font-bold uppercase ${theme.color}">${item.degree}º Modo</div><div class="text-[10px] ${theme.color} opacity-80 leading-none">${item.family}</div></div></div><div class="text-2xl font-black text-slate-900 dark:text-white mb-1">${item.chord}</div><div class="text-[10px] text-slate-500 dark:text-slate-400 mb-3 font-medium tracking-wide truncate" title="${item.mode}">${item.mode}</div><div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700"><div class="text-[9px] uppercase text-violet-500 font-bold mb-1 flex items-center gap-1"><i data-lucide="music" class="w-3 h-3"></i> Melodía Aleatoria</div><div class="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded border border-slate-200 dark:border-slate-700 text-center">${melodyText}</div></div>`;
+                    let melodyText = item.melody.map(m => {
+                        const noteIdx = item.intervals.indexOf(m.interval);
+                        // FIXED: Use the name from the item's calculated notes array, not generic lookup
+                        const noteName = (noteIdx !== -1) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval);
+                        return m.octaveOffset > 0 ? `${noteName}↑` : noteName;
+                    }).join(' - ');
+                    div.innerHTML = `
+                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="regenerateMelody(${item.id})" class="p-1 hover:bg-violet-100 dark:hover:bg-violet-900/30 rounded text-slate-400 hover:text-violet-500" title="Regenerar"><i data-lucide="dices" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="playProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-800 dark:hover:text-white"><i data-lucide="volume-2" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="removeProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 dark:hover:text-red-400"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                        <div class="mb-2"><span class="bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded mr-2">${idx + 1}</span><div class="inline-block"><div class="text-[10px] font-bold uppercase ${theme.color}">${item.degree}º Modo</div><div class="text-[10px] ${theme.color} opacity-80 leading-none">${item.family}</div></div></div>
+                        <div class="text-2xl font-black text-slate-900 dark:text-white mb-1">${item.chord}</div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 mb-3 font-medium tracking-wide truncate" title="${item.mode}">${item.mode}</div>
+                        <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700"><div class="text-[9px] uppercase text-violet-500 font-bold mb-1 flex items-center gap-1"><i data-lucide="music" class="w-3 h-3"></i> Melodía Aleatoria</div><div class="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded border border-slate-200 dark:border-slate-700 text-center">${melodyText}</div></div>
+                    `;
                     container.appendChild(div);
                 });
-            } else { if(clearBtn) clearBtn.classList.add('hidden'); container.innerHTML = `<div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center"><i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i><p class="text-sm font-medium">Lienzo vacío</p></div>`; }
+            } else {
+                if(clearBtn) clearBtn.classList.add('hidden');
+                container.innerHTML = `<div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center"><i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i><p class="text-sm font-medium">Lienzo vacío</p></div>`;
+            }
             lucide.createIcons();
         }
 
@@ -636,32 +642,164 @@
             const homeDetails = getStrictScaleDetails(state.root, homeMode.intervals);
             const homeChord = getChordSymbol(state.root, homeMode.intervals);
             const homeData = { ...homeMode, root: state.root, mode: state.mode, indices: homeIndices, notes: homeDetails.notes, formula: homeDetails.formula, chord: homeChord };
+
             let layers = { relatives: [], close: [], distant: [] };
-            NOTES_SHARP.forEach((r, rIdx) => { Object.keys(ALL_MODES_FLAT).forEach(mName => { if (r === state.root && mName === state.mode) return; const mData = ALL_MODES_FLAT[mName]; const tIndices = getScaleNotesIndices(rIdx, mData.intervals); const rel = analyzeRelationship(homeIndices, tIndices); const tChord = getChordSymbol(r, mData.intervals); const node = { root: r, mode: mName, family: mData.family, degree: mData.degree, indices: tIndices, diff: rel.diff, diffIndices: rel.diffIndices, hasTetra: rel.hasTetra, tetraIndices: rel.tetraIndices, chord: tChord, intervals: mData.intervals }; if(rel.diff === 0) layers.relatives.push(node); else if(rel.diff === 1) layers.close.push(node); else if(rel.diff === 2) layers.distant.push(node); }); });
-            window.renderMap(homeData, layers); window.renderInspector();
-            const btnHeader = document.getElementById('header-enharmonic-btn'); if(btnHeader) { if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); } }
-        }
+            NOTES_SHARP.forEach((r, rIdx) => {
+                Object.keys(ALL_MODES_FLAT).forEach(mName => {
+                    if (r === state.root && mName === state.mode) return;
+                    const mData = ALL_MODES_FLAT[mName];
+                    const tIndices = getScaleNotesIndices(rIdx, mData.intervals);
+                    const rel = analyzeRelationship(homeIndices, tIndices);
+                    const tChord = getChordSymbol(r, mData.intervals);
+                    const node = { 
+                        root: r, mode: mName, family: mData.family, degree: mData.degree, 
+                        indices: tIndices, diff: rel.diff, diffIndices: rel.diffIndices, 
+                        hasTetra: rel.hasTetra, tetraIndices: rel.tetraIndices, // Pass new property
+                        chord: tChord, intervals: mData.intervals 
+                    };
+                    if(rel.diff === 0) layers.relatives.push(node); else if(rel.diff === 1) layers.close.push(node); else if(rel.diff === 2) layers.distant.push(node);
+                });
+            });
+            window.renderMap(homeData, layers);
+            window.renderInspector();
+            const btnHeader = document.getElementById('header-enharmonic-btn');
+            if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); } }
 
         window.updateTransportUI = function() {
-            const btnPlay = document.getElementById('btn-play-all'); if(btnPlay) { if (state.isPlaying) { btnPlay.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i>'; btnPlay.classList.replace('bg-green-600', 'bg-yellow-600'); } else { btnPlay.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i>'; btnPlay.classList.replace('bg-yellow-600', 'bg-green-600'); } }
-            const btnLoop = document.getElementById('btn-loop'); if(btnLoop) { if (state.isLooping) btnLoop.classList.add('text-green-500', 'bg-green-100', 'dark:bg-green-900/30'); else btnLoop.classList.remove('text-green-500', 'bg-green-100', 'dark:bg-green-900/30'); }
-            const btnMelody = document.getElementById('btn-melody'); if(btnMelody) { if (state.isMelodyActive) { btnMelody.classList.add('text-violet-600', 'bg-violet-100', 'dark:bg-violet-900/30', 'ring-2', 'ring-violet-500'); btnMelody.classList.remove('text-slate-500', 'bg-slate-100', 'dark:bg-slate-800'); const strip = document.getElementById('melody-strip'); if(strip) strip.classList.remove('hidden'); } else { btnMelody.classList.remove('text-violet-600', 'bg-violet-100', 'dark:bg-violet-900/30', 'ring-2', 'ring-violet-500'); btnMelody.classList.add('text-slate-500', 'bg-slate-100', 'dark:bg-slate-800'); const strip = document.getElementById('melody-strip'); if(strip) strip.classList.add('hidden'); } }
+            const btnPlay = document.getElementById('btn-play-all');
+            if(btnPlay) {
+                if (state.isPlaying) {
+                    btnPlay.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i>';
+                    btnPlay.classList.replace('bg-green-600', 'bg-yellow-600');
+                } else {
+                    btnPlay.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i>';
+                    btnPlay.classList.replace('bg-yellow-600', 'bg-green-600');
+                }
+            }
+            const btnLoop = document.getElementById('btn-loop');
+            if(btnLoop) {
+                if (state.isLooping) btnLoop.classList.add('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
+                else btnLoop.classList.remove('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
+            }
+            const btnMelody = document.getElementById('btn-melody');
+            if(btnMelody) {
+                if (state.isMelodyActive) {
+                    btnMelody.classList.add('text-violet-600', 'bg-violet-100', 'dark:bg-violet-900/30', 'ring-2', 'ring-violet-500');
+                    btnMelody.classList.remove('text-slate-500', 'bg-slate-100', 'dark:bg-slate-800');
+                    const strip = document.getElementById('melody-strip'); if(strip) strip.classList.remove('hidden');
+                } else {
+                    btnMelody.classList.remove('text-violet-600', 'bg-violet-100', 'dark:bg-violet-900/30', 'ring-2', 'ring-violet-500');
+                    btnMelody.classList.add('text-slate-500', 'bg-slate-100', 'dark:bg-slate-800');
+                    const strip = document.getElementById('melody-strip'); if(strip) strip.classList.add('hidden');
+                }
+            }
             lucide.createIcons();
         }
 
-        window.startSequence = function() { if (state.progression.length === 0) return; if (state.isPlaying) window.stopSequence(); state.isPlaying = true; state.playingIndex = 0; window.updateTransportUI(); window.playNextStep(); }
-        window.stopSequence = function() { state.isPlaying = false; state.playingIndex = -1; clearTimeout(state.playbackTimeout); window.updateTransportUI(); window.updateProgressionVisuals(); const disp = document.getElementById('melody-note-display'); if(disp) disp.innerText = "..."; }
-        window.updateProgressionVisuals = function() { const container = document.getElementById('progression-container'); if(container) { Array.from(container.children).forEach((card, idx) => { if (idx === state.playingIndex && state.isPlaying) card.classList.add('playing-card'); else card.classList.remove('playing-card'); }); } }
-        window.playNextStep = function() { if (!state.isPlaying) return; if (state.playingIndex >= state.progression.length) { if (state.isLooping) state.playingIndex = 0; else { window.stopSequence(); return; } } const item = state.progression[state.playingIndex]; window.updateProgressionVisuals(); const container = document.getElementById('progression-container'); if(container) { const card = container.children[state.playingIndex]; if(card) { const offset = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2); container.scrollTo({ left: offset, behavior: 'smooth' }); } } const beatDur = 60 / state.bpm; const chordDur = beatDur * 4; playChord(item.root, item.intervals, 'chord', chordDur, state.rhythmPattern); if (state.isMelodyActive) { const now = audioCtx.currentTime; playStoredMelody(item.root, item.melody, now, chordDur); const melodyText = item.melody.map(m => { const noteIdx = item.intervals.indexOf(m.interval); return (noteIdx !== -1) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval); }).join(' '); const disp = document.getElementById('melody-note-display'); if(disp) disp.innerText = melodyText; } else { const disp = document.getElementById('melody-note-display'); if(disp) disp.innerText = "..."; } state.playbackTimeout = setTimeout(() => { state.playingIndex++; window.playNextStep(); }, chordDur * 1000); }
+        window.startSequence = function() {
+            if (state.progression.length === 0) return;
+            if (state.isPlaying) window.stopSequence(); 
+            state.isPlaying = true;
+            state.playingIndex = 0;
+            window.updateTransportUI();
+            window.playNextStep();
+        }
+
+        window.stopSequence = function() {
+            state.isPlaying = false;
+            state.playingIndex = -1;
+            clearTimeout(state.playbackTimeout);
+            window.updateTransportUI();
+            window.updateProgressionVisuals();
+            const disp = document.getElementById('melody-note-display'); if(disp) disp.innerText = "...";
+        }
+
+        window.updateProgressionVisuals = function() {
+            const container = document.getElementById('progression-container');
+            if(container) {
+                Array.from(container.children).forEach((card, idx) => {
+                    if (idx === state.playingIndex && state.isPlaying) card.classList.add('playing-card');
+                    else card.classList.remove('playing-card');
+                });
+            }
+        }
+
+        window.playNextStep = function() {
+            if (!state.isPlaying) return;
+            if (state.playingIndex >= state.progression.length) {
+                if (state.isLooping) state.playingIndex = 0;
+                else { window.stopSequence(); return; }
+            }
+            const item = state.progression[state.playingIndex];
+            window.updateProgressionVisuals();
+            const container = document.getElementById('progression-container');
+            if(container) {
+                const card = container.children[state.playingIndex];
+                if(card) {
+                    const offset = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2);
+                    container.scrollTo({ left: offset, behavior: 'smooth' });
+                }
+            }
+            const beatDur = 60 / state.bpm;
+            const chordDur = beatDur * 4; 
+            playChord(item.root, item.intervals, 'chord', chordDur, state.rhythmPattern);
+            if (state.isMelodyActive) {
+                const now = audioCtx.currentTime;
+                playStoredMelody(item.root, item.melody, now, chordDur);
+                // Updated to use correct note name logic
+                const melodyText = item.melody.map(m => {
+                    const noteIdx = item.intervals.indexOf(m.interval);
+                    return (noteIdx !== -1) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval);
+                }).join(' ');
+                const disp = document.getElementById('melody-note-display'); if(disp) disp.innerText = melodyText;
+            } else { const disp = document.getElementById('melody-note-display'); if(disp) disp.innerText = "..."; }
+            state.playbackTimeout = setTimeout(() => {
+                state.playingIndex++;
+                window.playNextStep();
+            }, chordDur * 1000);
+        }
 
         function init() {
-            const safeAddListener = (id, event, handler) => { const el = document.getElementById(id); if (el) el.addEventListener(event, handler); };
-            const rSel = document.getElementById('root-select'); if(rSel) { ROOT_OPTIONS.forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.innerText = r; rSel.appendChild(opt); }); rSel.addEventListener('change', e => { state.root = e.target.value; window.update(); }); }
-            const mSel = document.getElementById('mode-select'); if(mSel) { Object.keys(MODES_DATA).forEach(family => { let grp = document.createElement('optgroup'); grp.label = family; Object.keys(MODES_DATA[family]).forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.innerText = m; grp.appendChild(opt); }); mSel.appendChild(grp); }); mSel.addEventListener('change', e => { state.mode = e.target.value; window.update(); }); }
-            
-            // Listeners
-            window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); if(state.isPlaying) window.stopSequence(); else window.startSequence(); } else if (e.code === 'KeyM') { state.isMelodyActive = !state.isMelodyActive; window.updateTransportUI(); } else if (e.code === 'KeyL') { state.isLooping = !state.isLooping; window.updateTransportUI(); } else if (e.code === 'KeyX') { window.clearProgression(); } });
+            const safeAddListener = (id, event, handler) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener(event, handler);
+            };
+
+            const rSel = document.getElementById('root-select');
+            if(rSel) {
+                ROOT_OPTIONS.forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.innerText = r; rSel.appendChild(opt); });
+                rSel.addEventListener('change', e => { state.root = e.target.value; window.update(); });
+            }
+
+            const mSel = document.getElementById('mode-select');
+            if(mSel) {
+                Object.keys(MODES_DATA).forEach(family => {
+                    let grp = document.createElement('optgroup'); grp.label = family;
+                    Object.keys(MODES_DATA[family]).forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.innerText = m; grp.appendChild(opt); });
+                    mSel.appendChild(grp);
+                });
+                mSel.addEventListener('change', e => { state.mode = e.target.value; window.update(); });
+            }
+
+            // Keyboard Shortcuts
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if(state.isPlaying) window.stopSequence(); else window.startSequence();
+                } else if (e.code === 'KeyM') {
+                    state.isMelodyActive = !state.isMelodyActive;
+                    window.updateTransportUI();
+                } else if (e.code === 'KeyL') {
+                    state.isLooping = !state.isLooping;
+                    window.updateTransportUI();
+                } else if (e.code === 'KeyX') {
+                    window.clearProgression();
+                }
+            });
+
+            // LocalStorage Load
             loadState();
+
             safeAddListener('header-enharmonic-btn', 'click', toggleEnharmonicHeader);
             safeAddListener('clear-progression-btn', 'click', clearProgression);
             safeAddListener('btn-play-all', 'click', () => { if(state.isPlaying) window.stopSequence(); else window.startSequence(); });
@@ -676,7 +814,14 @@
             safeAddListener('btn-import', 'click', () => { const el = document.getElementById('file-upload'); if(el) el.click(); });
             safeAddListener('file-upload', 'change', importSession);
             safeAddListener('theme-toggle', 'click', () => { document.documentElement.classList.toggle('dark'); setTimeout(() => lucide.createIcons(), 100); });
-            const helpModal = document.getElementById('help-modal'); if(helpModal) { safeAddListener('help-toggle', 'click', () => helpModal.classList.add('open')); safeAddListener('close-help', 'click', () => helpModal.classList.remove('open')); safeAddListener('close-help-btn', 'click', () => helpModal.classList.remove('open')); }
+            
+            const helpModal = document.getElementById('help-modal');
+            if(helpModal) {
+                safeAddListener('help-toggle', 'click', () => helpModal.classList.add('open'));
+                safeAddListener('close-help', 'click', () => helpModal.classList.remove('open'));
+                safeAddListener('close-help-btn', 'click', () => helpModal.classList.remove('open'));
+            }
+
             document.body.addEventListener('click', initAudio, { once: true });
             
             renderPiano();
