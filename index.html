@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -187,7 +187,7 @@
             </div>
 
             <!-- Progression Strip -->
-            <div id="progression-container" class="flex gap-4 overflow-x-auto pb-4 min-h-[180px] scroll-smooth">
+            <div id="progression-container" class="flex gap-2 overflow-x-auto pb-4 min-h-[180px] scroll-smooth items-center">
                 <!-- Empty State -->
                 <div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center">
                     <i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i>
@@ -346,9 +346,10 @@
 
         const MODES_DATA = {
             "Escala Mayor": { "Jónico (Mayor)": [0,2,4,5,7,9,11], "Dórico": [0,2,3,5,7,9,10], "Frigio": [0,1,3,5,7,8,10], "Lidio": [0,2,4,6,7,9,11], "Mixolidio": [0,2,4,5,7,9,10], "Eólico (Menor)": [0,2,3,5,7,8,10], "Locrio": [0,1,3,5,6,8,10] },
-            "Menor Armónica": { "Menor Armónica": [0,2,3,5,7,8,11], "Locrio ♮6": [0,1,3,5,6,9,10], "Jónico #5": [0,2,4,5,8,9,11], "Dórico #4": [0,2,3,6,7,9,10], "Mixolidio b9 b13": [0,1,4,5,7,8,10], "Lidio #2": [0,3,4,6,7,9,11], "Locrio b4 bb7": [0,1,3,4,6,8,9] },
-            "Menor Melódica": { "Menor Melódica": [0,2,3,5,7,9,11], "Frigio ♮6 (Dórico b2)": [0,1,3,5,7,9,10], "Lidio Aumentado": [0,2,4,6,8,9,11], "Mixolidio #4 (Lidio b7)": [0,2,4,6,7,9,10], "Mixolidio b6": [0,2,4,5,7,8,10], "Locrio ♮2": [0,2,3,5,6,8,10], "Alterada (Super Locrio)": [0,1,3,4,6,8,10] },
-            "Mayor Armónica": { "Jónico b6": [0,2,4,5,7,8,11], "Locrio ♮2 (Dórico b5)": [0,2,3,5,6,9,10], "Frigio b4": [0,1,3,4,7,8,10], "Lidio b3 (Dórico #4)": [0,2,3,6,7,9,11], "Mixolidio b2": [0,1,4,5,7,9,10], "Lidio Aumentado #2": [0,3,4,6,8,9,11], "Locrio bb7": [0,1,3,5,6,8,9] }
+            // Correction based on user request and image analysis
+            "Menor Armónica": { "Eólico 7": [0,2,3,5,7,8,11], "Locrio 6": [0,1,3,5,6,9,10], "Jónico #5": [0,2,4,5,8,9,11], "Dórico #4": [0,2,3,6,7,9,10], "Mixolidio b9 b13": [0,1,4,5,7,8,10], "Lidio #9": [0,3,4,6,7,9,11], "Locrio b4 bb7": [0,1,3,4,6,8,9] },
+            "Menor Melódica": { "Dórico 7": [0,2,3,5,7,9,11], "Frigio 6": [0,1,3,5,7,9,10], "Lidio #5": [0,2,4,6,8,9,11], "Mixolidio #4": [0,2,4,6,7,9,10], "Mixolidio b6": [0,2,4,5,7,8,10], "Locrio 2": [0,2,3,5,6,8,10], "Mixolidio Alterado": [0,1,3,4,6,8,10] },
+            "Mayor Armónica": { "Jónico b6": [0,2,4,5,7,8,11], "Locrio 2 ♮6": [0,2,3,5,6,9,10], "Frigio b4": [0,1,3,4,7,8,10], "Dórico #4 7": [0,2,3,6,7,9,11], "Mixolidio b2": [0,1,4,5,7,9,10], "Lidio #2 #5": [0,3,4,6,8,9,11], "Locrio bb7": [0,1,3,5,6,8,9] }
         };
 
         let ALL_MODES_FLAT = {};
@@ -856,6 +857,17 @@
                 
                 container.innerHTML = '';
                 state.progression.forEach((item, idx) => {
+                    // Add connector line if not the first item
+                    if (idx > 0) {
+                        const connector = document.createElement('div');
+                        connector.className = "flex items-center justify-center shrink-0 opacity-40";
+                        connector.innerHTML = `
+                            <div class="w-4 h-0.5 bg-slate-400 dark:bg-slate-500 rounded"></div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 dark:text-slate-500 -ml-1.5"></i>
+                        `;
+                        container.appendChild(connector);
+                    }
+
                     const theme = FAMILY_THEMES[item.family] || FAMILY_THEMES["Escala Mayor"];
                     const div = document.createElement('div');
                     
