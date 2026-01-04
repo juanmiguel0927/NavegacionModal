@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,16 +26,49 @@
         .animate-pulse-slow { animation: pulse-slow 3s infinite; }
         
         .playing-card {
-            box-shadow: 0 0 15px 2px rgba(16, 185, 129, 0.5);
-            border-color: #10b981 !important;
+            box-shadow: 0 0 15px 2px rgba(139, 92, 246, 0.5); /* Violet glow for playing */
+            border-color: #8b5cf6 !important;
             transform: scale(1.02);
+            transition: all 0.2s ease;
         }
+
+        /* Melody Ticker Animation */
+        @keyframes slide-up-fade {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .melody-note-anim { animation: slide-up-fade 0.1s ease-out forwards; }
 
         /* Modal Transitions */
         .modal { opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal.open { opacity: 1; visibility: visible; }
         .modal-content { transform: scale(0.95); transition: all 0.3s ease; }
         .modal.open .modal-content { transform: scale(1); }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            margin-top: -4px; 
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        .dark input[type=range]::-webkit-slider-runnable-track {
+            background: #334155;
+        }
 
         /* Scrollbar */
         ::-webkit-scrollbar { height: 8px; width: 8px; }
@@ -143,11 +176,11 @@
             <!-- Progression Toolbar -->
             <div class="flex flex-col md:flex-row items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4">
                 
-                <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 w-full md:w-auto flex-wrap">
                     <h2 class="text-sm font-bold uppercase text-slate-400 flex items-center gap-2 whitespace-nowrap">
                         <i data-lucide="music-4" class="w-4 h-4 text-green-500"></i> Workstation
                     </h2>
-                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden lg:block"></div>
                     
                     <!-- Playback Controls -->
                     <div class="flex items-center gap-2">
@@ -160,17 +193,35 @@
                         <button id="btn-loop" class="p-2 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-lg shadow transition-colors hover:text-slate-800 dark:hover:text-white" title="Loop">
                             <i data-lucide="repeat" class="w-4 h-4"></i>
                         </button>
+                        
+                        <!-- Melody Button (Toggle) -->
+                        <button id="btn-melody" class="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-lg shadow-sm transition-all hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:text-violet-600 dark:hover:text-violet-400 hover:border-violet-200 dark:hover:border-violet-800" title="Activar Melodía">
+                            <i data-lucide="dices" class="w-4 h-4"></i>
+                            <span class="text-xs font-bold uppercase hidden sm:inline">Melodía</span>
+                        </button>
+                    </div>
+
+                    <!-- Volume Faders -->
+                    <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center gap-2" title="Volumen Acordes">
+                            <i data-lucide="piano" class="w-3 h-3 text-slate-400"></i>
+                            <input type="range" id="vol-chord" min="0" max="1" step="0.1" value="0.7" class="w-16">
+                        </div>
+                        <div class="flex items-center gap-2" title="Volumen Melodía">
+                            <i data-lucide="music" class="w-3 h-3 text-violet-400"></i>
+                            <input type="range" id="vol-melody" min="0" max="1" step="0.1" value="0.6" class="w-16">
+                        </div>
                     </div>
 
                     <!-- Tempo Control -->
-                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 ml-auto md:ml-0">
                         <span class="text-[10px] font-bold text-slate-500 uppercase">BPM</span>
                         <input type="number" id="bpm-input" value="90" min="40" max="240" class="w-12 bg-transparent text-sm font-bold text-center outline-none text-slate-700 dark:text-slate-200">
                     </div>
                 </div>
 
                 <!-- File Actions -->
-                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end mt-2 md:mt-0">
                     <input type="file" id="file-upload" class="hidden" accept=".json">
                     <button id="btn-import" class="text-xs flex items-center gap-1 text-slate-500 hover:text-blue-500 transition-colors px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
                         <i data-lucide="upload" class="w-3.5 h-3.5"></i> Cargar
@@ -184,6 +235,15 @@
                     </button>
                     <div id="progression-count" class="text-xs text-slate-400 font-mono ml-2">0 Pasos</div>
                 </div>
+            </div>
+
+            <!-- Melody Visualizer Strip (New) -->
+            <div id="melody-strip" class="hidden mb-4 px-4 py-2 bg-violet-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-900/30 rounded-lg flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-violet-500 animate-pulse"></div>
+                    <span class="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide">Melodía Activa</span>
+                </div>
+                <div id="melody-note-display" class="font-mono text-sm font-bold text-violet-700 dark:text-violet-300">...</div>
             </div>
 
             <!-- Progression Strip -->
@@ -285,7 +345,7 @@
                         <li>Explora los nodos orbitales para evaluar opciones de modulación. El <strong>Inspector</strong> mostrará las relaciones interválicas.</li>
                         <li>Utiliza el botón <strong class="text-green-500">"+"</strong> para integrar el acorde seleccionado a la <strong>Workstation</strong> de composición.</li>
                         <li>Para establecer un nuevo Centro Modal, utiliza la función <strong class="text-amber-500">"Ir Aquí"</strong>.</li>
-                        <li>Verifica la coherencia auditiva de la progresión mediante los controles de reproducción <i data-lucide="play" class="w-3 h-3 inline"></i>.</li>
+                        <li>Verifica la coherencia auditiva de la progresión mediante los controles de reproducción <i data-lucide="play" class="w-3 h-3 inline"></i>. Activa el botón <strong>Melodía</strong> para inspirarte con improvisaciones.</li>
                     </ol>
                 </div>
 
@@ -302,7 +362,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- DATA & CONFIG ---
+        // --- 1. UTILITY FUNCTIONS & CONFIG ---
         const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
         const ROOT_OPTIONS = ['C', 'C#', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -344,12 +404,12 @@
             }
         };
 
+        // CORRECTED NAMES WITH ♮ SYMBOL
         const MODES_DATA = {
             "Escala Mayor": { "Jónico (Mayor)": [0,2,4,5,7,9,11], "Dórico": [0,2,3,5,7,9,10], "Frigio": [0,1,3,5,7,8,10], "Lidio": [0,2,4,6,7,9,11], "Mixolidio": [0,2,4,5,7,9,10], "Eólico (Menor)": [0,2,3,5,7,8,10], "Locrio": [0,1,3,5,6,8,10] },
-            // Correction based on user request and image analysis
-            "Menor Armónica": { "Eólico 7": [0,2,3,5,7,8,11], "Locrio 6": [0,1,3,5,6,9,10], "Jónico #5": [0,2,4,5,8,9,11], "Dórico #4": [0,2,3,6,7,9,10], "Mixolidio b9 b13": [0,1,4,5,7,8,10], "Lidio #9": [0,3,4,6,7,9,11], "Locrio b4 bb7": [0,1,3,4,6,8,9] },
-            "Menor Melódica": { "Dórico 7": [0,2,3,5,7,9,11], "Frigio 6": [0,1,3,5,7,9,10], "Lidio #5": [0,2,4,6,8,9,11], "Mixolidio #4": [0,2,4,6,7,9,10], "Mixolidio b6": [0,2,4,5,7,8,10], "Locrio 2": [0,2,3,5,6,8,10], "Mixolidio Alterado": [0,1,3,4,6,8,10] },
-            "Mayor Armónica": { "Jónico b6": [0,2,4,5,7,8,11], "Locrio 2 ♮6": [0,2,3,5,6,9,10], "Frigio b4": [0,1,3,4,7,8,10], "Dórico #4 7": [0,2,3,6,7,9,11], "Mixolidio b2": [0,1,4,5,7,9,10], "Lidio #2 #5": [0,3,4,6,8,9,11], "Locrio bb7": [0,1,3,5,6,8,9] }
+            "Menor Armónica": { "Eólico \u266E7": [0,2,3,5,7,8,11], "Locrio \u266E6": [0,1,3,5,6,9,10], "Jónico #5": [0,2,4,5,8,9,11], "Dórico #4": [0,2,3,6,7,9,10], "Mixolidio b9 b13": [0,1,4,5,7,8,10], "Lidio #9": [0,3,4,6,7,9,11], "Locrio b4 bb7": [0,1,3,4,6,8,9] },
+            "Menor Melódica": { "Dórico \u266E7": [0,2,3,5,7,9,11], "Frigio \u266E6": [0,1,3,5,7,9,10], "Lidio #5": [0,2,4,6,8,9,11], "Mixolidio #4": [0,2,4,6,7,9,10], "Mixolidio b6": [0,2,4,5,7,8,10], "Locrio \u266E2": [0,2,3,5,6,8,10], "Mixolidio Alterado": [0,1,3,4,6,8,10] },
+            "Mayor Armónica": { "Jónico b6": [0,2,4,5,7,8,11], "Locrio \u266E2 \u266E6": [0,2,3,5,6,9,10], "Frigio b4": [0,1,3,4,7,8,10], "Dórico #4 \u266E7": [0,2,3,6,7,9,11], "Mixolidio b2": [0,1,4,5,7,9,10], "Lidio #2 #5": [0,3,4,6,8,9,11], "Locrio bb7": [0,1,3,5,6,8,9] }
         };
 
         let ALL_MODES_FLAT = {};
@@ -359,154 +419,7 @@
             });
         });
 
-        // --- STATE ---
-        let state = {
-            root: 'C',
-            mode: 'Jónico (Mayor)',
-            hoveredNode: null,
-            progression: [],
-            clearConfirm: false,
-            bpm: 90,
-            isPlaying: false,
-            isLooping: false,
-            playingIndex: -1,
-            playbackTimeout: null
-        };
-
-        let audioCtx = null;
-
-        // --- AUDIO ENGINE ---
-        function initAudio() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
-
-        function playChord(root, intervals, type = 'chord', duration = 1.5) {
-            initAudio();
-            const rootIdx = getNoteIndex(root);
-            const baseFreq = 130.81 * Math.pow(2, rootIdx / 12); 
-            const now = audioCtx.currentTime;
-            const indices = [0, 2, 4, 6]; 
-            
-            if (type === 'chord') {
-                indices.forEach((degreeIdx, i) => {
-                    if (degreeIdx >= intervals.length) return;
-                    playTone(baseFreq, intervals[degreeIdx], now, duration, i === 0 ? 'triangle' : 'sine');
-                });
-            } else if (type === 'scale') {
-                const noteDur = 0.2;
-                intervals.forEach((interval, i) => {
-                    playTone(baseFreq, interval, now + (i * noteDur), noteDur + 0.1, 'sine');
-                });
-                playTone(baseFreq, 12, now + (intervals.length * noteDur), 0.8, 'sine');
-            }
-        }
-
-        function playTone(baseFreq, semitones, startTime, duration, type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.frequency.value = baseFreq * Math.pow(2, semitones / 12);
-            osc.type = type;
-            
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.1, startTime + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
-
-        // --- SEQUENCER ---
-        function startSequence() {
-            if (state.progression.length === 0) return;
-            if (state.isPlaying) stopSequence(); // Restart if already playing
-            
-            state.isPlaying = true;
-            state.playingIndex = 0;
-            updateTransportUI();
-            playNextStep();
-        }
-
-        function stopSequence() {
-            state.isPlaying = false;
-            state.playingIndex = -1;
-            clearTimeout(state.playbackTimeout);
-            updateTransportUI();
-            updateProgressionVisuals();
-        }
-
-        function playNextStep() {
-            if (!state.isPlaying) return;
-            if (state.playingIndex >= state.progression.length) {
-                if (state.isLooping) {
-                    state.playingIndex = 0;
-                } else {
-                    stopSequence();
-                    return;
-                }
-            }
-
-            const item = state.progression[state.playingIndex];
-            updateProgressionVisuals();
-            
-            const container = document.getElementById('progression-container');
-            const card = container.children[state.playingIndex];
-            if(card) {
-                const offset = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2);
-                container.scrollTo({ left: offset, behavior: 'smooth' });
-            }
-
-            const beatDur = 60 / state.bpm;
-            const chordDur = beatDur * 4; 
-            
-            playChord(item.root, item.intervals, 'chord', chordDur);
-
-            state.playbackTimeout = setTimeout(() => {
-                state.playingIndex++;
-                playNextStep();
-            }, chordDur * 1000);
-        }
-
-        function updateTransportUI() {
-            const btnPlay = document.getElementById('btn-play-all');
-            if (state.isPlaying) {
-                btnPlay.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i>';
-                btnPlay.classList.replace('bg-green-600', 'bg-yellow-600');
-                btnPlay.classList.replace('hover:bg-green-500', 'hover:bg-yellow-500');
-            } else {
-                btnPlay.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i>';
-                btnPlay.classList.replace('bg-yellow-600', 'bg-green-600');
-                btnPlay.classList.replace('hover:bg-yellow-500', 'hover:bg-green-500');
-            }
-            
-            const btnLoop = document.getElementById('btn-loop');
-            if (state.isLooping) {
-                btnLoop.classList.add('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
-            } else {
-                btnLoop.classList.remove('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
-            }
-            lucide.createIcons();
-        }
-
-        function updateProgressionVisuals() {
-            const container = document.getElementById('progression-container');
-            Array.from(container.children).forEach((card, idx) => {
-                if (idx === state.playingIndex && state.isPlaying) {
-                    card.classList.add('playing-card');
-                } else {
-                    card.classList.remove('playing-card');
-                }
-            });
-        }
-
-        // --- THEORY UTILS ---
+        // --- 2. CORE FUNCTIONS ---
         function getNoteIndex(noteName) {
             let idx = NOTES_SHARP.indexOf(noteName);
             if (idx === -1) idx = NOTES_FLAT.indexOf(noteName);
@@ -583,265 +496,329 @@
             return { diff, diffIndices, hasTetra };
         }
 
-        // --- RENDER LOGIC ---
-
-        function init() {
-            const rSel = document.getElementById('root-select');
-            ROOT_OPTIONS.forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.innerText = r; rSel.appendChild(opt); });
-
-            const mSel = document.getElementById('mode-select');
-            Object.keys(MODES_DATA).forEach(family => {
-                let grp = document.createElement('optgroup'); grp.label = family;
-                Object.keys(MODES_DATA[family]).forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.innerText = m; grp.appendChild(opt); });
-                mSel.appendChild(grp);
-            });
-
-            rSel.addEventListener('change', e => { state.root = e.target.value; update(); });
-            mSel.addEventListener('change', e => { state.mode = e.target.value; update(); });
-            
-            document.getElementById('header-enharmonic-btn').addEventListener('click', toggleEnharmonicHeader);
-            document.getElementById('clear-progression-btn').addEventListener('click', clearProgression);
-            
-            // Transport Controls
-            document.getElementById('btn-play-all').addEventListener('click', () => {
-                if(state.isPlaying) stopSequence(); else startSequence();
-            });
-            document.getElementById('btn-stop').addEventListener('click', stopSequence);
-            document.getElementById('btn-loop').addEventListener('click', () => {
-                state.isLooping = !state.isLooping;
-                updateTransportUI();
-            });
-            document.getElementById('bpm-input').addEventListener('change', (e) => {
-                let val = parseInt(e.target.value);
-                if(val < 40) val = 40; if(val > 240) val = 240;
-                state.bpm = val;
-            });
-
-            // File IO
-            document.getElementById('btn-export').addEventListener('click', exportSession);
-            document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-upload').click());
-            document.getElementById('file-upload').addEventListener('change', importSession);
-
-            document.getElementById('theme-toggle').addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-                setTimeout(() => lucide.createIcons(), 100);
-            });
-
-            // Help Modal
-            const helpModal = document.getElementById('help-modal');
-            document.getElementById('help-toggle').addEventListener('click', () => helpModal.classList.add('open'));
-            document.getElementById('close-help').addEventListener('click', () => helpModal.classList.remove('open'));
-            document.getElementById('close-help-btn').addEventListener('click', () => helpModal.classList.remove('open'));
-            
-            document.body.addEventListener('click', initAudio, { once: true });
-
-            update();
-            lucide.createIcons();
+        function getNoteNameFromInterval(root, interval) {
+            const rootIdx = getNoteIndex(root);
+            const noteIdx = (rootIdx + interval) % 12;
+            return NOTES_SHARP[noteIdx];
         }
 
-        function toggleEnharmonicHeader() {
-            const eq = ENHARMONIC_MAP[state.root];
-            if(eq) { state.root = eq; document.getElementById('root-select').value = eq; update(); }
+        // --- 3. STATE & AUDIO ---
+        let state = {
+            root: 'C',
+            mode: 'Jónico (Mayor)',
+            hoveredNode: null,
+            progression: [],
+            clearConfirm: false,
+            bpm: 90,
+            isPlaying: false,
+            isLooping: false,
+            isMelodyActive: false, 
+            volChord: 0.7,
+            volMelody: 0.6,
+            playingIndex: -1,
+            playbackTimeout: null
+        };
+
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
 
-        function toggleEnharmonicInspector() {
+        function playTone(baseFreq, semitones, startTime, duration, type, volume) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.frequency.value = baseFreq * Math.pow(2, semitones / 12);
+            osc.type = type;
+            
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
+
+        function playChord(root, intervals, type = 'chord', duration = 1.5) {
+            initAudio();
+            const rootIdx = getNoteIndex(root);
+            const baseFreq = 130.81 * Math.pow(2, rootIdx / 12); 
+            const now = audioCtx.currentTime;
+            
+            if (type === 'chord') {
+                const indices = [0, 2, 4, 6]; 
+                indices.forEach((degreeIdx, i) => {
+                    if (degreeIdx >= intervals.length) return;
+                    playTone(baseFreq, intervals[degreeIdx], now, duration, i === 0 ? 'triangle' : 'sine', state.volChord * 0.15);
+                });
+            } else if (type === 'scale') {
+                const noteDur = 0.2;
+                intervals.forEach((interval, i) => {
+                    playTone(baseFreq, interval, now + (i * noteDur), noteDur + 0.1, 'sine', state.volMelody * 0.2);
+                });
+                playTone(baseFreq, 12, now + (intervals.length * noteDur), 0.8, 'sine', state.volMelody * 0.2);
+            }
+        }
+
+        // GENERATE MELODY PATTERN (Gap-Fill & Consonant Start)
+        function generateMelodyPattern(intervals) {
+            const beats = 4;
+            const pattern = [];
+            const scaleLen = intervals.length;
+            
+            // Constraint 1: Connection note (First note) must be consonant (Chord Tone: 1, 3, 5, 7)
+            const chordTonesIndices = [0, 2, 4, 6];
+            let currentIndex = chordTonesIndices[Math.floor(Math.random() * chordTonesIndices.length)];
+            if (currentIndex >= scaleLen) currentIndex = 0; // Fallback
+
+            let currentOctave = 1; // Start middle
+            
+            pattern.push({ interval: intervals[currentIndex], octaveOffset: currentOctave * 12 });
+            
+            let lastStepSize = 0;
+
+            for (let i = 1; i < beats; i++) {
+                let stepSize = 0;
+                
+                // Constraint 2: Recovery after leap
+                if (Math.abs(lastStepSize) > 1) {
+                    stepSize = lastStepSize > 0 ? -1 : 1; 
+                } else {
+                    // Stepwise preference
+                    const rand = Math.random();
+                    let dir = Math.random() > 0.5 ? 1 : -1;
+                    if (currentOctave > 1) dir = -1; 
+                    if (currentOctave < 0) dir = 1;
+                    
+                    if (rand < 0.85) stepSize = dir; 
+                    else stepSize = dir * 2; 
+                }
+                
+                let nextIndexRaw = currentIndex + stepSize;
+                let nextOctave = currentOctave + Math.floor(nextIndexRaw / scaleLen);
+                let nextIndex = ((nextIndexRaw % scaleLen) + scaleLen) % scaleLen;
+                
+                if (nextOctave > 2) { nextOctave = 2; nextIndex = currentIndex; stepSize = 0; }
+                if (nextOctave < 0) { nextOctave = 0; nextIndex = currentIndex; stepSize = 0; }
+                
+                pattern.push({ interval: intervals[nextIndex], octaveOffset: nextOctave * 12 });
+                lastStepSize = (nextIndex + (nextOctave * scaleLen)) - (currentIndex + (currentOctave * scaleLen));
+                currentIndex = nextIndex;
+                currentOctave = nextOctave;
+            }
+            return pattern;
+        }
+
+        function playStoredMelody(root, melodyPattern, startTime, totalDuration) {
+            const rootIdx = getNoteIndex(root);
+            const baseFreq = 130.81 * Math.pow(2, rootIdx / 12);
+            const step = totalDuration / melodyPattern.length;
+            
+            melodyPattern.forEach((note, i) => {
+                playTone(baseFreq * 2, note.interval + note.octaveOffset, startTime + (i * step), step * 0.8, 'triangle', state.volMelody * 0.15);
+            });
+        }
+
+        // --- 4. GLOBAL HANDLERS ---
+        window.addHomeToProgression = function() {
+            const rootIdx = getNoteIndex(state.root);
+            const mode = ALL_MODES_FLAT[state.mode];
+            const chord = getChordSymbol(state.root, mode.intervals);
+            window.addToProgression({ ...mode, root: state.root, mode: state.mode, chord });
+        };
+        
+        window.playHome = function() {
+            const mode = ALL_MODES_FLAT[state.mode];
+            playChord(state.root, mode.intervals, 'chord');
+        };
+
+        window.addInspectorToProgression = function() {
+            if(state.hoveredNode) window.addToProgression(state.hoveredNode);
+        };
+        
+        window.goToInspector = function() {
+            if(state.hoveredNode) {
+                state.root = state.hoveredNode.root;
+                state.mode = state.hoveredNode.mode;
+                state.hoveredNode = null;
+                document.getElementById('root-select').value = state.root;
+                document.getElementById('mode-select').value = state.mode;
+                window.update();
+            }
+        };
+
+        window.playInspector = function(type) {
+            if(state.hoveredNode) {
+                if (type === 'chord') playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'chord');
+                else playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'scale');
+            }
+        };
+
+        window.playProgressionItem = function(id) {
+            const item = state.progression.find(p => p.id === id);
+            if(item) playChord(item.root, item.intervals, 'chord');
+        };
+
+        window.removeProgressionItem = function(id) {
+            state.progression = state.progression.filter(p => p.id !== id);
+            window.renderProgression();
+        };
+
+        window.regenerateMelody = function(id) {
+            const itemIndex = state.progression.findIndex(p => p.id === id);
+            if (itemIndex > -1) {
+                state.progression[itemIndex].melody = generateMelodyPattern(state.progression[itemIndex].intervals);
+                window.renderProgression();
+            }
+        };
+
+        window.addToProgression = function(data) {
+            const details = getStrictScaleDetails(data.root, data.intervals);
+            const melody = generateMelodyPattern(data.intervals);
+            state.progression.push({
+                id: Date.now(),
+                root: data.root,
+                mode: data.mode,
+                chord: data.chord,
+                family: data.family,
+                degree: data.degree,
+                notes: details.notes,
+                intervals: data.intervals,
+                melody: melody 
+            });
+            window.renderProgression();
+            playChord(data.root, data.intervals, 'chord');
+            const c = document.getElementById('progression-container');
+            setTimeout(() => c.scrollLeft = c.scrollWidth, 100);
+        };
+
+        window.clearProgression = function() {
+            if (state.clearConfirm) {
+                state.progression = [];
+                state.clearConfirm = false;
+                window.renderProgression();
+            } else {
+                state.clearConfirm = true;
+                window.renderProgression();
+                setTimeout(() => { state.clearConfirm = false; window.renderProgression(); }, 3000);
+            }
+        };
+
+        window.exportSession = function() {
+            if(state.progression.length === 0) {
+                alert("La progresión está vacía.");
+                return;
+            }
+            const dataStr = JSON.stringify(state.progression, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', 'modal_session.json');
+            linkElement.click();
+        };
+
+        window.importSession = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const loaded = JSON.parse(e.target.result);
+                    if(Array.isArray(loaded)) {
+                        state.progression = loaded;
+                        window.renderProgression();
+                    } else { alert("Formato inválido."); }
+                } catch(err) { alert("Error al leer el archivo."); }
+            };
+            reader.readAsText(file);
+        };
+
+        window.toggleEnharmonicInspector = function() {
             if (!state.hoveredNode) return;
             const eq = ENHARMONIC_MAP[state.hoveredNode.root];
             if (eq) {
                 const newNode = { ...state.hoveredNode, root: eq };
                 newNode.chord = getChordSymbol(eq, newNode.intervals);
                 state.hoveredNode = newNode;
-                renderInspector();
+                window.renderInspector();
             }
-        }
+        };
 
-        function update() {
-            const rootIdx = getNoteIndex(state.root);
-            const homeMode = ALL_MODES_FLAT[state.mode];
-            const homeIndices = getScaleNotesIndices(rootIdx, homeMode.intervals);
-            const homeDetails = getStrictScaleDetails(state.root, homeMode.intervals);
-            const homeChord = getChordSymbol(state.root, homeMode.intervals);
-            const homeData = { ...homeMode, root: state.root, mode: state.mode, indices: homeIndices, notes: homeDetails.notes, formula: homeDetails.formula, chord: homeChord };
+        window.toggleEnharmonicHeader = function() {
+            const eq = ENHARMONIC_MAP[state.root];
+            if(eq) { state.root = eq; document.getElementById('root-select').value = eq; window.update(); }
+        };
 
-            let layers = { relatives: [], close: [], distant: [] };
-            
-            NOTES_SHARP.forEach((r, rIdx) => {
-                Object.keys(ALL_MODES_FLAT).forEach(mName => {
-                    if (r === state.root && mName === state.mode) return;
-                    
-                    const mData = ALL_MODES_FLAT[mName];
-                    const tIndices = getScaleNotesIndices(rIdx, mData.intervals);
-                    const rel = analyzeRelationship(homeIndices, tIndices);
-                    const tChord = getChordSymbol(r, mData.intervals);
-
-                    const node = {
-                        root: r, mode: mName, family: mData.family, degree: mData.degree,
-                        indices: tIndices, diff: rel.diff, diffIndices: rel.diffIndices, hasTetra: rel.hasTetra,
-                        chord: tChord, intervals: mData.intervals
-                    };
-
-                    if(rel.diff === 0) layers.relatives.push(node);
-                    else if(rel.diff === 1) layers.close.push(node);
-                    else if(rel.diff === 2) layers.distant.push(node);
-                });
-            });
-
-            renderMap(homeData, layers);
-            renderInspector();
-
-            const btnHeader = document.getElementById('header-enharmonic-btn');
-            if(ENHARMONIC_MAP[state.root]) {
-                btnHeader.classList.remove('hidden');
-                btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`;
-            } else {
-                btnHeader.classList.add('hidden');
-            }
-        }
-
-        function renderMap(homeData, layers) {
+        // --- RENDER FUNCTIONS (ASSIGNED TO WINDOW FOR INTERNAL CALLS TOO) ---
+        
+        window.renderMap = function(homeData, layers) {
             const container = document.getElementById('home-node-container');
             const theme = FAMILY_THEMES[homeData.family];
-            
             container.innerHTML = `
-                <div class="relative group">
-                    <div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-default shadow-xl transition-all duration-500">
+                <div class="relative group" onclick="playHome()">
+                    <div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-pointer shadow-xl transition-all duration-500 hover:scale-105">
                         <span class="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 border-b border-slate-200 dark:border-slate-800 pb-0.5">${homeData.degree}º MODO</span>
                         <span class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-0.5">${homeData.chord}</span>
                         <span class="text-[9px] font-bold ${theme.color} uppercase leading-tight max-w-[90%]">${state.mode}</span>
                     </div>
-                    <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 flex gap-2 pointer-events-auto z-30">
-                        <button onclick="addHomeToProgression()" class="bg-green-600 hover:bg-green-500 text-white rounded-full p-2 shadow-lg border-4 border-white dark:border-slate-900 transition-transform hover:scale-110"><i data-lucide="plus" class="w-5 h-5"></i></button>
-                        <button onclick="playHome()" class="bg-slate-700 hover:bg-slate-600 text-white rounded-full p-2 shadow-lg border-4 border-white dark:border-slate-900 transition-transform hover:scale-110"><i data-lucide="volume-2" class="w-5 h-5"></i></button>
-                    </div>
-                </div>
-            `;
-            
-            const orbitSys = document.getElementById('orbit-system');
-            orbitSys.innerHTML = '';
-            
-            const appendLayer = (nodes, rPerc, bg, size, showText) => {
-                const limit = showText ? 12 : (size === '20px' ? 16 : 24);
-                const sliced = nodes.slice(0, limit);
-                sliced.forEach((n, i) => {
-                    const angle = (i / sliced.length) * 2 * Math.PI - (Math.PI / 2);
-                    const left = 50 + (rPerc/2 * Math.cos(angle));
-                    const top = 50 + (rPerc/2 * Math.sin(angle));
-                    
+                </div>`;
+                
+                // ADD MOUSE ENTER HERE TO ENABLE INSPECTOR ON CENTER HOVER
+                const centerNode = container.firstElementChild;
+                centerNode.onmouseenter = () => { 
+                    state.hoveredNode = { ...homeData, diffIndices: [], hasTetra: false }; // Dummy extra props for inspector
+                    window.renderInspector(); 
+                };
+
+            const sys = document.getElementById('orbit-system'); sys.innerHTML = '';
+            const addLayer = (nodes, r, size, txt) => {
+                const limit = txt ? 12 : (size==='20px'?16:24);
+                nodes.slice(0, limit).forEach((n, i, arr) => {
+                    const angle = (i / arr.length) * 2 * Math.PI - (Math.PI / 2);
+                    const left = 50 + (r/2 * Math.cos(angle)), top = 50 + (r/2 * Math.sin(angle));
                     const btn = document.createElement('button');
-                    let dynamicBg = '';
-                    if (rPerc === 85) dynamicBg = 'bg-slate-300 border-slate-400 hover:bg-slate-400 dark:bg-slate-700 dark:border-slate-600 dark:hover:bg-slate-500'; 
-                    else if (rPerc === 55) dynamicBg = 'bg-blue-300 border-blue-400 hover:bg-blue-400 dark:bg-blue-600 dark:border-blue-800 dark:hover:bg-blue-400'; 
-                    else dynamicBg = 'bg-amber-300 border-amber-400 hover:bg-amber-400 dark:bg-amber-500 dark:border-amber-300 dark:hover:bg-amber-400';
-
-                    btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group ${dynamicBg} orbit-node`;
-                    btn.style.left = `${left}%`; btn.style.top = `${top}%`;
-                    btn.style.width = size; btn.style.height = size;
-                    btn.style.marginLeft = `calc(-${size} / 2)`; btn.style.marginTop = `calc(-${size} / 2)`;
-                    
-                    if (showText) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`;
-                    
-                    btn.onmouseenter = () => { state.hoveredNode = n; renderInspector(); };
-                    btn.onclick = () => { state.root = n.root; state.mode = n.mode; state.hoveredNode = null; update(); };
-
-                    orbitSys.appendChild(btn);
+                    let bg = r===85 ? 'bg-slate-300 dark:bg-slate-700' : r===55 ? 'bg-blue-300 dark:bg-blue-600' : 'bg-amber-300 dark:bg-amber-500';
+                    btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group orbit-node ${bg} border-slate-400 dark:border-slate-600`;
+                    btn.style.left = `${left}%`; btn.style.top = `${top}%`; btn.style.width = size; btn.style.height = size; btn.style.marginLeft = `calc(-${size}/2)`; btn.style.marginTop = `calc(-${size}/2)`;
+                    if(txt) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`;
+                    btn.onmouseenter = () => { state.hoveredNode = n; window.renderInspector(); };
+                    btn.onclick = (e) => { e.stopPropagation(); state.root = n.root; state.mode = n.mode; state.hoveredNode = null; window.update(); };
+                    sys.appendChild(btn);
                 });
             };
-
-            appendLayer(layers.distant, 85, null, '12px', false);
-            appendLayer(layers.close, 55, null, '20px', false);
-            appendLayer(layers.relatives, 25, null, '32px', true);
+            addLayer(layers.distant, 85, '12px', false); addLayer(layers.close, 55, '20px', false); addLayer(layers.relatives, 25, '32px', true);
         }
 
-        function renderInspector() {
-            const container = document.getElementById('inspector-content');
-            const node = state.hoveredNode;
+        window.renderInspector = function() {
+            const el = document.getElementById('inspector-content'), n = state.hoveredNode;
+            if(!n) { el.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60"><i data-lucide="grid" class="w-12 h-12 mb-2"></i><p class="text-sm">Selecciona un nodo</p></div>`; lucide.createIcons(); return; }
+            const theme = FAMILY_THEMES[n.family] || FAMILY_THEMES["Escala Mayor"], det = getStrictScaleDetails(n.root, n.intervals);
+            let notesHTML = det.notes.map((note, i) => `<div class="flex flex-col items-center"><span class="w-8 h-8 flex items-center justify-center rounded-lg font-bold border text-sm transition-colors ${n.diffIndices && n.diffIndices.includes(n.indices[i]) ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}">${note}</span><span class="text-[9px] text-slate-400 dark:text-slate-600 mt-1 font-mono">${det.formula[i]}</span></div>`).join('');
             
-            if (!node) {
-                container.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60">
-                        <i data-lucide="grid" class="w-12 h-12 mb-2"></i>
-                        <p class="text-sm">Selecciona un nodo</p>
-                    </div>`;
-                lucide.createIcons();
-                return;
-            }
-
-            const theme = FAMILY_THEMES[node.family] || FAMILY_THEMES["Escala Mayor"];
-            const details = getStrictScaleDetails(node.root, node.intervals);
-            const hasEnharmonic = !!ENHARMONIC_MAP[node.root];
-
-            let notesHTML = '';
-            details.notes.forEach((n, i) => {
-                const isDiff = node.diffIndices.includes(node.indices[i]);
-                const style = isDiff 
-                    ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-500/50 dark:text-red-400' 
-                    : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300';
-                notesHTML += `
-                    <div class="flex flex-col items-center">
-                        <span class="w-8 h-8 flex items-center justify-center rounded-lg font-bold border text-sm transition-colors ${style}">${n}</span>
-                        <span class="text-[9px] text-slate-400 dark:text-slate-600 mt-1 font-mono">${details.formula[i]}</span>
-                    </div>`;
-            });
-
-            container.innerHTML = `
+            el.innerHTML = `
                 <div class="mb-4 text-center p-4 bg-gradient-to-br ${theme.gradient} rounded-xl border ${theme.border} relative overflow-hidden shadow-sm">
-                    <div class="absolute top-2 right-3 text-[9px] font-bold px-2 py-0.5 bg-white/60 dark:bg-slate-900/50 ${theme.color} rounded-full border border-slate-200 dark:border-slate-700">
-                        ${node.degree}º MODO
-                    </div>
-                    
-                    ${hasEnharmonic ? `
-                    <button onclick="toggleEnharmonicInspector()" class="absolute top-2 left-2 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="Ver Enarmónico">
-                         <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                    </button>` : ''}
-
-                    <div class="text-xs uppercase text-slate-500 dark:text-slate-300 opacity-70 mb-1 mt-2">Acorde Resultante</div>
-                    <div class="text-4xl font-black text-slate-900 dark:text-white drop-shadow-sm mb-2">${node.chord}</div>
-                    
-                    <div class="flex justify-center gap-2 mt-2">
-                        <button onclick="playInspector('chord')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors">
-                            <i data-lucide="volume-2" class="w-3 h-3"></i> Acorde
-                        </button>
-                        <button onclick="playInspector('scale')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors">
-                            <i data-lucide="music" class="w-3 h-3"></i> Escala
-                        </button>
-                    </div>
+                    <div class="absolute top-2 right-3 text-[9px] font-bold px-2 py-0.5 bg-white/60 dark:bg-slate-900/50 ${theme.color} rounded-full border border-slate-200 dark:border-slate-700">${n.degree}º MODO</div>
+                    ${!!ENHARMONIC_MAP[n.root] ? `<button onclick="toggleEnharmonicInspector()" class="absolute top-2 left-2 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="Ver Enarmónico"><i data-lucide="refresh-cw" class="w-3 h-3"></i></button>` : ''}
+                    <div class="text-xs uppercase text-slate-500 dark:text-slate-300 opacity-70 mb-1 mt-2">Acorde Resultante</div><div class="text-4xl font-black text-slate-900 dark:text-white drop-shadow-sm mb-2">${n.chord}</div>
+                    <div class="flex justify-center gap-2 mt-2"><button onclick="playInspector('chord')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors"><i data-lucide="volume-2" class="w-3 h-3"></i> Acorde</button><button onclick="playInspector('scale')" class="flex items-center gap-1 text-[10px] bg-black/5 dark:bg-white/10 hover:bg-black/10 px-2 py-1 rounded text-slate-700 dark:text-white transition-colors"><i data-lucide="music" class="w-3 h-3"></i> Escala</button></div>
                 </div>
-
-                <div class="mb-2">
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 leading-tight">${node.root} <span class="font-normal text-slate-500 dark:text-slate-400">${node.mode}</span></h3>
-                    <div class="flex items-center gap-2 mt-1">
-                        <i data-lucide="layers" class="w-3 h-3 ${theme.color}"></i>
-                        <p class="text-xs ${theme.color} font-medium">${node.family}</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-950 rounded-lg p-3 border border-slate-200 dark:border-slate-800 mb-4 mt-2">
-                    <div class="flex flex-wrap gap-1 mb-2 justify-center">${notesHTML}</div>
-                </div>
-
-                <div class="p-3 rounded-lg border flex items-start gap-3 mb-4 ${node.hasTetra ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}">
-                    <i data-lucide="${node.hasTetra ? 'check' : 'x'}" class="w-4 h-4 ${node.hasTetra ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'} mt-0.5"></i>
-                    <div>
-                        <h4 class="text-xs font-bold ${node.hasTetra ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-500'}">
-                            ${node.hasTetra ? 'Conexión Fluida (Tetracordio)' : 'Sin conexión directa'}
-                        </h4>
-                    </div>
-                </div>
-
-                <div class="mt-auto grid grid-cols-2 gap-2">
-                    <button onclick="addInspectorToProgression()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-green-500 dark:hover:bg-green-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Agregar
-                    </button>
-                    <button onclick="goToInspector()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-amber-500 dark:hover:bg-amber-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
-                        Ir Aquí <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
-                </div>
+                <div class="mb-2"><h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 leading-tight">${n.root} <span class="font-normal text-slate-500 dark:text-slate-400">${n.mode}</span></h3><div class="flex items-center gap-2 mt-1"><i data-lucide="layers" class="w-3 h-3 ${theme.color}"></i><p class="text-xs ${theme.color} font-medium">${n.family}</p></div></div>
+                <div class="bg-slate-50 dark:bg-slate-950 rounded-lg p-3 border border-slate-200 dark:border-slate-800 mb-4 mt-2"><div class="flex flex-wrap gap-1 mb-2 justify-center">${notesHTML}</div></div>
+                <div class="p-3 rounded-lg border flex items-start gap-3 mb-4 ${n.hasTetra ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}"><i data-lucide="${n.hasTetra ? 'check' : 'x'}" class="w-4 h-4 ${n.hasTetra ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'} mt-0.5"></i><div><h4 class="text-xs font-bold ${n.hasTetra ? 'text-emerald-700 dark:text-emerald-500' : 'text-slate-500'}">${n.hasTetra ? 'Conexión Fluida' : 'Sin conexión directa'}</h4></div></div>
+                <div class="mt-auto grid grid-cols-2 gap-2"><button onclick="addInspectorToProgression()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-green-500 text-slate-700 dark:text-slate-200 hover:text-white font-bold rounded-lg flex items-center justify-center gap-2 text-xs uppercase"><i data-lucide="plus" class="w-4 h-4"></i> Agregar</button><button onclick="goToInspector()" class="py-3 bg-slate-200 dark:bg-slate-700 hover:bg-amber-500 text-slate-700 dark:text-slate-200 hover:text-white font-bold rounded-lg flex items-center justify-center gap-2 text-xs uppercase">Ir Aquí <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
             `;
             lucide.createIcons();
         }
 
-        // --- PROGRESSION LOGIC ---
-        function renderProgression() {
+        window.renderProgression = function() {
             const container = document.getElementById('progression-container');
             const countEl = document.getElementById('progression-count');
             const clearBtn = document.getElementById('clear-progression-btn');
@@ -851,180 +828,184 @@
             if (state.progression.length > 0) {
                 clearBtn.classList.remove('hidden');
                 document.getElementById('clear-btn-text').innerText = state.clearConfirm ? "¿Confirmar?" : "Borrar";
-                clearBtn.className = state.clearConfirm 
-                    ? "text-xs text-red-600 dark:text-red-400 font-bold bg-red-100 dark:bg-red-900/20 px-2 py-0.5 rounded flex items-center gap-1 transition-all"
-                    : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20";
-                
+                clearBtn.className = state.clearConfirm ? "text-xs text-red-600 dark:text-red-400 font-bold bg-red-100 dark:bg-red-900/20 px-2 py-0.5 rounded flex items-center gap-1 transition-all" : "text-xs text-slate-500 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1 transition-all px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20";
                 container.innerHTML = '';
                 state.progression.forEach((item, idx) => {
-                    // Add connector line if not the first item
                     if (idx > 0) {
-                        const connector = document.createElement('div');
-                        connector.className = "flex items-center justify-center shrink-0 opacity-40";
-                        connector.innerHTML = `
-                            <div class="w-4 h-0.5 bg-slate-400 dark:bg-slate-500 rounded"></div>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 dark:text-slate-500 -ml-1.5"></i>
-                        `;
-                        container.appendChild(connector);
+                        const c = document.createElement('div'); c.className = "flex items-center justify-center shrink-0 opacity-40"; c.innerHTML = `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>`; container.appendChild(c);
                     }
-
                     const theme = FAMILY_THEMES[item.family] || FAMILY_THEMES["Escala Mayor"];
                     const div = document.createElement('div');
-                    
                     const playingClass = (state.isPlaying && state.playingIndex === idx) ? 'playing-card' : '';
+                    div.className = `min-w-[240px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg transition-transform ${playingClass}`;
                     
-                    div.className = `min-w-[220px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg transition-transform ${playingClass}`;
-                    
-                    let notesHTML = '';
-                    item.notes.forEach(n => {
-                        notesHTML += `<span class="text-[9px] font-mono bg-slate-100 dark:bg-slate-900 px-1 rounded text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${n}</span>`;
-                    });
+                    let melodyText = item.melody.map(m => {
+                        const n = getNoteNameFromInterval(item.root, m.interval);
+                        return m.octaveOffset > 0 ? `${n}↑` : n;
+                    }).join(' - ');
 
                     div.innerHTML = `
                         <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="regenerateMelody(${item.id})" class="p-1 hover:bg-violet-100 dark:hover:bg-violet-900/30 rounded text-slate-400 hover:text-violet-500" title="Regenerar"><i data-lucide="dices" class="w-3.5 h-3.5"></i></button>
                             <button onclick="playProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-800 dark:hover:text-white"><i data-lucide="volume-2" class="w-3.5 h-3.5"></i></button>
                             <button onclick="removeProgressionItem(${item.id})" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 dark:hover:text-red-400"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
                         </div>
-                        <div class="mb-2">
-                            <span class="bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded mr-2">${idx + 1}</span>
-                            <div class="inline-block">
-                                <div class="text-[10px] font-bold uppercase ${theme.color}">${item.degree}º Modo <span class="text-slate-400 dark:text-slate-500 font-normal normal-case">de</span></div>
-                                <div class="text-[10px] ${theme.color} opacity-80 leading-none">${item.family}</div>
-                            </div>
-                        </div>
+                        <div class="mb-2"><span class="bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-[9px] font-bold px-1.5 py-0.5 rounded mr-2">${idx + 1}</span><div class="inline-block"><div class="text-[10px] font-bold uppercase ${theme.color}">${item.degree}º Modo</div><div class="text-[10px] ${theme.color} opacity-80 leading-none">${item.family}</div></div></div>
                         <div class="text-2xl font-black text-slate-900 dark:text-white mb-1">${item.chord}</div>
                         <div class="text-[10px] text-slate-500 dark:text-slate-400 mb-3 font-medium tracking-wide truncate" title="${item.mode}">${item.mode}</div>
-                        <div class="flex flex-wrap gap-1">${notesHTML}</div>
+                        <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700"><div class="text-[9px] uppercase text-violet-500 font-bold mb-1 flex items-center gap-1"><i data-lucide="music" class="w-3 h-3"></i> Melodía Aleatoria</div><div class="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded border border-slate-200 dark:border-slate-700 text-center">${melodyText}</div></div>
                     `;
                     container.appendChild(div);
                 });
             } else {
                 clearBtn.classList.add('hidden');
-                container.innerHTML = `
-                    <div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center">
-                        <i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i>
-                        <p class="text-sm font-medium">Lienzo vacío</p>
-                        <p class="text-xs mt-1 opacity-70">Agrega acordes desde el mapa o inspector para construir tu idea.</p>
-                    </div>`;
+                container.innerHTML = `<div class="w-full text-center py-10 text-slate-400 dark:text-slate-600 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center justify-center"><i data-lucide="music" class="w-8 h-8 mb-2 opacity-50"></i><p class="text-sm font-medium">Lienzo vacío</p></div>`;
             }
             lucide.createIcons();
         }
 
-        function addToProgression(data) {
-            const details = getStrictScaleDetails(data.root, data.intervals);
-            state.progression.push({
-                id: Date.now(),
-                root: data.root,
-                mode: data.mode,
-                chord: data.chord,
-                family: data.family,
-                degree: data.degree,
-                notes: details.notes,
-                intervals: data.intervals
-            });
-            renderProgression();
-            playChord(data.root, data.intervals);
-            const c = document.getElementById('progression-container');
-            setTimeout(() => c.scrollLeft = c.scrollWidth, 100);
-        }
-
-        function removeProgressionItem(id) {
-            state.progression = state.progression.filter(p => p.id !== id);
-            renderProgression();
-        }
-
-        function clearProgression() {
-            if (state.clearConfirm) {
-                state.progression = [];
-                state.clearConfirm = false;
-                renderProgression();
-            } else {
-                state.clearConfirm = true;
-                renderProgression();
-                setTimeout(() => { state.clearConfirm = false; renderProgression(); }, 3000);
-            }
-        }
-
-        // --- FILE IO ---
-        function exportSession() {
-            if(state.progression.length === 0) {
-                alert("La progresión está vacía.");
-                return;
-            }
-            const dataStr = JSON.stringify(state.progression, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'modal_session.json';
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-
-        function importSession(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const loaded = JSON.parse(e.target.result);
-                    if(Array.isArray(loaded)) {
-                        state.progression = loaded;
-                        renderProgression();
-                    } else {
-                        alert("Formato inválido.");
-                    }
-                } catch(err) {
-                    alert("Error al leer el archivo.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // --- ACTION HANDLERS (Global scope) ---
-        window.addHomeToProgression = () => {
+        window.update = function() {
             const rootIdx = getNoteIndex(state.root);
-            const mode = ALL_MODES_FLAT[state.mode];
-            const chord = getChordSymbol(state.root, mode.intervals);
-            addToProgression({ ...mode, root: state.root, mode: state.mode, chord });
-        };
-        
-        window.playHome = () => {
-            const mode = ALL_MODES_FLAT[state.mode];
-            playChord(state.root, mode.intervals);
-        };
+            const homeMode = ALL_MODES_FLAT[state.mode];
+            const homeIndices = getScaleNotesIndices(rootIdx, homeMode.intervals);
+            const homeDetails = getStrictScaleDetails(state.root, homeMode.intervals);
+            const homeChord = getChordSymbol(state.root, homeMode.intervals);
+            const homeData = { ...homeMode, root: state.root, mode: state.mode, indices: homeIndices, notes: homeDetails.notes, formula: homeDetails.formula, chord: homeChord };
 
-        window.addInspectorToProgression = () => {
-            if(state.hoveredNode) addToProgression(state.hoveredNode);
-        };
-        
-        window.goToInspector = () => {
-            if(state.hoveredNode) {
-                state.root = state.hoveredNode.root;
-                state.mode = state.hoveredNode.mode;
-                state.hoveredNode = null;
-                document.getElementById('root-select').value = state.root;
-                document.getElementById('mode-select').value = state.mode;
-                update();
+            let layers = { relatives: [], close: [], distant: [] };
+            NOTES_SHARP.forEach((r, rIdx) => {
+                Object.keys(ALL_MODES_FLAT).forEach(mName => {
+                    if (r === state.root && mName === state.mode) return;
+                    const mData = ALL_MODES_FLAT[mName];
+                    const tIndices = getScaleNotesIndices(rIdx, mData.intervals);
+                    const rel = analyzeRelationship(homeIndices, tIndices);
+                    const tChord = getChordSymbol(r, mData.intervals);
+                    const node = { root: r, mode: mName, family: mData.family, degree: mData.degree, indices: tIndices, diff: rel.diff, diffIndices: rel.diffIndices, hasTetra: rel.hasTetra, chord: tChord, intervals: mData.intervals };
+                    if(rel.diff === 0) layers.relatives.push(node); else if(rel.diff === 1) layers.close.push(node); else if(rel.diff === 2) layers.distant.push(node);
+                });
+            });
+            window.renderMap(homeData, layers);
+            window.renderInspector();
+            const btnHeader = document.getElementById('header-enharmonic-btn');
+            if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); }
+        }
+
+        window.updateTransportUI = function() {
+            const btnPlay = document.getElementById('btn-play-all');
+            if (state.isPlaying) {
+                btnPlay.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i>';
+                btnPlay.classList.replace('bg-green-600', 'bg-yellow-600');
+            } else {
+                btnPlay.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i>';
+                btnPlay.classList.replace('bg-yellow-600', 'bg-green-600');
             }
-        };
+            const btnLoop = document.getElementById('btn-loop');
+            if (state.isLooping) btnLoop.classList.add('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
+            else btnLoop.classList.remove('text-green-500', 'bg-green-100', 'dark:bg-green-900/30');
 
-        window.playInspector = (type) => {
-            if(state.hoveredNode) playChord(state.hoveredNode.root, state.hoveredNode.intervals, type);
-        };
+            const btnMelody = document.getElementById('btn-melody');
+            if (state.isMelodyActive) {
+                btnMelody.classList.add('text-violet-600', 'bg-violet-100', 'dark:bg-violet-900/30', 'ring-2', 'ring-violet-500');
+                btnMelody.classList.remove('text-slate-500', 'bg-slate-100', 'dark:bg-slate-800');
+                document.getElementById('melody-strip').classList.remove('hidden');
+            } else {
+                btnMelody.classList.remove('text-violet-600', 'bg-violet-100', 'dark:bg-violet-900/30', 'ring-2', 'ring-violet-500');
+                btnMelody.classList.add('text-slate-500', 'bg-slate-100', 'dark:bg-slate-800');
+                document.getElementById('melody-strip').classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
 
-        window.playProgressionItem = (id) => {
-            const item = state.progression.find(p => p.id === id);
-            if(item) playChord(item.root, item.intervals);
-        };
+        window.startSequence = function() {
+            if (state.progression.length === 0) return;
+            if (state.isPlaying) window.stopSequence(); 
+            state.isPlaying = true;
+            state.playingIndex = 0;
+            window.updateTransportUI();
+            window.playNextStep();
+        }
 
-        window.removeProgressionItem = removeProgressionItem;
-        window.toggleEnharmonicInspector = toggleEnharmonicInspector;
-        window.exportSession = exportSession;
-        window.importSession = importSession;
+        window.stopSequence = function() {
+            state.isPlaying = false;
+            state.playingIndex = -1;
+            clearTimeout(state.playbackTimeout);
+            window.updateTransportUI();
+            window.updateProgressionVisuals();
+            document.getElementById('melody-note-display').innerText = "...";
+        }
 
-        // Start
+        window.updateProgressionVisuals = function() {
+            const container = document.getElementById('progression-container');
+            Array.from(container.children).forEach((card, idx) => {
+                if (idx === state.playingIndex && state.isPlaying) card.classList.add('playing-card');
+                else card.classList.remove('playing-card');
+            });
+        }
+
+        window.playNextStep = function() {
+            if (!state.isPlaying) return;
+            if (state.playingIndex >= state.progression.length) {
+                if (state.isLooping) state.playingIndex = 0;
+                else { window.stopSequence(); return; }
+            }
+            const item = state.progression[state.playingIndex];
+            window.updateProgressionVisuals();
+            const container = document.getElementById('progression-container');
+            const card = container.children[state.playingIndex];
+            if(card) {
+                const offset = card.offsetLeft - container.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2);
+                container.scrollTo({ left: offset, behavior: 'smooth' });
+            }
+            const beatDur = 60 / state.bpm;
+            const chordDur = beatDur * 4; 
+            playChord(item.root, item.intervals, 'chord', chordDur);
+            if (state.isMelodyActive) {
+                const now = audioCtx.currentTime;
+                playStoredMelody(item.root, item.melody, now, chordDur);
+                const melodyText = item.melody.map(m => getNoteNameFromInterval(item.root, m.interval)).join(' ');
+                document.getElementById('melody-note-display').innerText = melodyText;
+            } else { document.getElementById('melody-note-display').innerText = "..."; }
+            state.playbackTimeout = setTimeout(() => {
+                state.playingIndex++;
+                window.playNextStep();
+            }, chordDur * 1000);
+        }
+
+        function init() {
+            const rSel = document.getElementById('root-select');
+            ROOT_OPTIONS.forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.innerText = r; rSel.appendChild(opt); });
+            const mSel = document.getElementById('mode-select');
+            Object.keys(MODES_DATA).forEach(family => {
+                let grp = document.createElement('optgroup'); grp.label = family;
+                Object.keys(MODES_DATA[family]).forEach(m => { let opt = document.createElement('option'); opt.value = m; opt.innerText = m; grp.appendChild(opt); });
+                mSel.appendChild(grp);
+            });
+            rSel.addEventListener('change', e => { state.root = e.target.value; window.update(); });
+            mSel.addEventListener('change', e => { state.mode = e.target.value; window.update(); });
+            document.getElementById('header-enharmonic-btn').addEventListener('click', toggleEnharmonicHeader);
+            document.getElementById('clear-progression-btn').addEventListener('click', clearProgression);
+            document.getElementById('btn-play-all').addEventListener('click', () => { if(state.isPlaying) window.stopSequence(); else window.startSequence(); });
+            document.getElementById('btn-stop').addEventListener('click', window.stopSequence);
+            document.getElementById('btn-loop').addEventListener('click', () => { state.isLooping = !state.isLooping; window.updateTransportUI(); });
+            document.getElementById('btn-melody').addEventListener('click', () => { state.isMelodyActive = !state.isMelodyActive; window.updateTransportUI(); });
+            document.getElementById('bpm-input').addEventListener('change', (e) => { let val = parseInt(e.target.value); if(val < 40) val = 40; if(val > 240) val = 240; state.bpm = val; });
+            document.getElementById('vol-chord').addEventListener('input', (e) => state.volChord = parseFloat(e.target.value));
+            document.getElementById('vol-melody').addEventListener('input', (e) => state.volMelody = parseFloat(e.target.value));
+            document.getElementById('btn-export').addEventListener('click', exportSession);
+            document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-upload').click());
+            document.getElementById('file-upload').addEventListener('change', importSession);
+            document.getElementById('theme-toggle').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); setTimeout(() => lucide.createIcons(), 100); });
+            const helpModal = document.getElementById('help-modal');
+            document.getElementById('help-toggle').addEventListener('click', () => helpModal.classList.add('open'));
+            document.getElementById('close-help').addEventListener('click', () => helpModal.classList.remove('open'));
+            document.getElementById('close-help-btn').addEventListener('click', () => helpModal.classList.remove('open'));
+            document.body.addEventListener('click', initAudio, { once: true });
+            
+            window.update();
+            lucide.createIcons();
+        }
+
         init();
-
     </script>
 </body>
 </html>
