@@ -45,23 +45,16 @@
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #cbd5e1; border-radius: 2px; }
         .dark input[type=range]::-webkit-slider-runnable-track { background: #475569; }
 
-        /* PIANO STYLES FIXED */
-        .piano-key { transition: background-color 0.1s ease, transform 0.1s; }
-        /* IMPORTANT: Use background-color for divs */
-        .piano-key.active-chord { background-color: #8b5cf6 !important; box-shadow: 0 0 15px #8b5cf6; z-index: 20; transform: translateY(2px); } /* Violet */
-        .piano-key.active-melody { background-color: #06b6d4 !important; box-shadow: 0 0 15px #06b6d4; z-index: 20; transform: translateY(2px); } /* Cyan */
-
-        /* Toast */
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #f8fafc; padding: 10px 24px; border-radius: 99px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200; pointer-events: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1); }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        /* Piano Styles */
+        .piano-key { transition: background-color 0.05s, fill 0.05s; }
+        .piano-key.active-chord { background-color: #8b5cf6 !important; border-color: #7c3aed !important; box-shadow: 0 0 10px #8b5cf6; z-index: 20; transform: translateY(2px); } 
+        .piano-key.active-melody { background-color: #06b6d4 !important; border-color: #0891b2 !important; box-shadow: 0 0 10px #06b6d4; z-index: 20; transform: translateY(2px); }
 
         /* Scrollbar */
         ::-webkit-scrollbar { height: 6px; width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen p-3 md:p-6 bg-slate-50 text-slate-900 dark:bg-[#0f172a] dark:text-e2e8f0 transition-colors duration-300">
@@ -72,16 +65,11 @@
         <div class="lg:col-span-12 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-200 dark:border-slate-800 pb-4 md:pb-6 transition-colors duration-300 gap-4">
             <div class="flex items-center justify-between w-full md:w-auto gap-4">
                 <h1 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 dark:from-amber-200 dark:via-orange-300 dark:to-rose-400 bg-clip-text text-transparent uppercase tracking-tighter leading-tight">
-                    Laboratorio de Navegación Modal
+                    Laboratorio Modal
                 </h1>
                 <div class="flex gap-2 shrink-0">
-                    <button id="help-toggle" class="p-2.5 rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95" title="Guía Detallada">
-                        <i data-lucide="help-circle" class="w-5 h-5"></i>
-                    </button>
-                    <button id="theme-toggle" class="p-2.5 rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95" title="Cambiar Tema">
-                        <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
-                        <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
-                    </button>
+                    <button id="help-toggle" class="p-2.5 rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95"><i data-lucide="help-circle" class="w-5 h-5"></i></button>
+                    <button id="theme-toggle" class="p-2.5 rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95"><i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i></button>
                 </div>
             </div>
             
@@ -89,17 +77,13 @@
                 <div class="flex flex-col flex-1">
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-[10px] uppercase font-bold text-slate-500">Tónica</label>
-                        <button id="header-enharmonic-btn" class="hidden text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-500/30 transition-colors active:bg-blue-200">
-                            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Enarmónico
-                        </button>
+                        <button id="header-enharmonic-btn" class="hidden text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-500/30 transition-colors active:bg-blue-200"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Enarmónico</button>
                     </div>
-                    <select id="root-select" class="h-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none w-full text-slate-900 dark:text-white shadow-sm transition-colors">
-                    </select>
+                    <select id="root-select" class="h-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none w-full text-slate-900 dark:text-white shadow-sm transition-colors"></select>
                 </div>
                 <div class="flex flex-col flex-[2]">
                     <label class="text-[10px] uppercase font-bold text-slate-500 mb-1">Modo Base</label>
-                    <select id="mode-select" class="h-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white shadow-sm transition-colors">
-                    </select>
+                    <select id="mode-select" class="h-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white shadow-sm transition-colors"></select>
                 </div>
             </div>
         </div>
@@ -113,10 +97,10 @@
                 <div class="w-[55%] h-[55%] rounded-full border border-blue-400/30"></div>
                 <div class="w-[85%] h-[85%] rounded-full border border-slate-600/30"></div>
             </div>
-            <div class="absolute top-4 left-4 text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-600 space-y-1 z-10 pointer-events-none">
-                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Relativos (0 Diferencia)</div>
-                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Cercanos (1 Diferencia)</div>
-                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></div>Lejanos (2 Diferencias)</div>
+            <div class="absolute top-4 left-4 text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-600 space-y-1 z-10 pointer-events-none hidden sm:block">
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Rel (0 Dif)</div>
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Cer (1 Dif)</div>
+                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></div>Lej (2 Dif)</div>
             </div>
             <div id="home-node-container" class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"></div>
             <div id="orbit-system"></div>
@@ -124,21 +108,16 @@
 
         <!-- INSPECTOR LATERAL -->
         <div class="lg:col-span-4 flex flex-col gap-4">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 shadow-lg flex-1 flex flex-col relative transition-colors duration-300 min-h-[300px]">
-                <h2 class="text-xs font-bold uppercase text-slate-400 flex items-center gap-2 mb-4">
-                    <i data-lucide="info" class="w-4 h-4"></i> Inspector
-                </h2>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 shadow-lg flex-1 flex flex-col relative transition-colors duration-300 min-h-[250px]">
+                <h2 class="text-xs font-bold uppercase text-slate-400 flex items-center gap-2 mb-4"><i data-lucide="info" class="w-4 h-4"></i> Inspector</h2>
                 <div id="inspector-content" class="flex-1 flex flex-col justify-center">
-                    <div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60 py-8">
-                        <i data-lucide="touchpad" class="w-12 h-12 mb-2"></i>
-                        <p class="text-sm">Pasa el mouse sobre un círculo</p>
-                    </div>
+                    <div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60 py-8"><i data-lucide="touchpad" class="w-12 h-12 mb-2"></i><p class="text-sm text-center px-4">Toca un nodo</p></div>
                 </div>
             </div>
         </div>
 
         <!-- WORKSTATION -->
-        <div class="lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-lg transition-colors duration-300 mb-20 md:mb-0">
+        <div class="lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-lg transition-colors duration-300 mb-24 md:mb-0">
             <!-- Toolbar -->
             <div class="flex flex-col gap-4 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div class="flex items-center justify-between">
@@ -146,26 +125,17 @@
                     <div id="progression-count" class="text-xs text-slate-400 font-mono">0 Pasos</div>
                 </div>
                 <div class="flex flex-wrap gap-3 items-center justify-between">
-                    <!-- Controls -->
-                    <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
-                        <button id="btn-play-all" class="p-3 bg-green-600 hover:bg-green-500 text-white rounded-xl shadow active:scale-95 shrink-0" title="Reproducir"><i data-lucide="play" class="w-5 h-5 fill-current"></i></button>
-                        <button id="btn-stop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow active:scale-95 shrink-0" title="Detener"><i data-lucide="square" class="w-5 h-5 fill-current"></i></button>
-                        <button id="btn-loop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-xl shadow active:scale-95 shrink-0" title="Loop"><i data-lucide="repeat" class="w-5 h-5"></i></button>
+                    <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full no-scrollbar">
+                        <button id="btn-play-all" class="p-3 bg-green-600 hover:bg-green-500 text-white rounded-xl shadow active:scale-95 shrink-0"><i data-lucide="play" class="w-5 h-5 fill-current"></i></button>
+                        <button id="btn-stop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow active:scale-95 shrink-0"><i data-lucide="square" class="w-5 h-5 fill-current"></i></button>
+                        <button id="btn-loop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-xl shadow active:scale-95 shrink-0"><i data-lucide="repeat" class="w-5 h-5"></i></button>
                         <div class="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1 shrink-0"></div>
-                        <button id="btn-melody" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-xl shadow-sm active:scale-95 shrink-0 transition-colors" title="Melodía">
-                            <i data-lucide="dices" class="w-5 h-5"></i><span class="text-xs font-bold uppercase">Melodía</span>
-                        </button>
-                        <!-- Rhythm Selector -->
+                        <button id="btn-melody" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-xl shadow-sm active:scale-95 shrink-0 transition-colors"><i data-lucide="dices" class="w-5 h-5"></i><span class="text-xs font-bold uppercase">Melodía</span></button>
                         <div class="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                              <i data-lucide="activity" class="w-4 h-4 text-slate-400"></i>
-                             <select id="rhythm-select" class="bg-transparent text-xs font-bold text-slate-600 dark:text-slate-300 outline-none cursor-pointer">
-                                 <option value="block">Bloque</option>
-                                 <option value="arpeggio">Arpegio</option>
-                                 <option value="alberti">Alberti</option>
-                             </select>
+                             <select id="rhythm-select" class="bg-transparent text-xs font-bold text-slate-600 dark:text-slate-300 outline-none cursor-pointer"><option value="block">Bloque</option><option value="arpeggio">Arpegio</option><option value="alberti">Alberti</option></select>
                         </div>
                     </div>
-                    <!-- Actions -->
                     <div class="flex items-center gap-2 ml-auto">
                         <button id="clear-progression-btn" class="hidden px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-800 flex items-center gap-1"><i data-lucide="trash-2" class="w-4 h-4"></i> <span id="clear-btn-text">Borrar</span></button>
                         <div class="flex gap-1">
@@ -175,7 +145,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Mix & Tempo -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700 items-center">
                     <div class="flex items-center gap-2"><i data-lucide="piano" class="w-4 h-4 text-slate-400"></i><input type="range" id="vol-chord" min="0" max="1" step="0.1" value="0.7" class="w-full"></div>
                     <div class="flex items-center gap-2"><i data-lucide="music" class="w-4 h-4 text-violet-400"></i><input type="range" id="vol-melody" min="0" max="1" step="0.1" value="0.6" class="w-full"></div>
@@ -196,9 +165,7 @@
 
             <!-- Virtual Piano -->
             <div class="mt-6 border-t border-slate-100 dark:border-slate-800 pt-4 flex justify-center overflow-x-auto">
-                 <div id="piano-container" class="relative h-28 w-full min-w-[600px] max-w-4xl bg-slate-100 dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-inner">
-                     <!-- Keys generated by JS -->
-                 </div>
+                 <div id="piano-container" class="relative h-28 w-full min-w-[600px] max-w-4xl bg-slate-100 dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-inner"></div>
             </div>
         </div>
     </div>
@@ -206,18 +173,98 @@
     <!-- TOAST -->
     <div id="toast" class="toast">Notificación</div>
 
-    <!-- HELP MODAL (Preserved) -->
+    <!-- HELP MODAL -->
     <div id="help-modal" class="modal fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div class="modal-content bg-white dark:bg-slate-900 w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[85vh]">
-             <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950 sticky top-0 z-10"><h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="map" class="w-5 h-5 text-amber-500"></i> Guía Detallada</h2><button id="close-help" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button></div>
-             <div class="p-8 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-10 leading-relaxed">
-                 <section><div class="flex gap-4 items-start mb-2"><div class="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl text-amber-600 dark:text-amber-400 shrink-0"><i data-lucide="home" class="w-6 h-6"></i></div><div><h3 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">El Centro Modal: Tu "Hogar" Sonoro</h3><p class="text-base">En la composición modal, no pensamos solo en "tono", sino en un <strong>Centro de Gravedad Tonal</strong>...</p></div></div></section>
-                 <hr class="border-slate-200 dark:border-slate-800"/>
-                 <section><h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2"><i data-lucide="orbit" class="w-5 h-5 text-blue-500"></i>Jerarquía de Proximidad Modal</h3><p class="text-sm mb-4">Los modos se organizan visualmente según su distancia armónica...</p></section>
-                 <hr class="border-slate-200 dark:border-slate-800"/>
-                 <section><div class="flex gap-4 items-start"><div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400 shrink-0"><i data-lucide="link" class="w-6 h-6"></i></div><div><h3 class="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Principio de Intersección de Tetracordios</h3><p class="text-base mb-4">El <strong>Principio de Intersección de Tetracordios</strong> establece que para una modulación fluida, deben existir <strong>4 notas seguidas (consecutivas)</strong>...</p><div class="bg-white dark:bg-slate-950 p-5 rounded-xl border border-slate-200 dark:border-slate-800 font-mono text-sm shadow-sm"><p class="mb-3 text-xs uppercase font-bold text-slate-400 tracking-wide">Ejemplo 1: ¡SÍ Conecta!</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-4"><div><span class="block text-slate-500 mb-1 text-[10px] uppercase">G Menor (Eólico)</span><div class="flex flex-wrap gap-1 items-center"><span class="text-slate-400">G</span><span class="text-slate-400">A</span><div class="flex bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-200 dark:border-emerald-800"><span>Bb</span><span class="mx-1">-</span><span>C</span><span class="mx-1">-</span><span>D</span><span class="mx-1">-</span><span>Eb</span></div><span class="text-slate-400">F</span></div></div><div><span class="block text-slate-500 mb-1 text-[10px] uppercase">D Mixolidio b2 #2 b6</span><div class="flex flex-wrap gap-1 items-center"><div class="flex bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-200 dark:border-emerald-800"><span>D</span><span class="mx-1">-</span><span>Eb</span></div><span class="text-slate-400">F#</span><span class="text-slate-400">G</span><span class="text-slate-400">A</span><div class="flex bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 px-2 py-0.5 rounded font-bold border border-emerald-200 dark:border-emerald-800"><span>Bb</span><span class="mx-1">-</span><span>C</span></div></div></div></div></div></div></div></section>
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950 sticky top-0 z-10"><h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5 text-amber-500"></i> Manual de Teoría y Uso</h2><button id="close-help" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <div class="p-8 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-12 leading-relaxed text-sm md:text-base">
+                
+                <!-- CONCEPTOS FUNDAMENTALES -->
+                <section>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">1. Fundamentos de la Navegación Modal</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-amber-600 dark:text-amber-400 mb-1">Gravedad Tonal y Centro Modal</h4>
+                            <p>A diferencia de la tonalidad funcional tradicional, la armonía modal se basa en el establecimiento de un <strong>Centro de Gravedad</strong> (Home). El nodo central en la interfaz representa este punto de reposo. Toda excursión armónica hacia los nodos periféricos genera tensión que, naturalmente, tiende a resolver regresando al centro.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-600 dark:text-blue-400 mb-1">Isomorfismo y Distancia Armónica</h4>
+                            <p>Los modos se organizan visualmente mediante anillos concéntricos que representan la "distancia" o afinidad armónica respecto al centro:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 pl-2 opacity-90">
+                                <li><strong>Anillo 1 (Relativos):</strong> Modos que comparten exactamente las mismas notas (pitch class set). La distancia es 0.</li>
+                                <li><strong>Anillo 2 (Cercanos):</strong> Modos que difieren en una sola nota. Permiten modulaciones suaves y cromatismos sutiles.</li>
+                                <li><strong>Anillo 3 (Lejanos):</strong> Modos con dos notas de diferencia. Su uso genera contrastes armónicos más marcados y dramáticos.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PRINCIPIO DE INTERSECCIÓN -->
+                <section>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">2. Principio de Intersección de Tetracordios</h3>
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <p class="mb-4">
+                            Este principio establece que para garantizar una <strong>modulación fluida</strong> (smooth voice leading) entre dos modos, debe existir una secuencia de <strong>4 notas consecutivas</strong> (un tetracordio) en la escala de origen que también esté presente en la escala de destino.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- CASO POSITIVO -->
+                            <div class="bg-white dark:bg-slate-950 p-4 rounded-lg border-l-4 border-emerald-500 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2 text-emerald-600 font-bold uppercase text-xs tracking-wider"><i data-lucide="check-circle" class="w-4 h-4"></i> Conexión Fluida</div>
+                                <p class="text-xs mb-2 text-slate-500">Ejemplo: <strong>G Eólico</strong> a <strong>D Mixolidio b2 b6</strong></p>
+                                <div class="space-y-2 font-mono text-xs">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="opacity-50">G A</span>
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-1 rounded font-bold">Bb C D Eb</span>
+                                        <span class="opacity-50">F</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-1 rounded font-bold">D Eb</span>
+                                        <span class="opacity-50">F# G A</span>
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-1 rounded font-bold">Bb C</span>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-[10px] leading-tight opacity-70">
+                                    El bloque <strong>Bb-C-D-Eb</strong> existe en ambas escalas (en D Mixolidio b2 b6 envuelve la octava), permitiendo un puente melódico perfecto.
+                                </p>
+                            </div>
+
+                            <!-- CASO NEGATIVO -->
+                            <div class="bg-white dark:bg-slate-950 p-4 rounded-lg border-l-4 border-red-400 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2 text-red-500 font-bold uppercase text-xs tracking-wider"><i data-lucide="x-circle" class="w-4 h-4"></i> Ruptura de Enlace</div>
+                                <p class="text-xs mb-2 text-slate-500">Ejemplo: <strong>G Eólico</strong> a <strong>C Mayor</strong></p>
+                                <div class="space-y-2 font-mono text-xs">
+                                    <div class="flex flex-wrap gap-1 text-slate-400">G A <strong class="text-red-500">Bb</strong> C D <strong class="text-red-500">Eb</strong> F</div>
+                                    <div class="flex flex-wrap gap-1 text-slate-400">C D <strong class="text-slate-600 dark:text-slate-200">E</strong> F G A <strong class="text-slate-600 dark:text-slate-200">B</strong></div>
+                                </div>
+                                <p class="mt-2 text-[10px] leading-tight opacity-70">
+                                    Aunque comparten notas (C, D, F, G, A), las alteraciones (Bb vs B, Eb vs E) rompen cualquier secuencia de 4 notas seguidas. La transición será abrupta.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. WORKFLOW -->
+                <section>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">3. Flujo de Trabajo Profesional</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-4">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-xs font-bold shrink-0">1</span>
+                            <p class="text-sm"><strong>Configuración Inicial:</strong> Define tu Tónica y Modo base en el panel superior.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-xs font-bold shrink-0">2</span>
+                            <p class="text-sm"><strong>Análisis:</strong> Usa el mouse para explorar nodos. El <strong>Inspector</strong> te revelará las relaciones interválicas y si existe conexión fluida.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-xs font-bold shrink-0">3</span>
+                            <p class="text-sm"><strong>Secuenciación:</strong> Agrega acordes a la Workstation. Experimenta con la <strong>Melodía Aleatoria</strong> y los diferentes patrones rítmicos.</p>
+                        </div>
+                    </div>
+                </section>
             </div>
-            <div class="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-center sticky bottom-0"><button id="close-help-btn" class="w-full sm:w-auto px-8 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold rounded-xl transition-colors text-sm shadow-lg">Entendido, ¡A Componer!</button></div>
+            <div class="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-center sticky bottom-0"><button id="close-help-btn" class="w-full sm:w-auto px-8 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold rounded-xl transition-colors text-sm shadow-lg">Entendido</button></div>
         </div>
     </div>
 
@@ -227,14 +274,7 @@
         const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
         const ROOT_OPTIONS = ['C', 'C#', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
         const ENHARMONIC_MAP = { 'C#':'Db', 'Db':'C#', 'D#':'Eb', 'Eb':'D#', 'F#':'Gb', 'Gb':'F#', 'G#':'Ab', 'Ab':'G#', 'A#':'Bb', 'Bb':'A#', 'B':'Cb', 'Cb':'B', 'E':'Fb', 'Fb':'E', 'E#':'F', 'F':'E#', 'B#':'C', 'C':'B#' };
-
-        const FAMILY_THEMES = {
-            "Escala Mayor": { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500", border: "border-amber-500", glow: "shadow-amber-500/50", gradient: "from-amber-100 to-amber-50 dark:from-amber-500/20 dark:to-amber-900/5" },
-            "Menor Armónica": { color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500", border: "border-rose-500", glow: "shadow-rose-500/50", gradient: "from-rose-100 to-rose-50 dark:from-rose-500/20 dark:to-rose-900/5" },
-            "Menor Melódica": { color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500", border: "border-emerald-500", glow: "shadow-emerald-500/50", gradient: "from-emerald-100 to-emerald-50 dark:from-emerald-500/20 dark:to-emerald-900/5" },
-            "Mayor Armónica": { color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500", border: "border-violet-500", glow: "shadow-violet-500/50", gradient: "from-violet-100 to-violet-50 dark:from-violet-500/20 dark:to-violet-900/5" }
-        };
-
+        const FAMILY_THEMES = { "Escala Mayor": { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500", border: "border-amber-500", glow: "shadow-amber-500/50", gradient: "from-amber-100 to-amber-50 dark:from-amber-500/20 dark:to-amber-900/5" }, "Menor Armónica": { color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500", border: "border-rose-500", glow: "shadow-rose-500/50", gradient: "from-rose-100 to-rose-50 dark:from-rose-500/20 dark:to-rose-900/5" }, "Menor Melódica": { color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500", border: "border-emerald-500", glow: "shadow-emerald-500/50", gradient: "from-emerald-100 to-emerald-50 dark:from-emerald-500/20 dark:to-emerald-900/5" }, "Mayor Armónica": { color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500", border: "border-violet-500", glow: "shadow-violet-500/50", gradient: "from-violet-100 to-violet-50 dark:from-violet-500/20 dark:to-violet-900/5" } };
         const MODES_DATA = {
             "Escala Mayor": { "Jónico (Mayor)": [0,2,4,5,7,9,11], "Dórico": [0,2,3,5,7,9,10], "Frigio": [0,1,3,5,7,8,10], "Lidio": [0,2,4,6,7,9,11], "Mixolidio": [0,2,4,5,7,9,10], "Eólico (Menor)": [0,2,3,5,7,8,10], "Locrio": [0,1,3,5,6,8,10] },
             "Menor Armónica": { "Eólico \u266E7": [0,2,3,5,7,8,11], "Locrio \u266E6": [0,1,3,5,6,9,10], "Jónico #5": [0,2,4,5,8,9,11], "Dórico #4": [0,2,3,6,7,9,10], "Mixolidio b2 b6": [0,1,3,4,7,8,10], "Lidio #2": [0,3,4,6,7,9,11], "Locrio b4 bb7": [0,1,3,4,6,8,9] },
@@ -242,305 +282,52 @@
             "Mayor Armónica": { "Jónico b6": [0,2,4,5,7,8,11], "Locrio \u266E2 \u266E6": [0,2,3,5,6,9,10], "Mixolidio b2 #2 b6": [0,1,3,4,7,8,10], "Dórico #4 \u266E7": [0,2,3,6,7,9,11], "Mixolidio b2": [0,1,4,5,7,9,10], "Lidio #2 #5": [0,3,4,6,8,9,11], "Locrio bb7": [0,1,3,5,6,8,9] }
         };
 
-        let ALL_MODES_FLAT = {};
-        Object.keys(MODES_DATA).forEach(family => {
-            Object.keys(MODES_DATA[family]).forEach((mode, idx, arr) => {
-                ALL_MODES_FLAT[mode] = { family, intervals: MODES_DATA[family][mode], degree: idx + 1, degreeTotal: arr.length };
-            });
-        });
-
-        // STATE
+        let ALL_MODES_FLAT = {}; Object.keys(MODES_DATA).forEach(family => { Object.keys(MODES_DATA[family]).forEach((mode, idx, arr) => { ALL_MODES_FLAT[mode] = { family, intervals: MODES_DATA[family][mode], degree: idx + 1, degreeTotal: arr.length }; }); });
         let state = { root: 'C', mode: 'Jónico (Mayor)', hoveredNode: null, progression: [], clearConfirm: false, bpm: 90, isPlaying: false, isLooping: false, isMelodyActive: false, volChord: 0.7, volMelody: 0.6, rhythmPattern: 'block', playingIndex: -1, playbackTimeout: null };
         let audioCtx = null;
 
-        // UTILS
         function getNoteIndex(n) { let i = NOTES_SHARP.indexOf(n); return i === -1 ? NOTES_FLAT.indexOf(n) : i; }
         function getScaleNotesIndices(r, ints) { return ints.map(i => (r + i) % 12); }
         function getNoteNameFromInterval(r, i) { const idx = (getNoteIndex(r) + i) % 12; return NOTES_SHARP[idx]; }
-        function getStrictScaleDetails(rootNote, intervals) {
-            const ALPHABET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'], NATURALS = { 'C':0, 'D':2, 'E':4, 'F':5, 'G':7, 'A':9, 'B':11 };
-            let rootLetter = rootNote.charAt(0), rootVal = getNoteIndex(rootNote), notes = [], formula = [], rootLetterIdx = ALPHABET.indexOf(rootLetter);
-            intervals.forEach((interval, i) => {
-                const targetLetter = ALPHABET[(rootLetterIdx + i) % 7];
-                let naturalDist = NATURALS[targetLetter], targetVal = (rootVal + interval) % 12, diff = targetVal - naturalDist;
-                if (diff > 6) diff -= 12; if (diff < -6) diff += 12;
-                let acc = diff === 1 ? '#' : diff === 2 ? '##' : diff === -1 ? 'b' : diff === -2 ? 'bb' : '';
-                notes.push(targetLetter + acc);
-                const major = [0,2,4,5,7,9,11], fDiff = interval - major[i];
-                let fSym = i===0 ? '1' : (i+1).toString();
-                if (i>0 && fDiff!==0) fSym = (fDiff===1?'#':fDiff===2?'##':fDiff===-1?'b':'bb') + fSym;
-                formula.push(fSym);
-            });
-            return { notes, formula };
-        }
-        function getChordSymbol(root, intervals) {
-            const i = new Set(intervals); let s = root;
-            if (i.has(4)) { if (i.has(7)) s += i.has(11) ? "maj7" : i.has(10) ? "7" : ""; else if (i.has(8)) s += i.has(11) ? "maj7#5" : i.has(10) ? "7#5" : "aug"; else if (i.has(6)) s += i.has(10) ? "7b5" : "maj7b5"; }
-            else if (i.has(3)) { if (i.has(7)) s += i.has(11) ? "mMaj7" : i.has(10) ? "m7" : "m"; else if (i.has(6)) s += i.has(9) ? "dim7" : i.has(10) ? "m7b5" : "dim"; }
-            else s += i.has(7) ? (i.has(5) ? "sus4" : i.has(2) ? "sus2" : "5") : "(no3)";
-            return s;
-        }
-        function analyzeRelationship(homeIndices, targetIndices) {
-            const setHome = new Set(homeIndices); let diff = 0, diffIndices = [];
-            targetIndices.forEach(n => { if(!setHome.has(n)) { diff++; diffIndices.push(n); }});
-            let tetraNotes = null;
-            let ext = [...homeIndices, ...homeIndices.slice(0,3)];
-            const setTarget = new Set(targetIndices);
-            for(let i=0; i<homeIndices.length; i++) {
-                if([0,1,2,3].every(x => setTarget.has(ext[i+x]))) {
-                    tetraNotes = [ext[i], ext[i+1], ext[i+2], ext[i+3]]; 
-                    break;
-                }
-            }
-            return { diff, diffIndices, hasTetra: !!tetraNotes, tetraIndices: tetraNotes };
-        }
-
-        // MELODY LOGIC
-        function generateMelodyPattern(intervals) {
-            const beats = 4;
-            const pattern = [];
-            const scaleLen = intervals.length;
-            const chordTonesIndices = [0, 2, 4, 6].filter(i => i < scaleLen);
-            let currentIndex = chordTonesIndices[Math.floor(Math.random() * chordTonesIndices.length)];
-            let currentOctave = 1;
-            pattern.push({ interval: intervals[currentIndex], octaveOffset: currentOctave * 12 });
-            let lastStepSize = 0, prevAbsIndex = currentIndex + (currentOctave * scaleLen);
-
-            for (let i = 1; i < beats; i++) {
-                let stepSize = 0, nextIndex, nextOctave, nextAbsIndex, attempts = 0;
-                do {
-                    if (Math.abs(lastStepSize) >= 2) stepSize = lastStepSize > 0 ? -1 : 1; 
-                    else {
-                        const dir = Math.random() > 0.5 ? 1 : -1;
-                        if (currentOctave > 1) stepSize = -1; else if (currentOctave < 0) stepSize = 1;
-                        else stepSize = Math.random() < 0.8 ? dir : dir * 2;
-                    }
-                    let nextRaw = currentIndex + stepSize;
-                    nextOctave = currentOctave + Math.floor(nextRaw / scaleLen);
-                    nextIndex = ((nextRaw % scaleLen) + scaleLen) % scaleLen;
-                    if(nextOctave > 2) { nextOctave = 2; nextIndex = currentIndex; }
-                    if(nextOctave < 0) { nextOctave = 0; nextIndex = currentIndex; }
-                    nextAbsIndex = nextIndex + (nextOctave * scaleLen);
-                    attempts++;
-                } while (nextAbsIndex === prevAbsIndex && attempts < 10);
-
-                if (nextAbsIndex === prevAbsIndex) {
-                     nextIndex = (currentIndex + 1) % scaleLen; nextAbsIndex = nextIndex + (currentOctave * scaleLen);
-                }
-                pattern.push({ interval: intervals[nextIndex], octaveOffset: nextOctave * 12 });
-                lastStepSize = nextAbsIndex - prevAbsIndex; currentIndex = nextIndex; currentOctave = nextOctave; prevAbsIndex = nextAbsIndex;
-            }
-            return pattern;
-        }
-
-        // AUDIO
-        function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        function getStrictScaleDetails(rootNote, intervals) { const ALPHABET = ['C','D','E','F','G','A','B'], NATURALS = {'C':0,'D':2,'E':4,'F':5,'G':7,'A':9,'B':11}; let rootLetter = rootNote.charAt(0), rootVal = getNoteIndex(rootNote), notes = [], formula = [], rootLetterIdx = ALPHABET.indexOf(rootLetter); intervals.forEach((interval, i) => { const targetLetter = ALPHABET[(rootLetterIdx + i) % 7]; let naturalDist = NATURALS[targetLetter], targetVal = (rootVal + interval) % 12, diff = targetVal - naturalDist; if (diff > 6) diff -= 12; if (diff < -6) diff += 12; let acc = diff === 1 ? '#' : diff === 2 ? '##' : diff === -1 ? 'b' : diff === -2 ? 'bb' : ''; notes.push(targetLetter + acc); const major = [0,2,4,5,7,9,11], fDiff = interval - major[i]; let fSym = i===0 ? '1' : (i+1).toString(); if (i>0 && fDiff!==0) fSym = (fDiff===1?'#':fDiff===2?'##':fDiff===-1?'b':'bb') + fSym; formula.push(fSym); }); return { notes, formula }; }
+        function getChordSymbol(root, intervals) { const i = new Set(intervals); let s = root; if (i.has(4)) { if (i.has(7)) s += i.has(11) ? "maj7" : i.has(10) ? "7" : ""; else if (i.has(8)) s += i.has(11) ? "maj7#5" : i.has(10) ? "7#5" : "aug"; else if (i.has(6)) s += i.has(10) ? "7b5" : "maj7b5"; } else if (i.has(3)) { if (i.has(7)) s += i.has(11) ? "mMaj7" : i.has(10) ? "m7" : "m"; else if (i.has(6)) s += i.has(9) ? "dim7" : i.has(10) ? "m7b5" : "dim"; } else s += i.has(7) ? (i.has(5) ? "sus4" : i.has(2) ? "sus2" : "5") : "(no3)"; return s; }
+        function analyzeRelationship(homeIndices, targetIndices) { const setHome = new Set(homeIndices); let diff = 0, diffIndices = []; targetIndices.forEach(n => { if(!setHome.has(n)) { diff++; diffIndices.push(n); }}); let tetraNotes = null; let ext = [...homeIndices, ...homeIndices.slice(0,3)]; const setTarget = new Set(targetIndices); for(let i=0; i<homeIndices.length; i++) { if([0,1,2,3].every(x => setTarget.has(ext[i+x]))) { tetraNotes = [ext[i], ext[i+1], ext[i+2], ext[i+3]]; break; } } return { diff, diffIndices, hasTetra: !!tetraNotes, tetraIndices: tetraNotes }; }
+        function generateMelodyPattern(intervals) { const beats = 4; const pattern = []; const scaleLen = intervals.length; const chordTonesIndices = [0, 2, 4, 6].filter(i => i < scaleLen); let currentIndex = chordTonesIndices[Math.floor(Math.random() * chordTonesIndices.length)]; let currentOctave = 1; pattern.push({ interval: intervals[currentIndex], octaveOffset: currentOctave * 12 }); let lastStepSize = 0; let prevAbsIndex = currentIndex + (currentOctave * scaleLen); for (let i = 1; i < beats; i++) { let stepSize = 0; let nextIndex, nextOctave, nextAbsIndex; let attempts = 0; do { if (Math.abs(lastStepSize) >= 2) { stepSize = lastStepSize > 0 ? -1 : 1; } else { const dir = Math.random() > 0.5 ? 1 : -1; if (currentOctave > 1) stepSize = -1; else if (currentOctave < 0) stepSize = 1; else { const r = Math.random(); if (r < 0.8) stepSize = dir; else stepSize = dir * 2; } } let nextRaw = currentIndex + stepSize; nextOctave = currentOctave + Math.floor(nextRaw / scaleLen); nextIndex = ((nextRaw % scaleLen) + scaleLen) % scaleLen; if(nextOctave > 2) { nextOctave = 2; nextIndex = currentIndex; } if(nextOctave < 0) { nextOctave = 0; nextIndex = currentIndex; } nextAbsIndex = nextIndex + (nextOctave * scaleLen); attempts++; } while (nextAbsIndex === prevAbsIndex && attempts < 10); if (nextAbsIndex === prevAbsIndex) { nextIndex = (currentIndex + 1) % scaleLen; nextAbsIndex = nextIndex + (currentOctave * scaleLen); } pattern.push({ interval: intervals[nextIndex], octaveOffset: nextOctave * 12 }); lastStepSize = nextAbsIndex - prevAbsIndex; currentIndex = nextIndex; currentOctave = nextOctave; prevAbsIndex = nextAbsIndex; } return pattern; }
         
-        function playTone(baseFreq, semitones, startTime, duration, type, volume, isMelody) {
-            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-            osc.frequency.value = baseFreq * Math.pow(2, semitones / 12); osc.type = type;
-            gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(volume, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(startTime); osc.stop(startTime + duration);
-            
-            // Highlight absolute key index based on C3 (130.81Hz) as base
-            setTimeout(() => { highlightKey((getNoteIndex("C") + semitones) % 60, isMelody); }, (startTime - audioCtx.currentTime) * 1000);
-        }
-
-        function playChord(root, intervals, type, duration = 1.5, patternType = 'block') {
-            initAudio(); const rootIdx = getNoteIndex(root), baseFreq = 130.81 * Math.pow(2, rootIdx / 12), now = audioCtx.currentTime;
-            
-            const indices = [0, 2, 4, 6].filter(i => i < intervals.length);
-            
-            if (type === 'chord') {
-                if (patternType === 'block') {
-                    indices.forEach((d, i) => {
-                         // Absolute semitones relative to C3
-                         playTone(130.81, rootIdx + intervals[d], now, duration, i===0?'triangle':'sine', state.volChord * 0.15, false);
-                    });
-                } else if (patternType === 'arpeggio') {
-                    const step = duration / indices.length;
-                    indices.forEach((d, i) => {
-                        playTone(130.81, rootIdx + intervals[d], now + (i*step), step * 1.5, 'sine', state.volChord * 0.15, false);
-                    });
-                } else if (patternType === 'alberti') {
-                    const ptrn = [0, 2, 1, 2], step = duration / 4;
-                    ptrn.forEach((pIdx, i) => { if(indices[pIdx] !== undefined) playTone(130.81, rootIdx + intervals[indices[pIdx]], now + (i*step), step, 'sine', state.volChord * 0.15, false); });
-                }
-            } else if (type === 'scale') {
-                const noteDur = 0.2;
-                intervals.forEach((int, i) => {
-                    playTone(130.81, rootIdx + int, now + (i*0.2), 0.3, 'sine', state.volMelody * 0.2, true);
-                });
-                playTone(130.81, rootIdx + 12, now + (intervals.length * noteDur), 0.8, 'sine', state.volMelody * 0.2, true);
-            }
-        }
-
-        function playStoredMelody(root, melodyPattern, startTime, totalDuration) {
-            const rootIdx = getNoteIndex(root), step = totalDuration / melodyPattern.length;
-            melodyPattern.forEach((note, i) => {
-                // Absolute semitones = root + octave_shift + interval + specific_offset
-                playTone(130.81, rootIdx + 12 + note.interval + note.octaveOffset, startTime + (i * step), step * 0.9, 'triangle', state.volMelody * 0.15, true);
-            });
-        }
-
-        // --- PIANO ---
-        function renderPiano() {
-            const container = document.getElementById('piano-container');
-            if(!container) return;
-            const keys = [];
-            const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            for(let i=0; i<5; i++) notes.forEach(n => keys.push({ n: n, t: n.includes('#') ? 'black' : 'white' }));
-            
-            let html = '<div class="relative w-full h-full flex">';
-            let wCount = keys.filter(k => k.t === 'white').length;
-            let wWidth = 100 / wCount;
-            let wLeft = 0;
-            
-            keys.forEach((k, i) => {
-                if (k.t === 'white') {
-                    html += `<div id="key-${i}" class="piano-key white bg-white dark:bg-slate-300 border-r border-slate-300 dark:border-slate-600 h-full absolute" style="width:${wWidth}%; left:${wLeft}%" onmousedown="previewNote(${i})"></div>`;
-                    wLeft += wWidth;
-                }
-            });
-            wLeft = 0;
-            keys.forEach((k, i) => {
-                if (k.t === 'white') wLeft += wWidth;
-                else {
-                    let bLeft = wLeft - (wWidth * 0.7 / 2);
-                    html += `<div id="key-${i}" class="piano-key black bg-slate-800 dark:bg-black border border-slate-900 h-[60%] absolute z-10" style="width:${wWidth*0.7}%; left:${bLeft}%" onmousedown="previewNote(${i})"></div>`;
-                }
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
+        function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        function playTone(baseFreq, semitones, startTime, duration, type, volume, isMelody) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.frequency.value = baseFreq * Math.pow(2, semitones / 12); osc.type = type; gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(volume, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(startTime); osc.stop(startTime + duration); setTimeout(() => { highlightKey((getNoteIndex("C") + semitones) % 60, isMelody); }, (startTime - audioCtx.currentTime) * 1000); }
+        function playChord(root, intervals, type, duration = 1.5, patternType = 'block') { initAudio(); const rootIdx = getNoteIndex(root), baseFreq = 130.81 * Math.pow(2, rootIdx / 12), now = audioCtx.currentTime; const indices = [0, 2, 4, 6].filter(i => i < intervals.length); if (type === 'chord') { if (patternType === 'block') indices.forEach((d, i) => { playTone(130.81, rootIdx + intervals[d], now, duration, i===0?'triangle':'sine', state.volChord * 0.15, false); }); else if (patternType === 'arpeggio') { const step = duration / indices.length; indices.forEach((d, i) => { playTone(130.81, rootIdx + intervals[d], now + (i*step), step * 1.5, 'sine', state.volChord * 0.15, false); }); } else if (patternType === 'alberti') { const ptrn = [0, 2, 1, 2], step = duration / 4; ptrn.forEach((pIdx, i) => { if(indices[pIdx] !== undefined) playTone(130.81, rootIdx + intervals[indices[pIdx]], now + (i*step), step, 'sine', state.volChord * 0.15, false); }); } } else if (type === 'scale') { const noteDur = 0.2; intervals.forEach((int, i) => { playTone(130.81, rootIdx + int, now + (i*0.2), 0.3, 'sine', state.volMelody * 0.2, true); }); playTone(130.81, rootIdx + 12, now + (intervals.length * noteDur), 0.8, 'sine', state.volMelody * 0.2, true); } }
+        function playStoredMelody(root, melodyPattern, startTime, totalDuration) { const rootIdx = getNoteIndex(root), step = totalDuration / melodyPattern.length; melodyPattern.forEach((note, i) => { playTone(130.81, rootIdx + 12 + note.interval + note.octaveOffset, startTime + (i * step), step * 0.9, 'triangle', state.volMelody * 0.15, true); }); }
+        function renderPiano() { const container = document.getElementById('piano-container'); if(!container) return; const keys = []; const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']; for(let i=0; i<5; i++) notes.forEach(n => keys.push({ n: n, t: n.includes('#') ? 'black' : 'white' })); let html = '<div class="relative w-full h-full flex">'; let wCount = keys.filter(k => k.t === 'white').length; let wWidth = 100 / wCount; let wLeft = 0; keys.forEach((k, i) => { if (k.t === 'white') { html += `<div id="key-${i}" class="piano-key white bg-white dark:bg-slate-300 border-r border-slate-300 dark:border-slate-600 h-full absolute" style="width:${wWidth}%; left:${wLeft}%" onmousedown="previewNote(${i})"></div>`; wLeft += wWidth; } }); wLeft = 0; keys.forEach((k, i) => { if (k.t === 'white') wLeft += wWidth; else { let bLeft = wLeft - (wWidth * 0.7 / 2); html += `<div id="key-${i}" class="piano-key black bg-slate-800 dark:bg-black border border-slate-900 h-[60%] absolute z-10" style="width:${wWidth*0.7}%; left:${bLeft}%" onmousedown="previewNote(${i})"></div>`; } }); html += '</div>'; container.innerHTML = html; }
         window.previewNote = (idx) => { initAudio(); playTone(130.81, idx, audioCtx.currentTime, 0.5, 'sine', 0.5, true); };
-
-        function highlightKey(idx, isMelody) {
-            const keyIdx = idx % 60; 
-            const key = document.getElementById(`key-${keyIdx}`);
-            if (key) { 
-                const cls = isMelody ? 'active-melody' : 'active-chord';
-                key.classList.add(cls); 
-                setTimeout(() => key.classList.remove(cls), 200); 
-            }
-        }
-
-        // HANDLERS
+        function highlightKey(idx, isMelody) { const keyIdx = idx % 60; const key = document.getElementById(`key-${keyIdx}`); if (key) { const cls = isMelody ? 'active-melody' : 'active-chord'; key.classList.add(cls); setTimeout(() => key.classList.remove(cls), 200); } }
         function saveState() { localStorage.setItem('modalLabProgression', JSON.stringify(state.progression)); }
-        function loadState() {
-            const saved = localStorage.getItem('modalLabProgression');
-            if(saved) { try { state.progression = JSON.parse(saved); window.renderProgression(); showToast("Sesión restaurada"); } catch(e) {} }
-        }
+        function loadState() { const saved = localStorage.getItem('modalLabProgression'); if(saved) { try { state.progression = JSON.parse(saved); window.renderProgression(); showToast("Sesión restaurada"); } catch(e) {} } }
 
-        window.addHomeToProgression = function() {
-            const rootIdx = getNoteIndex(state.root);
-            const mode = ALL_MODES_FLAT[state.mode];
-            const chord = getChordSymbol(state.root, mode.intervals);
-            window.addToProgression({ ...mode, root: state.root, mode: state.mode, chord });
-        };
-        window.playHome = function() {
-            const mode = ALL_MODES_FLAT[state.mode];
-            playChord(state.root, mode.intervals, 'chord', 1.5, state.rhythmPattern);
-        };
+        window.addHomeToProgression = function() { const rootIdx = getNoteIndex(state.root); const mode = ALL_MODES_FLAT[state.mode]; const chord = getChordSymbol(state.root, mode.intervals); window.addToProgression({ ...mode, root: state.root, mode: state.mode, chord }); };
+        window.playHome = function() { const mode = ALL_MODES_FLAT[state.mode]; playChord(state.root, mode.intervals, 'chord', 1.5, state.rhythmPattern); };
         window.addInspectorToProgression = function() { if(state.hoveredNode) window.addToProgression(state.hoveredNode); };
-        window.goToInspector = function() {
-            if(state.hoveredNode) {
-                state.root = state.hoveredNode.root; state.mode = state.hoveredNode.mode; state.hoveredNode = null;
-                document.getElementById('root-select').value = state.root; document.getElementById('mode-select').value = state.mode;
-                window.update();
-            }
-        };
-        window.playInspector = function(type) {
-            if(state.hoveredNode) {
-                if (type === 'chord') playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'chord', 1.5, state.rhythmPattern);
-                else playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'scale');
-            }
-        };
-        window.playProgressionItem = function(id) {
-            const item = state.progression.find(p => p.id === id);
-            if(item) playChord(item.root, item.intervals, 'chord', 1.5, state.rhythmPattern);
-        };
+        window.goToInspector = function() { if(state.hoveredNode) { state.root = state.hoveredNode.root; state.mode = state.hoveredNode.mode; state.hoveredNode = null; document.getElementById('root-select').value = state.root; document.getElementById('mode-select').value = state.mode; window.update(); } };
+        window.playInspector = function(type) { if(state.hoveredNode) { if (type === 'chord') playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'chord', 1.5, state.rhythmPattern); else playChord(state.hoveredNode.root, state.hoveredNode.intervals, 'scale'); } };
+        window.playProgressionItem = function(id) { const item = state.progression.find(p => p.id === id); if(item) playChord(item.root, item.intervals, 'chord', 1.5, state.rhythmPattern); };
         window.removeProgressionItem = function(id) { state.progression = state.progression.filter(p => p.id !== id); saveState(); window.renderProgression(); };
-        window.regenerateMelody = function(id) {
-            const itemIndex = state.progression.findIndex(p => p.id === id);
-            if (itemIndex > -1) {
-                state.progression[itemIndex].melody = generateMelodyPattern(state.progression[itemIndex].intervals);
-                saveState(); window.renderProgression();
-            }
-        };
-        window.addToProgression = function(data) {
-            const details = getStrictScaleDetails(data.root, data.intervals);
-            const melody = generateMelodyPattern(data.intervals);
-            state.progression.push({ id: Date.now(), root: data.root, mode: data.mode, chord: data.chord, family: data.family, degree: data.degree, notes: details.notes, intervals: data.intervals, melody: melody });
-            saveState(); window.renderProgression();
-            playChord(data.root, data.intervals, 'chord', 1.5, state.rhythmPattern);
-            const c = document.getElementById('progression-container');
-            if(c) setTimeout(() => c.scrollLeft = c.scrollWidth, 100);
-            showToast("Acorde agregado");
-        };
-        window.clearProgression = function() {
-            if (state.clearConfirm) { state.progression = []; state.clearConfirm = false; saveState(); window.renderProgression(); showToast("Progresión borrada"); }
-            else { state.clearConfirm = true; window.renderProgression(); setTimeout(() => { state.clearConfirm = false; window.renderProgression(); }, 3000); }
-        };
-        window.exportSession = function() {
-            if(state.progression.length === 0) { showToast("Nada que exportar"); return; }
-            const dataStr = JSON.stringify(state.progression, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const link = document.createElement('a'); link.setAttribute('href', dataUri); link.setAttribute('download', 'modal_session.json'); link.click();
-            showToast("Sesión exportada");
-        };
-        window.importSession = function(event) {
-            const file = event.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) { try { const loaded = JSON.parse(e.target.result); if(Array.isArray(loaded)) { state.progression = loaded; saveState(); window.renderProgression(); showToast("Sesión cargada"); } } catch(err) { showToast("Error de archivo"); } };
-            reader.readAsText(file);
-        };
-        window.toggleEnharmonicInspector = function() {
-            if (!state.hoveredNode) return;
-            const eq = ENHARMONIC_MAP[state.hoveredNode.root];
-            if (eq) { state.hoveredNode = { ...state.hoveredNode, root: eq, chord: getChordSymbol(eq, state.hoveredNode.intervals) }; window.renderInspector(); }
-        };
-        window.toggleEnharmonicHeader = function() {
-            const eq = ENHARMONIC_MAP[state.root];
-            if(eq) { state.root = eq; document.getElementById('root-select').value = eq; window.update(); }
-        };
-
-        function showToast(msg) {
-            const t = document.getElementById('toast'); if(!t) return;
-            t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000);
-        }
+        window.regenerateMelody = function(id) { const itemIndex = state.progression.findIndex(p => p.id === id); if (itemIndex > -1) { state.progression[itemIndex].melody = generateMelodyPattern(state.progression[itemIndex].intervals); saveState(); window.renderProgression(); } };
+        window.addToProgression = function(data) { const details = getStrictScaleDetails(data.root, data.intervals); const melody = generateMelodyPattern(data.intervals); state.progression.push({ id: Date.now(), root: data.root, mode: data.mode, chord: data.chord, family: data.family, degree: data.degree, notes: details.notes, intervals: data.intervals, melody: melody }); saveState(); window.renderProgression(); playChord(data.root, data.intervals, 'chord', 1.5, state.rhythmPattern); const c = document.getElementById('progression-container'); if(c) setTimeout(() => c.scrollLeft = c.scrollWidth, 100); showToast("Acorde agregado"); };
+        window.clearProgression = function() { if (state.clearConfirm) { state.progression = []; state.clearConfirm = false; saveState(); window.renderProgression(); showToast("Progresión borrada"); } else { state.clearConfirm = true; window.renderProgression(); setTimeout(() => { state.clearConfirm = false; window.renderProgression(); }, 3000); } };
+        window.exportSession = function() { if(state.progression.length === 0) { showToast("Nada que exportar"); return; } const dataStr = JSON.stringify(state.progression, null, 2); const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr); const link = document.createElement('a'); link.setAttribute('href', dataUri); link.setAttribute('download', 'modal_session.json'); link.click(); showToast("Sesión exportada"); };
+        window.importSession = function(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const loaded = JSON.parse(e.target.result); if(Array.isArray(loaded)) { state.progression = loaded; saveState(); window.renderProgression(); showToast("Sesión cargada"); } } catch(err) { showToast("Error de archivo"); } }; reader.readAsText(file); };
+        window.toggleEnharmonicInspector = function() { if (!state.hoveredNode) return; const eq = ENHARMONIC_MAP[state.hoveredNode.root]; if (eq) { state.hoveredNode = { ...state.hoveredNode, root: eq, chord: getChordSymbol(eq, state.hoveredNode.intervals) }; window.renderInspector(); } };
+        window.toggleEnharmonicHeader = function() { const eq = ENHARMONIC_MAP[state.root]; if(eq) { state.root = eq; document.getElementById('root-select').value = eq; window.update(); } };
+        function showToast(msg) { const t = document.getElementById('toast'); if(!t) return; t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 
         window.renderMap = function(homeData, layers) {
             const container = document.getElementById('home-node-container');
             const theme = FAMILY_THEMES[homeData.family];
-            container.innerHTML = `
-                <div class="relative group" onclick="playHome()">
-                    <div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-pointer shadow-xl transition-all duration-500 hover:scale-105">
-                        <span class="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 border-b border-slate-200 dark:border-slate-800 pb-0.5">${homeData.degree}º MODO</span>
-                        <span class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-0.5">${homeData.chord}</span>
-                        <span class="text-[9px] font-bold ${theme.color} uppercase leading-tight max-w-[90%]">${state.mode}</span>
-                    </div>
-                </div>`;
+            container.innerHTML = `<div class="relative group" onclick="playHome()"><div class="w-40 h-40 rounded-full bg-white dark:bg-slate-950 border-4 ${theme.border} ${theme.glow} flex flex-col items-center justify-center text-center p-2 z-10 pointer-events-auto cursor-pointer shadow-xl transition-all duration-500 hover:scale-105"><span class="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 border-b border-slate-200 dark:border-slate-800 pb-0.5">${homeData.degree}º MODO</span><span class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-0.5">${homeData.chord}</span><span class="text-[9px] font-bold ${theme.color} uppercase leading-tight max-w-[90%]">${state.mode}</span></div></div>`;
             const centerNode = container.firstElementChild;
             centerNode.onmouseenter = () => { state.hoveredNode = { ...homeData, diffIndices: [], hasTetra: false, tetraIndices: null }; window.renderInspector(); };
-            
             const sys = document.getElementById('orbit-system'); sys.innerHTML = '';
-            const addLayer = (nodes, r, size, txt) => {
-                const limit = txt ? 12 : (size==='20px'?16:24);
-                nodes.slice(0, limit).forEach((n, i, arr) => {
-                    const angle = (i / arr.length) * 2 * Math.PI - (Math.PI / 2);
-                    const left = 50 + (r/2 * Math.cos(angle)), top = 50 + (r/2 * Math.sin(angle));
-                    const btn = document.createElement('button');
-                    let bg = r===85 ? 'bg-slate-300 dark:bg-slate-700' : r===55 ? 'bg-blue-300 dark:bg-blue-600' : 'bg-amber-300 dark:bg-amber-500';
-                    btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group orbit-node ${bg} border-slate-400 dark:border-slate-600`;
-                    btn.style.left = `${left}%`; btn.style.top = `${top}%`; btn.style.width = size; btn.style.height = size; btn.style.marginLeft = `calc(-${size}/2)`; btn.style.marginTop = `calc(-${size}/2)`;
-                    if(txt) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`;
-                    btn.onmouseenter = () => { state.hoveredNode = n; window.renderInspector(); };
-                    btn.onclick = (e) => { e.stopPropagation(); state.root = n.root; state.mode = n.mode; state.hoveredNode = null; window.update(); };
-                    sys.appendChild(btn);
-                });
-            };
+            const addLayer = (nodes, r, size, txt) => { const limit = txt ? 12 : (size==='20px'?16:24); nodes.slice(0, limit).forEach((n, i, arr) => { const angle = (i / arr.length) * 2 * Math.PI - (Math.PI / 2); const left = 50 + (r/2 * Math.cos(angle)), top = 50 + (r/2 * Math.sin(angle)); const btn = document.createElement('button'); let bg = r===85 ? 'bg-slate-300 dark:bg-slate-700' : r===55 ? 'bg-blue-300 dark:bg-blue-600' : 'bg-amber-300 dark:bg-amber-500'; btn.className = `absolute rounded-full border shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-150 hover:z-50 cursor-pointer group orbit-node ${bg} border-slate-400 dark:border-slate-600`; btn.style.left = `${left}%`; btn.style.top = `${top}%`; btn.style.width = size; btn.style.height = size; btn.style.marginLeft = `calc(-${size}/2)`; btn.style.marginTop = `calc(-${size}/2)`; if(txt) btn.innerHTML = `<span class="text-[9px] font-bold text-slate-800 dark:text-slate-900">${n.root}</span>`; btn.onmouseenter = () => { state.hoveredNode = n; window.renderInspector(); }; btn.onclick = (e) => { e.stopPropagation(); state.root = n.root; state.mode = n.mode; state.hoveredNode = null; window.update(); }; sys.appendChild(btn); }); };
             addLayer(layers.distant, 85, '12px', false); addLayer(layers.close, 55, '20px', false); addLayer(layers.relatives, 25, '32px', true);
         }
 
@@ -550,10 +337,15 @@
             const theme = FAMILY_THEMES[n.family] || FAMILY_THEMES["Escala Mayor"], det = getStrictScaleDetails(n.root, n.intervals);
             
             let tetraText = "";
+            // Find "common" note names for tetracord display. We use the HOME scale logic to name them.
             if (n.hasTetra && n.tetraIndices) {
+                // n.tetraIndices contains raw intervals relative to HOME root.
+                // We need to find the names of these notes based on HOME scale context
+                const homeDet = getStrictScaleDetails(state.root, ALL_MODES_FLAT[state.mode].intervals);
                 const tetraNames = n.tetraIndices.map(interval => {
-                   const noteIdx = n.intervals.indexOf(interval);
-                   return (noteIdx !== -1) ? det.notes[noteIdx] : getNoteNameFromInterval(n.root, interval);
+                    // find index in home intervals
+                    const idx = ALL_MODES_FLAT[state.mode].intervals.indexOf(interval);
+                    return (idx !== -1) ? homeDet.notes[idx] : getNoteNameFromInterval(state.root, interval);
                 });
                 tetraText = `${tetraNames.join(' - ')}`;
             }
@@ -606,7 +398,7 @@
                     let melodyText = item.melody.map(m => {
                         const noteIdx = item.intervals.indexOf(m.interval);
                         // FIXED: Use the name from the item's calculated notes array, not generic lookup
-                        const noteName = (noteIdx !== -1) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval);
+                        const noteName = (noteIdx !== -1 && item.notes[noteIdx]) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval);
                         return m.octaveOffset > 0 ? `${noteName}↑` : noteName;
                     }).join(' - ');
                     div.innerHTML = `
@@ -657,7 +449,7 @@
             window.renderMap(homeData, layers);
             window.renderInspector();
             const btnHeader = document.getElementById('header-enharmonic-btn');
-            if(btnHeader) { if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); } }
+            if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); }
         }
 
         window.updateTransportUI = function() {
