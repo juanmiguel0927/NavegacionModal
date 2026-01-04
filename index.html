@@ -52,6 +52,10 @@
         .modal-content { transform: scale(0.95); transition: all 0.3s ease; max-height: 90vh; }
         .modal.open .modal-content { transform: scale(1); }
 
+        /* Toast Notification */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: white; padding: 10px 20px; border-radius: 8px; font-size: 14px; opacity: 0; transition: all 0.3s ease; z-index: 200; pointer-events: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
         /* Custom Range Slider */
         input[type=range] {
             -webkit-appearance: none; 
@@ -60,13 +64,13 @@
         }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 18px;
-            width: 18px;
+            height: 14px;
+            width: 14px;
             border-radius: 50%;
             background: #8b5cf6;
-            margin-top: -7px; 
+            margin-top: -5px; 
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
@@ -182,13 +186,13 @@
                 <div class="flex flex-wrap gap-3 items-center justify-between">
                     <!-- Controls Group -->
                     <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
-                        <button id="btn-play-all" class="p-3 bg-green-600 hover:bg-green-500 text-white rounded-xl shadow active:scale-95 shrink-0" title="Reproducir"><i data-lucide="play" class="w-5 h-5 fill-current"></i></button>
-                        <button id="btn-stop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow active:scale-95 shrink-0"><i data-lucide="square" class="w-5 h-5 fill-current"></i></button>
-                        <button id="btn-loop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-xl shadow active:scale-95 shrink-0"><i data-lucide="repeat" class="w-5 h-5"></i></button>
+                        <button id="btn-play-all" class="p-3 bg-green-600 hover:bg-green-500 text-white rounded-xl shadow active:scale-95 shrink-0" title="Reproducir (Espacio)"><i data-lucide="play" class="w-5 h-5 fill-current"></i></button>
+                        <button id="btn-stop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow active:scale-95 shrink-0" title="Detener"><i data-lucide="square" class="w-5 h-5 fill-current"></i></button>
+                        <button id="btn-loop" class="p-3 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-xl shadow active:scale-95 shrink-0" title="Loop (L)"><i data-lucide="repeat" class="w-5 h-5"></i></button>
                         
                         <div class="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1 shrink-0"></div>
 
-                        <button id="btn-melody" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-xl shadow-sm active:scale-95 shrink-0 transition-colors">
+                        <button id="btn-melody" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-xl shadow-sm active:scale-95 shrink-0 transition-colors" title="Melodía (M)">
                             <i data-lucide="dices" class="w-5 h-5"></i>
                             <span class="text-xs font-bold uppercase">Melodía</span>
                         </button>
@@ -245,6 +249,9 @@
             </div>
         </div>
     </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">Notificación</div>
 
     <!-- HELP MODAL -->
     <div id="help-modal" class="modal fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -434,7 +441,7 @@
             });
         }
 
-        // HANDLERS
+        // HANDLERS (ALL GLOBALS)
         window.addHomeToProgression = function() {
             const rootIdx = getNoteIndex(state.root);
             const mode = ALL_MODES_FLAT[state.mode];
@@ -487,21 +494,23 @@
             playChord(data.root, data.intervals, 'chord');
             const c = document.getElementById('progression-container');
             if(c) setTimeout(() => c.scrollLeft = c.scrollWidth, 100);
+            showToast("Acorde agregado");
         };
         window.clearProgression = function() {
-            if (state.clearConfirm) { state.progression = []; state.clearConfirm = false; window.renderProgression(); }
+            if (state.clearConfirm) { state.progression = []; state.clearConfirm = false; window.renderProgression(); showToast("Progresión borrada"); }
             else { state.clearConfirm = true; window.renderProgression(); setTimeout(() => { state.clearConfirm = false; window.renderProgression(); }, 3000); }
         };
         window.exportSession = function() {
-            if(state.progression.length === 0) { alert("Vacío."); return; }
+            if(state.progression.length === 0) { showToast("Nada que exportar"); return; }
             const dataStr = JSON.stringify(state.progression, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const link = document.createElement('a'); link.setAttribute('href', dataUri); link.setAttribute('download', 'modal_session.json'); link.click();
+            showToast("Sesión exportada");
         };
         window.importSession = function(event) {
             const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) { try { const loaded = JSON.parse(e.target.result); if(Array.isArray(loaded)) { state.progression = loaded; window.renderProgression(); } } catch(err) {} };
+            reader.onload = function(e) { try { const loaded = JSON.parse(e.target.result); if(Array.isArray(loaded)) { state.progression = loaded; window.renderProgression(); showToast("Sesión cargada"); } } catch(err) { showToast("Error de archivo"); } };
             reader.readAsText(file);
         };
         window.toggleEnharmonicInspector = function() {
@@ -513,6 +522,14 @@
             const eq = ENHARMONIC_MAP[state.root];
             if(eq) { state.root = eq; document.getElementById('root-select').value = eq; window.update(); }
         };
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            if(!t) return;
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
 
         window.renderMap = function(homeData, layers) {
             const container = document.getElementById('home-node-container');
@@ -550,12 +567,9 @@
         window.renderInspector = function() {
             const el = document.getElementById('inspector-content'), n = state.hoveredNode;
             if(!n) { el.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 opacity-60"><i data-lucide="grid" class="w-12 h-12 mb-2"></i><p class="text-sm">Pasa el mouse sobre un círculo</p></div>`; lucide.createIcons(); return; }
+            const theme = FAMILY_THEMES[n.family] || FAMILY_THEMES["Escala Mayor"], det = getStrictScaleDetails(n.root, n.intervals);
             
-            // Re-calculate notes for current root context to ensure correct naming
-            const theme = FAMILY_THEMES[n.family] || FAMILY_THEMES["Escala Mayor"];
-            const det = getStrictScaleDetails(n.root, n.intervals);
-            
-            // Tetracord Logic Presentation
+            // Tetra
             let tetraText = "";
             if (n.hasTetra && n.tetraIndices) {
                 const tetraNames = n.tetraIndices.map(interval => {
@@ -614,7 +628,6 @@
                     div.className = `min-w-[240px] bg-white dark:bg-slate-800 rounded-xl p-4 border-l-4 ${theme.border} relative group flex-shrink-0 shadow-md dark:shadow-lg transition-transform ${playingClass} snap-center`;
                     let melodyText = item.melody.map(m => {
                         const noteIdx = item.intervals.indexOf(m.interval);
-                        // FIXED: Use the name from the item's calculated notes array, not generic lookup
                         const noteName = (noteIdx !== -1 && item.notes[noteIdx]) ? item.notes[noteIdx] : getNoteNameFromInterval(item.root, m.interval);
                         return m.octaveOffset > 0 ? `${noteName}↑` : noteName;
                     }).join(' - ');
@@ -666,7 +679,7 @@
             window.renderMap(homeData, layers);
             window.renderInspector();
             const btnHeader = document.getElementById('header-enharmonic-btn');
-            if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); }
+            if(btnHeader) { if(ENHARMONIC_MAP[state.root]) { btnHeader.classList.remove('hidden'); btnHeader.title = `Cambiar a ${ENHARMONIC_MAP[state.root]}`; } else { btnHeader.classList.add('hidden'); } }
         }
 
         window.updateTransportUI = function() {
